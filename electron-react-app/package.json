@@ -15,7 +15,8 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
-    "typescript": "~3.7.2"
+    "typescript": "~3.7.2",
+    "typescript-rabbitmq": "0.0.8"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -24,7 +25,7 @@
     "eject": "react-scripts eject",
     "react-start": "set BROWSER=none && yarn start",
     "electron-start": "set ELECTRON_START_URL=http://localhost:3000 && electron .",
-    "electron-pack": "yarn build && electron-builder build -c.extraMetadata.main=build/Main.js" 
+    "electron-pack": "yarn build && electron-builder build -c.extraMetadata.main=build/Main.js"
   },
   "eslintConfig": {
     "extends": "react-app"
