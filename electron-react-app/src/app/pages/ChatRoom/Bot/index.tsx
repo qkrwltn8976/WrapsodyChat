@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Client } from "@stomp/stompjs";
+import { Client, IPublishParams } from "@stomp/stompjs";
 interface Props {
     client: Client,
     name: String,
@@ -24,7 +24,7 @@ class BotChatRoom extends React.PureComponent {
     client: any = "";
     name: String = "";
     state: any = { user: [], message: [] };
-    constructor(props: { client: any, name: string; }, state: {}) {
+    constructor(props: { client: Client, name: string; }, state: {}) {
         super(props, state);
         this.client = new Client({
             brokerURL: "ws://192.168.100.30:9500/ws",
@@ -39,6 +39,7 @@ class BotChatRoom extends React.PureComponent {
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000
         });
+    
         this.client.brokerURL = "ws://192.168.100.30:9500/ws";
         this.client.onConnect = () => {
             
@@ -75,11 +76,13 @@ class BotChatRoom extends React.PureComponent {
             console.log('WebSocket Client Connected');
         }
 
-        this.client.publish({
-            destination: `/app/login/admin`,
+        let parmasd : IPublishParams = {
+            destination: '/app/login/admin',
             body: ""
-        });
-        // console.log(this.client)
+        };
+
+        this.client.publish = () => parmasd;
+        console.log(this.client)
     }
 
     loginOnSubmit = () => {
