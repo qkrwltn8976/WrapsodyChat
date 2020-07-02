@@ -23,28 +23,72 @@ interface State { user: [], message: [] }
 class BotChatRoom extends React.PureComponent {
     client: any = "";
     name: String = "";
-    state: any = {user: [], message: []};
-    constructor(props: {client: any, name: string;}, state: {}) {
+    state: any = { user: [], message: [] };
+    constructor(props: { client: any, name: string; }, state: {}) {
         super(props, state);
-        this.client = new Client();
-        this.client.brokerURL = "ws://192.168.100.30:9099/";
+        this.client = new Client({
+            brokerURL: "ws://192.168.100.30:9500/ws",
+            connectHeaders: {
+                login: "admin",
+                passcode: "1111",
+            },
+            debug: function (str) {
+                console.log(str);
+            },
+            reconnectDelay: 5000,
+            heartbeatIncoming: 4000,
+            heartbeatOutgoing: 4000
+        });
+        this.client.brokerURL = "ws://192.168.100.30:9500/ws";
         this.client.onConnect = () => {
-            console.log("성공")
-            // this.client.subscribe("/topic/user", f => {
-            //     this.setState({
-            //         ...this.state,
-            //         user: JSON.parse(f.body)
-            //     });
-            // });
-
-            this.client.publish({
-                destination: `/app/init`,
-                body: ""
+            
+            console.log("connected to Stomp");
+            this.client.subscribe("/exchange/user", () => {
+                this.setState({
+                    ...this.state,
+                    // user: JSON.parse(f.body)
+                });
+                console.log('asdf')
             });
+
+
+            // this.client.publish({
+            //     destination: `/app/init`,
+            //     body: ""
+            // });
         };
-        
+        // this.client.publish({
+        //     destination: `/app/init`,
+        //     body: ""
+        // });
+        // this.client.publish({destination: '/topic/general', body: 'Hello world'});
+        console.log(this.client)
+        this.client.onStompError = () => {
+            console.log('stomp error occured')
+        }
+        // this.client.onConnect();
+        // 
+
         this.client.activate();
+
+        this.client.onopen = () => {
+            console.log('WebSocket Client Connected');
+        }
+
+        this.client.publish({
+            destination: `/app/login/admin`,
+            body: ""
+        });
+        // console.log(this.client)
     }
+
+    loginOnSubmit = () => {
+        this.client.publish({
+            destination: `/app/login/admin`,
+            body: ""
+        });
+    }
+
     componentDidMount() {
         let client: String;
         let name: String;
@@ -62,7 +106,11 @@ class BotChatRoom extends React.PureComponent {
         // document.body.appendChild(script);
 
         // document.body.appendChild(stomp);
+        // this.client.onConnect();
+        // this.loginOnSubmit()
+        // console.log(this.client)
     }
+
     render() {
         return (
             <div>
