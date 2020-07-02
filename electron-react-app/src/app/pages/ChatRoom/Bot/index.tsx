@@ -31,19 +31,23 @@ class BotChatRoom extends React.PureComponent {
             connectHeaders: {
                 login: "admin",
                 passcode: "1111",
+                // password: "1111",
+                host: "/wrapsody-oracle"
             },
             debug: function (str) {
                 console.log(str);
             },
             reconnectDelay: 5000,
-            heartbeatIncoming: 4000,
-            heartbeatOutgoing: 4000
+            heartbeatIncoming: 10000,
+            heartbeatOutgoing: 10000
         });
     
-        this.client.brokerURL = "ws://192.168.100.30:9500/ws";
+        // this.client.brokerURL = "ws://192.168.100.30:9500/ws";
         this.client.onConnect = () => {
             
             console.log("connected to Stomp");
+            
+
             this.client.subscribe("/exchange/user", () => {
                 this.setState({
                     ...this.state,
@@ -76,12 +80,16 @@ class BotChatRoom extends React.PureComponent {
             console.log('WebSocket Client Connected');
         }
 
-        let parmasd : IPublishParams = {
+        let params : IPublishParams = {
             destination: '/app/login/admin',
             body: ""
         };
 
-        this.client.publish = () => parmasd;
+        this.client.publish = () => params;
+
+        // this.client.subscribe = () => {
+        //     destination: '/exchage/user-admin'
+        // }
         console.log(this.client)
     }
 
