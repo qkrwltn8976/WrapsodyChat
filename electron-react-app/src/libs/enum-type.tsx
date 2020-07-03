@@ -14,3 +14,8 @@ export enum SearchType{
     USER = 'user'
 }
 
+export enum HeaderType{
+    CHAT = 'chatRoom',
+    CREATE = 'createChatRoom',
+    ETC = 'etc',
+}
