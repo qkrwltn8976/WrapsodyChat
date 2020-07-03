@@ -14,3 +14,9 @@ export enum HeaderType{
     CREATE = 'createChatRoom',
     ETC = 'etc',
 }
+
+export enum MemberListType{
+    CHAT = 'chat',
+    SELECT = 'select',
+    SELECTED = 'selected',
+}
