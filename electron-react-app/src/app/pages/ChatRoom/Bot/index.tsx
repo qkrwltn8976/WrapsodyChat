@@ -28,7 +28,6 @@ class BotChatRoom extends React.PureComponent {
             heartbeatOutgoing: 10000
         });
     
-        // this.client.brokerURL = "ws://192.168.100.30:9500/ws";
         this.client.onConnect = () => {
             
             console.log("connected to Stomp");

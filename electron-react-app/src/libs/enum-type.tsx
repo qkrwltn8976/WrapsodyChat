@@ -9,3 +9,8 @@ export enum RoomType {
     DEP = 'dep'
 }
 
+export enum SearchType{
+    ROOM = 'room',
+    USER = 'user'
+}
+
