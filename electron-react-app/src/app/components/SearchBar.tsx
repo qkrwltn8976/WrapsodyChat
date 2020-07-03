@@ -1,8 +1,8 @@
 import * as React from 'react';
-import {SearchType} from "../../libs/enum-type";
 
 function SearchBar(props: any) {
-    if(props.enum === SearchType.ROOM){
+    const searchType = props.type;
+    if(searchType === "ChatRoomList"){
         return (
             <div className = "wrapmsgr_chatroom_search_div">
                 <input type = "text" placeholder = "Enter a document or group room."></input>
@@ -10,25 +10,14 @@ function SearchBar(props: any) {
             </div>
         );
     }
-    if(props.enum === SearchType.USER){
-        return (
-            <div>
-                <div className = "search_div">
-                    <input type = "text" placeholder = "Enter a user name or ID."></input>
-                    <i className = "icon_search"></i>
-                </div>
-            </div>
-        );
-    }
     return (
         <div>
             <div className = "search_div">
-                <input type = "text" placeholder = "Enter..."></input>
+                <input type = "text" placeholder = "Enter a user name or ID."></input>
                 <i className = "icon_search"></i>
             </div>
         </div>
     );
-    
 }
 
 export default SearchBar;

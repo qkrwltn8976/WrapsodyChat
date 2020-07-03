@@ -6,11 +6,6 @@
       "dom.iterable",
       "esnext"
     ],
-    "baseUrl": ".",
-    "rootDir": "src",
-    "paths": {
-      "@libs/*": ["src/libs/*"]
-    },
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -24,7 +19,6 @@
     "noEmit": true,
     "jsx": "react"
   },
-  "extends": "./tsconfig.base.json",
   "include": [
     "src", "@types/amqp.ts"
   ]
