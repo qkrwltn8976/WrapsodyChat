@@ -1,6 +1,7 @@
 export enum MSG {
     USER = 'user',
-    SYSTEM = 'system'
+    SYSTIME = 'systemTime',
+    SYSETR = 'systemEnter'
 }
 
 export enum RoomType {
@@ -14,3 +15,5 @@ export enum HeaderType{
     CREATE = 'createChatRoom',
     ETC = 'etc',
 }
+
+
