@@ -30,7 +30,7 @@ class BotChatRoom extends React.PureComponent {
             brokerURL: "ws://192.168.100.30:9500/ws",
             connectHeaders: {
                 login: "admin",
-                passcode: "1111",
+                password: "1111",
             },
             debug: function (str) {
                 console.log(str);
@@ -50,7 +50,7 @@ class BotChatRoom extends React.PureComponent {
                     // user: JSON.parse(f.body)
                 });
                 console.log('asdf')
-            });
+            });          
 
 
             // this.client.publish({
