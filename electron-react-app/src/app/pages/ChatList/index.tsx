@@ -1,7 +1,7 @@
 import * as React from 'react';
-import Chat from "./Chat";
+import Chat from "../../components/Chat";
 import SearchBar from "../../components/SearchBar";
-import {SearchType} from "../../../libs/enum-type"
+import {SearchType} from "@libs/enum-type"
 
 function ChatList() {
     return (
