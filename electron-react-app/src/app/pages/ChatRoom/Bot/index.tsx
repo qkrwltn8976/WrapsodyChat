@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Client, IPublishParams, Message } from "@stomp/stompjs";
 import Header from '../../../components/Header';
+import * as etype from '../../../../libs/enum-type';
 
 interface Props {
     client: Client,
@@ -77,7 +78,7 @@ class BotChatRoom extends React.PureComponent {
         return (
             <div>
                 <h3>채팅방리스트</h3>
-                <Header docName =
+                <Header docName = "" headerType = {etype.HeaderType.ETC}/>
             </div>
         )
     }

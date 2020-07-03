@@ -1,4 +1,9 @@
 import * as React from 'react';
+import * as etype from '..//../libs/enum-type';
+import '../../assets/css/wrapmsgr.css';
+import '../../assets/css/base.css';
+import '../../assets/css/wrapmsgr-components.css';
+import '../../assets/css/wrapmsgr-icons.css';
 
 interface Props{
     docName: string;
@@ -15,45 +20,48 @@ class Header extends React.Component<Props>{
     
     render() {
         const {docName, headerType} = this.props;
-        return (
-            <div>
-                if(headerType == 'chatRoom'){
-                     <div className = "wrapmsgr_header">
-                        <h1 className = "wrapmsgr_title">
-                            <span className = "ng-scope">{headerType}-</span>
-                            <span className = "ng-binding" title = {docName}>{docName}</span>
-                        </h1>
-                        <div className = "wrapmsgr-header-icon-wrap">
-                            <a href = "">
-                                <i className = "icon_times" title = "Close"></i>
-                            </a>
-                        </div>
-                    </div>
-                }else if(headerType == 'createChatRoom'){
-                    <div className = "wrapmsgr_popup_header">
-                        <h2 className = "title_h2">
-                        <span>{headerType}</span>
-                        </h2>
+        console.log("@@@@@@@@@@@@22", docName, headerType);
+        if(headerType === "chatRoom"){
+            return(
+                <div className = "wrapmsgr_header">
+                    <h1 className = "wrapmsgr_title">
+                        <span className = "ng-scope">{headerType}-</span>
+                        <span className = "ng-binding" title = {docName}>{docName}</span>
+                    </h1>
+                    <div className = "wrapmsgr-header-icon-wrap">
                         <a href = "">
-                            <i className = "icon_times">
-                            </i>
+                            <i className = "icon_times" title = "Close"></i>
                         </a>
                     </div>
-                }
-                else{
-                    <div className = "wrapmsgr_header">
-                        <h1 className = "wrapmsgr_title">
-                            <span className = "ng-scope">{headerType}</span>
-                        </h1>
-                        <div className = "wrapmsgr-header-icon-wrap">
-                            <a href = "">
-                                <i className = "icon_times" title = "Close"></i>
-                            </a>
-                        </div>
-                    </div>
-                } // Wrapsody Chat Bot, Wrapsody Chat
+                </div>
+            );
+        }else if(headerType === "createChatRoom"){
+            return(
+            <div className = "wrapmsgr_popup_header">
+                <h2 className = "title_h2">
+                <span>{headerType}</span>
+                </h2>
+                <a href = "">
+                    <i className = "icon_times">
+                    </i>
+                </a>
             </div>
-        );
+            );    
+        }
+        else{
+            return(
+                <div className = "wrapmsgr_header">
+                    <h1 className = "wrapmsgr_title">
+                        <span className = "ng-scope">읭{headerType}</span>
+                    </h1>
+                    <div className = "wrapmsgr-header-icon-wrap">
+                        <a href = "">
+                            <i className = "icon_times" title = "Close"></i>
+                        </a>
+                    </div>
+                </div>
+            );
+        } // Wrapsody Chat Bot, Wrapsody Chat, invite
     }
 }
 
