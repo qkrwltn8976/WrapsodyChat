@@ -2,9 +2,14 @@ import * as React from 'react';
 import { Component, Fragment } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { ChatList, BotChatRoom } from './app/pages'
+import { ChatList, BotChatRoom} from './app/pages';
+import {Header} from './app/components';
 import { render } from '@testing-library/react';
 import {Client, Message} from '@stomp/stompjs';
+import "./assets/css/wrapmsgr.css";
+import "./assets/css/wrapmsgr-components.css";
+import "./assets/css/wrapmsgr-icons.css";
+
 
 function App() {
   // let StompJs = require('@stomp/stompjs');
@@ -16,8 +21,16 @@ function App() {
     return (
       <Fragment>   
         <h1>테스트</h1>
-        <ChatList name = "랩소디"/>
-        <BotChatRoom />
+        <div className = "wrapmsgr_container">
+          <div className = "wrapmsgr_chat_list">
+          <Header type = "ChatRoomList"/>
+          <div className = "wrapmsgr_content">
+          <ChatList/>
+        </div>
+          </div>
+        </div>
+
+        {/* <BotChatRoom /> */}
       </Fragment>
     );
 }
