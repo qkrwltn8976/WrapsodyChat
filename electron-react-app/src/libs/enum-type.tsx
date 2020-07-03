@@ -10,11 +10,6 @@ export enum RoomType {
     DEP = 'dep'
 }
 
-export enum SearchType{
-    ROOM = 'room',
-    USER = 'user'
-}
-
 export enum HeaderType{
     CHAT = 'chatRoom',
     CREATE = 'createChatRoom',

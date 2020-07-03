@@ -1,15 +1,16 @@
 import * as React from 'react';
 
+declare global{ namespace JSX{
+        interface IntrinsicElements{
+            "document-icon": any;
+        }
+    }
+}
+
 function Chat() {
     return (
         <li className = "ng-scope">
-            <document-icon className = "ng-scope ng-isolate-scope">
-                <i className = "icon_txt">
-                    <span className = "path1"></span>
-                    <span className = "path2"></span>
-                    <span className = "path3"></span>
-                </i>
-            </document-icon>
+            <document-icon></document-icon>
             <div className = "title_5">
                 <span className = "chatroom-name ng-binding">Wrapsody Chat</span>
                 <span className = "chatroom-message-contents ng-binding"></span>
