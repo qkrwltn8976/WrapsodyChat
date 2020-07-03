@@ -2,7 +2,9 @@ import * as React from 'react';
 
 function QuestionList() {
     return (
-        <div></div>
+        <ul className="question-list">
+						
+		</ul>
     );
 }
 
