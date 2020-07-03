@@ -1,7 +1,7 @@
-import React from 'react'
-
-declare namespace JSX{
+import react from 'react';
+declare global{ namespace JSX{
     interface IntrinsicElements{
         "document-icon": any;
     }
+}
 }
