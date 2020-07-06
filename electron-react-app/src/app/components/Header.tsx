@@ -2,7 +2,7 @@ import * as React from 'react';
 import {HeaderType} from 'src/libs/enum-type';
 
 interface Props{
-    docName: string;
+    docName?: string; // 채팅방 생성 헤더에서만 docName필요 나머지는 null
     headerType: string;
 }
 // header가 받는 Props설정
