@@ -20,7 +20,6 @@ function App() {
     const script = document.createElement('script');
     return (
       <Fragment>   
-         <Header docName = "" headerType = {etype.HeaderType.ETC}/>
         <h1>테스트</h1>
         <div className = "wrapmsgr_container">
           <div className = "wrapmsgr_chat_list">

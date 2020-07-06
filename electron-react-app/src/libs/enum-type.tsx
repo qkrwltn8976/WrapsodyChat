@@ -22,3 +22,8 @@ export enum SearchType{
 }
 
 
+export enum MemberListType{
+    CHAT = 'chat',
+    SELECT = 'select',
+    SELECTED = 'selected',
+}
