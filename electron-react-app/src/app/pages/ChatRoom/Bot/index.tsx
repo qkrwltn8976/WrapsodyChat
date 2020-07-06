@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Client, IPublishParams, Message } from "@stomp/stompjs";
 import Header from '../../../components/Header';
-import * as etype from '../../../../libs/enum-type';
+// import { HeaderType } from '../../../../libs/enum-type';
 
 interface Props {
     client: Client,
@@ -22,7 +22,7 @@ class BotChatRoom extends React.PureComponent {
             connectHeaders: {
                 login: "admin",
                 passcode: "1111",
-                host:"/wrapsody-oracle",
+                host: "/wrapsody-oracle",
             },
             debug: function (str) {
                 console.log(str);
@@ -32,13 +32,11 @@ class BotChatRoom extends React.PureComponent {
             heartbeatOutgoing: 10000
         });
 
-        
-
         console.log("connected to Stomp");
     
         // this.client.brokerURL = "ws://192.168.100.30:9500/ws";
         this.client.onConnect = () => {
-            
+
             console.log("connected to Stomp");
             
             // this.client.subscribe("/exchange/user-admin", () => {
@@ -107,7 +105,7 @@ class BotChatRoom extends React.PureComponent {
         return (
             <div>
                 <h3>채팅방리스트</h3>
-                <Header docName = "" headerType = {etype.HeaderType.ETC}/>
+                <Header docName="" headerType="" />
             </div>
         )
     }

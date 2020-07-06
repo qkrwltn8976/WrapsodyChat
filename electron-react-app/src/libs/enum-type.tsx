@@ -18,14 +18,27 @@ export enum HeaderType{
     ETC = 'etc',
 }
 
+export enum MemberListType{
+    CHAT = 'chat',
+    SELECT = 'select',
+    SELECTED = 'selected'
+}
+
+export enum MsgType {
+    SHORT = 'short',
+    LONG = 'long'
+}
+
+export enum MsgSubtype {
+    COMMAND = 'command',
+    BOT = 'bot'
+}
+
 export enum SearchType{
     ROOM = "room",
     USER = "user"
 }
 
 
-export enum MemberListType{
-    CHAT = 'chat',
-    SELECT = 'select',
-    SELECTED = 'selected',
-}
+
+
