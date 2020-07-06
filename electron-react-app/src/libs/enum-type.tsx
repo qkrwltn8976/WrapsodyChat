@@ -16,4 +16,9 @@ export enum HeaderType{
     ETC = 'etc',
 }
 
+export enum SearchType{
+    ROOM = "room",
+    USER = "user"
+}
+
 
