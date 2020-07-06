@@ -1,14 +1,16 @@
-import React, { Component, Fragment } from 'react';
+import * as React from 'react';
+import Chat from "./Chat";
+import SearchBar from "../../components/SearchBar";
 
-type ChatListProps = {
-    name: String
-}
-const ChatList: React.FC<ChatListProps> = ({name})=> {
+function ChatList() {
     return (
-        <div>
-            <h3>채팅방리스트 {name}</h3>
+        <div className = "wrapmsgr_chatroom_list">
+            <SearchBar type = "ChatRoomList"/>
+            <ul>
+                <Chat/>
+            </ul>
         </div>
-    )
+    );
 }
 
 export default ChatList;

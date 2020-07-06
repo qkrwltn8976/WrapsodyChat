@@ -1,5 +1,5 @@
 import * as React from 'react';
-// import * as etype from '../../..libs/enum-type';
+import * as etype from '../../libs/enum-type';
 import '../../assets/css/wrapmsgr.css';
 import '../../assets/css/base.css';
 import '../../assets/css/wrapmsgr-components.css';
