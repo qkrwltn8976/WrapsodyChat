@@ -4,9 +4,9 @@ import '../../assets/css/wrapmsgr.css';
 import '../../assets/css/base.css';
 import '../../assets/css/wrapmsgr-components.css';
 import '../../assets/css/wrapmsgr-icons.css';
-
+// interface? 클래스 또는 객체를 위한 타입을 지정할 때 사용되는 문법
 interface Props{
-    docName: string;
+    docName?: string; // 채팅방 생성 헤더에서만 docName필요 나머지는 null
     headerType: string;
 }
 // header가 받는 Props설정
@@ -20,7 +20,6 @@ class Header extends React.Component<Props>{
     
     render() {
         const {docName, headerType} = this.props;
-        console.log("@@@@@@@@@@@@22", docName, headerType);
         if(headerType === "chatRoom"){
             return(
                 <div className = "wrapmsgr_header">
