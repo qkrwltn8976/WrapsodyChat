@@ -10,14 +10,14 @@ interface Props {
 
 interface State { user: [], message: [] }
 
-class BotChatRoom extends React.PureComponent {
+class ServerTest extends React.PureComponent {
     client: Client = new Client;
     name: String = "";
     state: any = { user: [], message: [] };
     constructor(props: { client: Client, name: string; }, state: {}) {
         super(props, state);
         this.client = new Client({
-            brokerURL: "ws://192.168.100.30:9099/ws",
+            brokerURL: "ws://192.168.100.30:9400/ws",
             connectHeaders: {
                 login: "admin",
                 passcode: "1111",
@@ -36,20 +36,21 @@ class BotChatRoom extends React.PureComponent {
             
             console.log("connected to Stomp");
             
-            this.client.subscribe("/exchange/user-admin", () => {
+            var message = this.client.subscribe("/exchange/user-admin",f => {
                 this.setState({
                     ...this.state,
-                    // user: JSON.parse(f.body)
-                });
-                console.log('asdf')
-            });          
-
+                    sender: "admin"
+                })
+            });     
+            
             this.client.publish({
-                destination: '/exchange/request/api.user.info', 
-                body: 'Hello world',
+                destination: '/exchange/request', 
             });
 
         };
+
+        this.client.activate();
+
 
         console.log(this.client)
         this.client.onStompError = () => {
@@ -84,4 +85,4 @@ class BotChatRoom extends React.PureComponent {
     }
 }
 
-export default BotChatRoom;
+export default ServerTest;
