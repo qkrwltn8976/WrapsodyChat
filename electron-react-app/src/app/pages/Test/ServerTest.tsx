@@ -1,7 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Client, IPublishParams, Message } from "@stomp/stompjs";
-import Header from 'src/app/components/Header';
-import * as etype from 'src/libs/enum-type';
+import { Client, Message, StompSubscription, Stomp, StompConfig } from "@stomp/stompjs";
 
 interface Props {
     client: Client,
@@ -10,14 +8,16 @@ interface Props {
 
 interface State { user: [], message: [] }
 
+
 class ServerTest extends React.PureComponent {
-    client: Client = new Client;
-    name: String = "";
-    state: any = { user: [], message: [] };
-    constructor(props: { client: Client, name: string; }, state: {}) {
+    
+    constructor(props: { }, state: {}) {
         super(props, state);
-        this.client = new Client({
-            brokerURL: "ws://192.168.100.30:9400/ws",
+        
+
+
+        const client = new Client({
+            brokerURL: "ws://192.168.100.30:9500/ws",
             connectHeaders: {
                 login: "admin",
                 passcode: "1111",
@@ -26,60 +26,61 @@ class ServerTest extends React.PureComponent {
             debug: function (str) {
                 console.log(str);
             },
-            reconnectDelay: 50000000,
-            heartbeatIncoming: 10000,
-            heartbeatOutgoing: 10000
+            reconnectDelay: 500000,
+            heartbeatIncoming: 100000,
+            heartbeatOutgoing: 100000
         });
-    
-        // this.client.brokerURL = "ws://192.168.100.30:9500/ws";
-        this.client.onConnect = () => {
-            
+
+
+
+        
+
+        var callback = function(message: Message) {
+            // called when the client receives a STOMP message from the server
+            if (message.body||message.isBinaryBody||message.command) {
+              console.log("got message with body " + message.body)
+            } 
+              console.log("got empty message");
+          };
+
+        client.onConnect = function(){
             console.log("connected to Stomp");
-            
-            var message = this.client.subscribe("/exchange/user-admin",f => {
-                this.setState({
-                    ...this.state,
-                    sender: "admin"
-                })
-            });     
-            
-            this.client.publish({
-                destination: '/exchange/request', 
-            });
 
-        };
-
-        this.client.activate();
-
-
-        console.log(this.client)
-        this.client.onStompError = () => {
-            console.log('stomp error occured')
+            client.subscribe("/exchange/user-admin", callback, {"x-queue-name": "98f7e404-f6b7-4513-84b4-31aa1647bc6d"});
         }
 
-        this.client.activate();
+         client.onStompError = function(){
 
-        console.log(this.client);
+         }
+
+         client.activate();
+
+         
+        
     }
 
-    loginOnSubmit = () => {
-        this.client.publish({
-            destination: `/app/login/admin`,
-            body: ""
-        });
+    componentDidMount(){
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+        },
+            transformRequest: "",
+            data: {userId: "admin"}
+        }
+
+        const url = "https://ecm.dev.fasoo.com/filesync/user/getLoginToken.do";
+
+        fetch(url)
+        .then(response => response.json())
+        .then(data => this.setState({ postId: data.id }));
     }
 
-    componentDidMount() {
-        let client: String;
-        let name: String;
-        let state = { user: [], message: [] };
-    }
+    
 
     render() {
         return (
             <div>
-                <h3>채팅방리스트</h3>
-                <Header docName = "" headerType = {etype.HeaderType.ETC}/>
             </div>
         )
     }
