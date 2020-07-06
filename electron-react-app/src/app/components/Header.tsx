@@ -1,9 +1,5 @@
 import * as React from 'react';
-import * as etype from '..//../libs/enum-type';
-import '../../assets/css/wrapmsgr.css';
-import '../../assets/css/base.css';
-import '../../assets/css/wrapmsgr-components.css';
-import '../../assets/css/wrapmsgr-icons.css';
+import {HeaderType} from 'src/libs/enum-type';
 
 interface Props{
     docName: string;
@@ -20,8 +16,7 @@ class Header extends React.Component<Props>{
     
     render() {
         const {docName, headerType} = this.props;
-        console.log("@@@@@@@@@@@@22", docName, headerType);
-        if(headerType === "chatRoom"){
+        if(headerType === HeaderType.CHAT){
             return(
                 <div className = "wrapmsgr_header">
                     <h1 className = "wrapmsgr_title">
@@ -35,7 +30,7 @@ class Header extends React.Component<Props>{
                     </div>
                 </div>
             );
-        }else if(headerType === "createChatRoom"){
+        }else if(headerType === HeaderType.CREATE){
             return(
             <div className = "wrapmsgr_popup_header">
                 <h2 className = "title_h2">
@@ -46,6 +41,16 @@ class Header extends React.Component<Props>{
                     </i>
                 </a>
             </div>
+            );    
+        }
+        else if(headerType === HeaderType.CHATLIST){
+            return(
+            <div className="wrapmsgr_header">
+				<h1 className="wrapmsgr_title">Wrapsody Chat</h1>
+				<div className="wrapmsgr-header-icon-wrap">
+			 		<a href=""><i className="icon_times" title="Close"></i></a>
+			 	</div>
+			</div>
             );    
         }
         else{

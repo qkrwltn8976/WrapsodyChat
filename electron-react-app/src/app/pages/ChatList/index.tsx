@@ -6,7 +6,7 @@ import {SearchType} from "src/libs/enum-type"
 function ChatList() {
     return (
         <div className = "wrapmsgr_chatroom_list">
-            <SearchBar enum = {SearchType.ROOM}/>
+            <SearchBar type = {SearchType.ROOM}/>
             <ul>
                 <Chat/>
             </ul>

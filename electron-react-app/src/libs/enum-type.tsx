@@ -12,7 +12,9 @@ export enum RoomType {
 
 export enum HeaderType{
     CHAT = 'chatRoom',
+    CHATLIST = 'chatList',
     CREATE = 'createChatRoom',
+    INVITE = 'inviteChatRoom',
     ETC = 'etc',
 }
 
