@@ -12,20 +12,20 @@ export enum RoomType {
 
 export enum HeaderType{
     CHAT = 'chatRoom',
-    CHATLIST = 'chatList',
     CREATE = 'createChatRoom',
-    INVITE = 'inviteChatRoom',
     ETC = 'etc',
 }
 
-export enum SearchType{
-    ROOM = "room",
-    USER = "user"
+export enum MsgType {
+    SHORT = 'short',
+    LONG = 'long'
+}
+
+export enum MsgSubtype {
+    COMMAND = 'command',
+    BOT = 'bot'
 }
 
 
-export enum MemberListType{
-    CHAT = 'chat',
-    SELECT = 'select',
-    SELECTED = 'selected',
-}
+
+

@@ -22,7 +22,7 @@
     "jsx": "react"
   },
   "include": [
-    "src",
-     "@types/amqp.ts"
-  ]
+    "src"
+  ],
+  "extends": "./tsconfig.base.json"
 }
