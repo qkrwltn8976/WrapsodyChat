@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Component, Fragment } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { ChatList, BotChatRoom} from './app/pages';
+import { ChatList, BotChatRoom, DocumentChatRoom} from './app/pages';
 import {Header} from './app/components';
 import { render } from '@testing-library/react';
 import {Client, Message} from '@stomp/stompjs';
@@ -25,11 +25,12 @@ function App() {
         <div className = "wrapmsgr_container">
           <div className = "wrapmsgr_chat_list">
           <div className = "wrapmsgr_content">
-          <ChatList/>
+          {/* <ChatList/> */}
+          <DocumentChatRoom/>
         </div>
           </div>
         </div>
-
+        
         {/* <BotChatRoom /> */}
       </Fragment>
     );

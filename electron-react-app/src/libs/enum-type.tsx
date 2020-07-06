@@ -16,4 +16,14 @@ export enum HeaderType{
     ETC = 'etc',
 }
 
+export enum MsgType {
+    SHORT = 'short',
+    LONG = 'long'
+}
+
+export enum MsgSubtype {
+    COMMAND = 'command',
+    BOT = 'bot'
+}
+
 
