@@ -27,6 +27,7 @@ function App() {
           <div className = "wrapmsgr_content">
           {/* <ChatList/> */}
           <DocumentChatRoom/>
+          <ServerTest/>
         </div>
           </div>
         </div>
