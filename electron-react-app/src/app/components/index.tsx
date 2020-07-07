@@ -6,5 +6,4 @@ export { default as MemberList } from './MemberList';
 export { default as MsgInput } from './MsgInput';
 export { default as QuestonList } from './QuestionList';
 export { default as SearchBar } from './SearchBar';
-export { default as SystemMsg } from './SystemMsg';
-export { default as UserMsg } from './UserMsg';
+export { default as MsgList } from './MsgList';

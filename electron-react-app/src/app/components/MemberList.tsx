@@ -5,7 +5,7 @@ interface Props{
     members: object[];
 }
 
-// function MemberList({memberListType, members}: Props){
+function MemberList({memberListType, members}: Props){
 //     if(memberListType == 'chat'){
 //         return(
 //             <div>
@@ -67,6 +67,6 @@ interface Props{
 //             </ol>
 //         );
 //     }
-// }
+}
 
-// export default MemberList;
+export default MemberList;

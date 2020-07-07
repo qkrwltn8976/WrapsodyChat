@@ -1,7 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Client, IPublishParams, Message } from "@stomp/stompjs";
-import Header from 'src/app/components/Header';
-import * as etype from 'src/libs/enum-type';
+import { Client, Message, StompSubscription, Stomp, StompConfig } from "@stomp/stompjs";
 
 interface Props {
     client: Client,
@@ -10,14 +8,16 @@ interface Props {
 
 interface State { user: [], message: [] }
 
-class BotChatRoom extends React.PureComponent {
-    client: Client = new Client;
-    name: String = "";
-    state: any = { user: [], message: [] };
-    constructor(props: { client: Client, name: string; }, state: {}) {
+
+class ServerTest extends React.PureComponent {
+    
+    constructor(props: { }, state: {}) {
         super(props, state);
-        this.client = new Client({
-            brokerURL: "ws://192.168.100.30:9099/ws",
+        
+
+
+        const client = new Client({
+            brokerURL: "ws://192.168.100.30:9500/ws",
             connectHeaders: {
                 login: "admin",
                 passcode: "1111",
@@ -26,62 +26,61 @@ class BotChatRoom extends React.PureComponent {
             debug: function (str) {
                 console.log(str);
             },
-            reconnectDelay: 50000000,
-            heartbeatIncoming: 10000,
-            heartbeatOutgoing: 10000
+            reconnectDelay: 500000,
+            heartbeatIncoming: 100000,
+            heartbeatOutgoing: 100000
         });
-    
-        // this.client.brokerURL = "ws://192.168.100.30:9500/ws";
-        this.client.onConnect = () => {
-            
-            console.log("connected to Stomp");
-            
-            this.client.subscribe("/exchange/user-admin", () => {
-                this.setState({
-                    ...this.state,
-                    // user: JSON.parse(f.body)
-                });
-                console.log('asdf')
-            });          
 
-            this.client.publish({
-                destination: '/exchange/request/api.user.info', 
-                body: 'Hello world',
-            });
 
-        };
-
-        console.log(this.client)
-        this.client.onStompError = () => {
-            console.log('stomp error occured')
+        var stomp_on_receive = function(message:Message){
+            var response = JSON.parse(message.body)
+            console.log(response)
         }
 
-        this.client.activate();
+        var callback = function(message: Message) {
+            // called when the client receives a STOMP message from the server
+            if (message.body||message.isBinaryBody||message.command) {
+              console.log("got message with body " + message.body)
+            } 
+              console.log("got empty message");
+          };
 
-        console.log(this.client);
-    }
+          var uuidv4 = function() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
 
-    loginOnSubmit = () => {
-        this.client.publish({
-            destination: `/app/login/admin`,
-            body: ""
-        });
-    }
+        client.onConnect = function(){
+            console.log("connected to Stomp");
+            
+            client.subscribe("/exchange/user-admin", callback, {"x-queue-name": "user-admin-98f7e404-f6b7-4513-84b4-31aa1647bc6d"});
+            console.log(client.onUnhandledMessage.toString);
 
-    componentDidMount() {
-        let client: String;
-        let name: String;
-        let state = { user: [], message: [] };
+            client.publish({ 
+                destination: "/exchange/request/api.user.info", 
+                body: JSON.stringify({ senderId: "admin", locale: "ko-KR", payload: {} }), 
+                headers: { "reply-to": "/temp-queue/api.user.info", "content-type": "application/json" } 
+            });
+
+            console.log(client.onUnhandledMessage);
+        }
+
+         client.onStompError = function(){
+
+         }
+
+         client.activate();
+        
     }
 
     render() {
         return (
             <div>
-                <h3>채팅방리스트</h3>
-                <Header docName = "" headerType = {etype.HeaderType.ETC}/>
             </div>
         )
     }
 }
 
-export default BotChatRoom;
+export default ServerTest;
