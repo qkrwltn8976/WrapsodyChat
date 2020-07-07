@@ -5,7 +5,7 @@ interface Props{
 }
 // member객체가 넘어옴
 
-// class Member extends React.Component<Props>{
+class Member extends React.Component<Props>{
 //     constructor(props: Props){
 //         super(props);
 //     }
@@ -20,6 +20,6 @@ interface Props{
 //             </li>
 //         );
        
-//     }
-// }
-// export default Member;
+    // }
+}
+export default Member;
