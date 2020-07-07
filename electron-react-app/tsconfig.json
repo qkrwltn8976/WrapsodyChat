@@ -23,6 +23,5 @@
   },
   "include": [
     "src",
-     "@types/amqp.ts"
   ]
 }

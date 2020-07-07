@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import * as serviceWorker from './serviceWorker';
+import BotChatRoom from './app/pages/ChatRoom/Bot/index';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <BotChatRoom/>
   </React.StrictMode>,
   document.getElementById('root')
 );

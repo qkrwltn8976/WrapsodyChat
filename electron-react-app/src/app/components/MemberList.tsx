@@ -13,7 +13,7 @@ interface Props{
 //                 {
 //                     members.map( member =>
 //                         <li wrapmsgr-user-profile="users[member.userId]" className="ng-scope ng-isolate-scope">
-//                             <span className="user-photo ng-binding ng-isolate-scope no-photo cyan" user="users[member.userId]">{member.shortName}</span>
+//                             <span className="user-photo ng-binding ng-isolate-scope no-photo cyan">{member.shortName}</span>
 //                             <div className="">{member.Name} ({member.midName})</div>
 //                             <div className="sub-info">{member.dept}</div>
 //                         </li>
