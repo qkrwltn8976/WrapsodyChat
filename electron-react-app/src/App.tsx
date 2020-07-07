@@ -26,7 +26,8 @@ function App() {
             <Header docName = "" headerType = {HeaderType.CHATLIST}/>
           <div className = "wrapmsgr_content">
           {/* <ChatList/> */}
-          <DocumentChatRoom/>
+          {/* <DocumentChatRoom/> */}
+          <ServerTest/>
         </div>
           </div>
         </div>

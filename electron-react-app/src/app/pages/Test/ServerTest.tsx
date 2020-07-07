@@ -32,8 +32,21 @@ class ServerTest extends React.PureComponent {
         });
 
 
+        var stomp_on_receive = function(message:Message){
+            var response = JSON.parse(message.body)
+            console.log(response)
+        }
 
-        
+        // var stomp_on_connect = function(){
+        //     client.subscribe("/exchange/user-admin", callback, {"x-queue-name": "98f7e404-f6b7-4513-84b4-31aa1647bc6d"});
+        // }
+
+        // var stomp_on_error = function(){}
+
+        // var ws  = new WebSocket("ws://192.168.100.30:9500/ws");
+        // const client = Stomp.over(ws);
+        // client.onreceive = stomp_on_receive;
+        // client.connect("admin", "1111", stomp_on_connect, stomp_on_error, "/wrapsody-oracle")
 
         var callback = function(message: Message) {
             // called when the client receives a STOMP message from the server
@@ -43,10 +56,31 @@ class ServerTest extends React.PureComponent {
               console.log("got empty message");
           };
 
+          var uuidv4 = function() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+          
+
         client.onConnect = function(){
             console.log("connected to Stomp");
+            
+            client.subscribe("/exchange/user-admin", callback, {"x-queue-name": "user-admin-98f7e404-f6b7-4513-84b4-31aa1647bc6d"});
+            console.log(client.onUnhandledMessage.toString);
 
-            client.subscribe("/exchange/user-admin", callback, {"x-queue-name": "98f7e404-f6b7-4513-84b4-31aa1647bc6d"});
+            
+
+
+            client.publish({ 
+                destination: "/exchange/request/api.user.info", 
+                body: JSON.stringify({ senderId: "admin", locale: "ko-KR", payload: {} }), 
+                headers: { "reply-to": "/temp-queue/api.user.info", "content-type": "application/json" } 
+            });
+
+            console.log(client.onUnhandledMessage);
         }
 
          client.onStompError = function(){
@@ -57,23 +91,6 @@ class ServerTest extends React.PureComponent {
 
          
         
-    }
-
-    componentDidMount(){
-        const requestOptions = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-        },
-            transformRequest: "",
-            data: {userId: "admin"}
-        }
-
-        const url = "https://ecm.dev.fasoo.com/filesync/user/getLoginToken.do";
-
-        fetch(url)
-        .then(response => response.json())
-        .then(data => this.setState({ postId: data.id }));
     }
 
     
