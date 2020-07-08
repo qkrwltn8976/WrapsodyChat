@@ -1,9 +1,7 @@
 import * as React from 'react';
-import {RoomType} from "../../libs/enum-type";
-
-
+import {InfoHeaderType} from "src/libs/enum-type"
 function InfoHeader(props:any) {
-    if(props.type === RoomType.DOC){
+    if(props.type === InfoHeaderType.DOC){
         return (
             <div className="wrapmsgr_header">
                     <div className="wrapmsgr_header_title ng-scope">
@@ -44,7 +42,7 @@ function InfoHeader(props:any) {
                 </div>
         );
     }
-    if(props.type === RoomType.DEP){
+    if(props.type ===InfoHeaderType.DEP){
         return (
             <div className="wrapmsgr_header">
                     <div className="wrapmsgr_header_title ng-scope">
@@ -71,13 +69,24 @@ function InfoHeader(props:any) {
                 </div>
         );
     }
-    if(props.type === RoomType.BOT){
+    if(props.type === InfoHeaderType.BOT){
         return (
             <div className="wrapmsgr_chatbot-info_div">
                         <p className="ng-binding">Wrapsody Chatbot에게 무엇이든 물어보세요!</p>
                         <a href=""><i title="알림 수신" className="icon_bell_off"></i></a>
             </div>
         );
+    }
+    if(props.type === InfoHeaderType.CREATE || InfoHeaderType.INVITE){
+        return (
+            <div className="doc-chatroom-info_div">
+                <document-icon name="docInfo.detail.contentName" class="ng-isolate-scope"><i className="icon_txt">          <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i></document-icon>
+                    <div className="doc-name ng-binding">새 텍스트 문서 (2).txt</div>
+                        <div>
+                            <span className="ng-binding">문서 권한 보유자 3 명 / 대화 상대 1 명</span>                       
+                    </div>
+            </div>
+        )
     }
     return (
         <div className="wrapmsgr_chatbot-info_div">

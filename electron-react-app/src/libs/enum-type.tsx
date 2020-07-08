@@ -10,6 +10,15 @@ export enum RoomType {
     DEP = 'dep'
 }
 
+export enum InfoHeaderType{
+    BOT = 'bot',
+    DOC = 'doc',
+    DEP = 'dep',
+    INVITE = 'inviteChatRoom',
+    CREATE = 'createChatRoom',
+    ETC = 'etc'
+}
+
 export enum HeaderType{
     CHAT = 'Document Chat Room',
     CREATE = 'Create Document Chat Room',

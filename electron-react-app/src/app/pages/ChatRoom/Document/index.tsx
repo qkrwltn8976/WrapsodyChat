@@ -50,7 +50,7 @@ function DocumentChatRoom() {
                             <InfoHeader type = {RoomType.DOC}/>
                             <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
                                 <SearchBar/>
-                                <MemberList memberListType = {MemberListType.CHAT} members = {members}/>
+                                {/* <MemberList memberListType = {MemberListType.CHAT} members = {members}/> */}
                             </div>   
                             <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass">
                                 <MsgList msgs={msgs} />
