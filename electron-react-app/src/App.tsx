@@ -3,6 +3,7 @@ import { Component, Fragment } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { ChatList, BotChatRoom, DocumentChatRoom, ServerTest} from './app/pages';
+import CreateChatRoom from './app/pages/CreateChatRoom'
 import {Header} from './app/components';
 import { render } from '@testing-library/react';
 import {Client, Message} from '@stomp/stompjs';
@@ -23,11 +24,12 @@ function App() {
         <h1>테스트</h1>
         <div className = "wrapmsgr_container">
           <div className = "wrapmsgr_chat_list">
-            <Header docName = "" headerType = {HeaderType.CHATLIST}/>
+            <Header docName = "" headerType = {HeaderType.LIST}/>
           <div className = "wrapmsgr_content">
           {/* <ChatList/> */}
           {/* <DocumentChatRoom/> */}
-          <ServerTest/>
+          <CreateChatRoom/>
+          {/* <ServerTest/> */}
         </div>
           </div>
         </div>
