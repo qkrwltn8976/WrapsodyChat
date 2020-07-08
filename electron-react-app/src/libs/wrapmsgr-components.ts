@@ -230,7 +230,7 @@
 // 			<span class="path7"></span>\
 // 			<span class="path8"></span>\
 // 			<span class="path9"></span>\
-// 			<span class="path10"></span>\
+// 			<span path10"></span>\
 // 			<span class="path11"></span>\
 // 			</i>',
 // 		scope: {

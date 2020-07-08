@@ -363,7 +363,7 @@
 // 						}
 						
 // 						if (!found) {
-// 							$scope.sendApi("api.conversation.list.convoid", {convoId : member.convoId});
+// 							$scope.sendApi(".convoid", {convoId : member.convoId});
 // 						}
 // 					}
 					

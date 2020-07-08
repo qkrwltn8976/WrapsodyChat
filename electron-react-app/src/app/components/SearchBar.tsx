@@ -12,11 +12,9 @@ function SearchBar(props: any) {
         );
     }
     return (
-        <div>
-            <div className = "search_div">
-                <input type = "text" placeholder = "Enter a user name or ID."></input>
-                <i className = "icon_search"></i>
-            </div>
+        <div className = "search_div">
+            <input type = "text" placeholder = "Enter a user name or ID."></input>
+            <i className = "icon_search"></i>
         </div>
     );
 }
