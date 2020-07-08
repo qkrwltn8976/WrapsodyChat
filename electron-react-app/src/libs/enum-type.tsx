@@ -11,11 +11,10 @@ export enum RoomType {
 }
 
 export enum HeaderType{
-    CHAT = 'chatRoom',
-    CHATLIST = 'chatList',
-    CREATE = 'createChatRoom',
-    INVITE = 'inviteChatRoom',
-    ETC = 'etc',
+    CHAT = 'Document Chat Room',
+    CREATE = 'Create Document Chat Room',
+    INVITE = 'Invite',
+    LIST = 'Wrapsody Chat',
 }
 
 export enum MemberListType{

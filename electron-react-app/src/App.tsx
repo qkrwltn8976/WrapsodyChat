@@ -23,7 +23,7 @@ function App() {
         <h1>테스트</h1>
         <div className = "wrapmsgr_container">
           <div className = "wrapmsgr_chat_list">
-            <Header docName = "" headerType = {HeaderType.CHATLIST}/>
+            <Header docName = "" headerType = {HeaderType.CHAT}/>
           <div className = "wrapmsgr_content">
           {/* <ChatList/> */}
           <DocumentChatRoom/>

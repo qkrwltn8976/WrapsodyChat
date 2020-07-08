@@ -1,25 +1,25 @@
 import * as React from 'react';
 
-interface Props{
-    member: object;
+interface MemberInfo{
+    longName: string;
+    shortName: string;
+    dept: string;
 }
-// member객체가 넘어옴
 
-class Member extends React.Component<Props>{
-//     constructor(props: Props){
-//         super(props);
-//     }
-//     render(){
-//         const { member } = this.props;
-//         return(
-//             <li wrapmsgr-user-profile="member.userId">
-//                 {/* <span className="user-photo  no-photo cyan" user="member.userId">{member.userName}</span> */}
-//                 <span className="user-photo  { member.isPhoto } { member.photoColor }" user="member.userId">{member.userName}</span>
-//                 <div className="ng-binding">{member.userId} ({member.userAccount})</div>
-//                 <div className="sub-info ng-binding">{member.dept}</div>
-//             </li>
-//         );
+class Member extends React.Component<MemberInfo>{
+    constructor(props: MemberInfo){
+        super(props);
+    }
+    render(){
+        const { longName, shortName, dept} = this.props;
+        return(
+            <li ng-repeat="member in current.members | memberFilter:search.user:users | orderBy:'userName'" ng-class="{'has-grn-dot': false, 'has-red-dot': false}" wrapmsgr-user-profile="users[member.userId]" className="ng-scope ng-isolate-scope">
+                <span className="user-photo ng-binding ng-isolate-scope no-photo green">{shortName}</span>
+                <div className="ng-binding">{longName} ({shortName})</div>
+                <div className="sub-info ng-binding">{dept}</div>
+            </li>
+        );
        
-    // }
+    }
 }
 export default Member;
