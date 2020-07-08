@@ -23,7 +23,7 @@ export function subscribe(client: Client, userId: string, uuid: string, callback
         if (message.body || message.isBinaryBody || message.command) {        
             obj = JSON.parse(message.body);
             // callbackify(obj);
-            // console.log(obj)
+            //console.log(obj)
             callback(obj.payload)
         }
         else {
@@ -37,7 +37,7 @@ export function subscribe(client: Client, userId: string, uuid: string, callback
         "x-queue-name": `user-${userId}-${uuid}`
     });
 
-    console.log(obj);
+    //console.log(obj);
     return obj;
 }
 
@@ -49,5 +49,7 @@ export function publish(client: Client, api: string, userId: string, uuid: strin
         }),
         headers: { "reply-to": `user-admin-${uuid}`, "content-type": "application/json", "correlation_id ": api }
     })
+
+    
 }
 
