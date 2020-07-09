@@ -7,8 +7,7 @@ import "src/assets/css/wrapmsgr-icons.css";
 import page from './page'
 
 
-function DocumentChatRoom() {
-    let data: string;
+function DocumentChatRoom(props: {convoId: string}) {
     interface Msg {
         userId: string;
         msgBody: string;
@@ -40,6 +39,8 @@ function DocumentChatRoom() {
         { longName: "administrator", shortName: "ad", dept: "디지털 페이지"},
     ];
 
+    console.log(props.convoId)
+
     return (
         <React.Fragment>
             <div id="wrapmsgr" className="ng-scope">
@@ -53,7 +54,7 @@ function DocumentChatRoom() {
                                 {/* <MemberList memberListType = {MemberListType.CHAT} members = {members}/> */}
                             </div>   
                             <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass">
-                                <MsgList msgs={msgs} />
+                                {/* <MsgList convoId={props.convoId}/> */}
                                 <MsgInput/>
                             </div>       
                         </div>

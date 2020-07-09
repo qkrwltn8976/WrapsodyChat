@@ -18,7 +18,7 @@ function App() {
             {/* <Header docName = "" headerType = {HeaderType.CHAT}/> */}
             <div className = "wrapmsgr_content">
               {/* <ChatList/> */}
-              <DocumentChatRoom/>
+              {/* <DocumentChatRoom/> */}
               {/* <ServerTest/> */}
               {/* <Header docName = "" headerType = {HeaderType.LIST}/> */}
               {/* <div className = "wrapmsgr_content" > */}
@@ -27,6 +27,7 @@ function App() {
             </div>
           </div>
         </div>
+        <DocumentChatRoom convoId="91fc0628c5fe4af4a14564f46f8ed17f"/>
         {/* <BotChatRoom /> */}
       </Fragment>
     );
