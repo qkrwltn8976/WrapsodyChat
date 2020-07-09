@@ -47,7 +47,7 @@ function DocumentChatRoom() {
                     <div className="wrapmsgr_chat wrapmsgr_state_normalize wrapmsgr_viewmode_full" ng-class="[chatroomState, viewModeClass, {false: 'disabled'}[loggedIn]]" ng-show="current.convo">
                         <Header docName = "새 Microsoft Excel 워크시트.xlsx" headerType = {HeaderType.CHAT}/>
                         <div className="wrapmsgr_content  wrapmsgr_viewmode_full doc-chatroom" ng-class="[{1: 'doc-chatroom', 2: 'wrapmsgr_chatbot'}[current.convo.convoType], viewModeClass]">
-                            <InfoHeader type = {RoomType.DOC}/>
+                            <InfoHeader/>
                             <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
                                 <SearchBar/>
                                 {/* <MemberList memberListType = {MemberListType.CHAT} members = {members}/> */}

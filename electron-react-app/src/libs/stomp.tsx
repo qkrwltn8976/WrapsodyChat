@@ -1,9 +1,6 @@
 import { Client, IMessage } from "@stomp/stompjs";
 import { render } from "@testing-library/react";
-import React, {Component, Fragment} from 'react';
-import { MsgList, MsgInput, Header, MemberList, InfoHeader, SearchBar } from '../app/components';
-import {HeaderType} from '../libs/enum-type';
-
+import React, { Component, Fragment } from 'react';
 export function createClient(login: string, passcode: string) {
     return new Client({
         brokerURL: "ws://192.168.100.30:9500/ws",
@@ -18,30 +15,36 @@ export function createClient(login: string, passcode: string) {
         reconnectDelay: 500000,
         heartbeatIncoming: 100000,
         heartbeatOutgoing: 100000,
+        onUnhandledMessage: (messages: IMessage) => {
+            console.log(messages)
+        }
     })
 }
 
-export function subscribe(client: Client, userId: string, uuid: string, callback: any){
-    let obj;
-    client.subscribe(`/exchange/user-${userId}`, (message:IMessage) =>  {
-        if (message.body || message.isBinaryBody || message.command) {        
-            obj = JSON.parse(message.body);
-            // callbackify(obj);
-            console.log("zzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
-            console.log(obj.resultCode);
-            callback(obj.payload)
-        }
+export  function subscribe(client: Client, userId: string, uuid: string) {
+    
+    client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {
+        if (message.body || message.isBinaryBody || message.command) {
+            // console.log("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
+            // console.log(message);
+            // console.log("bbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+            // console.log(message.body); 
+            
+            let obj = JSON.parse(message.body);
+            // console.log("pppppppppppppppppppp");
+            // console.log(obj.payload);
+            // console.log("first first first");
+            console.log(obj.payload.Conversations[0]);
+
+            
+        }       
         else {
-            obj = {}
             console.log("got empty message");
-        }   
-        return obj;
+        }
     }, {
         "x-queue-name": `user-${userId}-${uuid}`
     });
-    //console.log(obj);
-    
-    return obj;
+    // return obj;
 }
 
 export function publish(client: Client, api: string, userId: string, uuid: string, payload: {}) {
@@ -51,8 +54,6 @@ export function publish(client: Client, api: string, userId: string, uuid: strin
             senderId: userId, locale: "ko-KR", payload,
         }),
         headers: { "reply-to": `user-admin-${uuid}`, "content-type": "application/json", "correlation_id ": api }
-    })
-
-    
+    });
 }
 
