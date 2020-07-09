@@ -1,8 +1,6 @@
 import { Client, IMessage } from "@stomp/stompjs";
-import {promisify} from 'es6-promisify';
 import { render } from "@testing-library/react";
 import React, { Component, Fragment } from 'react';
-import {Promise} from 'es6-promise';
 export function createClient(login: string, passcode: string) {
     return new Client({
         brokerURL: "ws://192.168.100.30:9500/ws",
