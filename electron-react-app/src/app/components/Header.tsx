@@ -4,6 +4,7 @@ import {HeaderType} from 'src/libs/enum-type';
 interface Props{
     docName?: string; // 채팅방 생성 헤더에서만 docName필요 나머지는 null
     headerType: string;
+    convoId?: String;
 }
 // header가 받는 Props설정
 // 기존 javascript에서의 react props? 재사용을 위해서 내가 커스텀을 진행할 수 있도록 값을 props로 전달
@@ -15,13 +16,13 @@ class Header extends React.Component<Props>{
     } // 생성자
     
     render() {
-        const {docName, headerType} = this.props;
+        const {docName, headerType, convoId} = this.props;
         if(headerType === HeaderType.CHAT){
             return(
                 <div className = "wrapmsgr_header">
-                    <h1 className = "wrapmsgr_title">
-                        <span className = "ng-scope">{headerType}-</span>
-                        <span className = "ng-binding" title = {docName}>{docName}</span>
+                    <h1 className = "wrapmsgr_title" id = "forHeaderDocTitle">
+                        {/* <span className = "ng-scope">{headerType}-</span> */}
+                        {/* <span className = "ng-binding" title = {docName}>{docName}</span> */}
                     </h1>
                     <div className = "wrapmsgr-header-icon-wrap">
                         <a href = "">

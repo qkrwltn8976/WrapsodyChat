@@ -4,7 +4,7 @@ import { HeaderType, MemberListType, RoomType, InfoHeaderType } from '../../../.
 import "src/assets/css/wrapmsgr.css";
 import "src/assets/css/wrapmsgr-components.css";
 import "src/assets/css/wrapmsgr-icons.css";
-import page from './page'
+
 
 
 function DocumentChatRoom(props: {convoId: string}) {
@@ -46,15 +46,15 @@ function DocumentChatRoom(props: {convoId: string}) {
             <div id="wrapmsgr" className="ng-scope">
 	            <div id="wrapmsgr_body" ng-controller="WrapMsgrController" className="wrapmsgr_container ng-scope" data-ws="ws://ecm.dev.fasoo.com:9500/ws" data-vhost="/wrapsody-oracle" data-fpns-enabled="true" data-weboffice-enabled="true">
                     <div className="wrapmsgr_chat wrapmsgr_state_normalize wrapmsgr_viewmode_full" ng-class="[chatroomState, viewModeClass, {false: 'disabled'}[loggedIn]]" ng-show="current.convo">
-                        <Header docName = "새 Microsoft Excel 워크시트.xlsx" headerType = {HeaderType.CHAT}/>
+                        <Header convoId = {props.convoId} docName = "" headerType = {HeaderType.CHAT} />
                         <div className="wrapmsgr_content  wrapmsgr_viewmode_full doc-chatroom" ng-class="[{1: 'doc-chatroom', 2: 'wrapmsgr_chatbot'}[current.convo.convoType], viewModeClass]">     
-                            <InfoHeader infoheaderType = {InfoHeaderType.DOC}/>
+                            <InfoHeader convoId = {props.convoId} infoheaderType = {InfoHeaderType.DOC} />
                             <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
                                 <SearchBar/>
-                                {/* <MemberList memberListType = {MemberListType.CHAT} members = {members}/> */}
+                                <MemberList convoId = {props.convoId} memberListType = {MemberListType.CHAT} />
                             </div>   
                             <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass">
-                                {/* <MsgList convoId={props.convoId}/> */}
+                                <MsgList convoId={props.convoId}/>
                                 <MsgInput/>
                             </div>       
                         </div>

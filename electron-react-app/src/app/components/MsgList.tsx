@@ -124,6 +124,7 @@ class MsgList extends React.Component<{convoId: string}, {}> {
 
             publish(this.client, 'api.user.info', 'admin', '98f7e404-f6b7-4513-84b4-31aa1647bc6d', {});
             publish(this.client, 'api.message.list', 'admin', '98f7e404-f6b7-4513-84b4-31aa1647bc6d', { 'convoId': this.convoId, "direction": "forward" });
+            publish(this.client, 'api.conversation.view', 'admin', '98f7e404-f6b7-4513-84b4-31aa1647bc6d', { 'convoId': this.convoId });
         }
 
         this.client.activate();
