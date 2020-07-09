@@ -4,13 +4,12 @@ import { Client, Message, StompSubscription, Stomp, StompConfig, IMessage } from
 import { createClient, subscribe, publish } from 'src/libs/stomp';
 
 interface Props{ 
-    headerType: string;
+    infoheaderType: string;
 }
 
-class InfoHeader extends React.Component{
+class InfoHeader extends React.Component<Props>{
     client: any;
     payload: any;
-   
     stompConnection = () => {
         this.client = createClient("admin", "1111");
         let obj = {};
@@ -27,23 +26,25 @@ class InfoHeader extends React.Component{
         super(props);
         this.stompConnection();
     }
-
     render(){
-        const headerType = this.props;
-        if( headerType=== InfoHeaderType.DOC){
+        const {infoheaderType} = this.props;
+        if( infoheaderType === InfoHeaderType.DOC){
             return (
                 <div className="wrapmsgr_header">
-                    <div className="wrapmsgr_header_title ng-scope">
-                        <document-icon name="current.convo.name" className="ng-isolate-scope">
-                            <i className="icon_txt">            <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i></document-icon>
-                        <div>
-                            <div className="chatroom-name ng-binding" title="Sample Text .DotInMiddle.txt">Sample Text .DotInMiddle.txt</div>
+                    <div className="wrapmsgr_header_title ng-scope" id = "forDocIcon">
+                        {/* <document-icon name="current.convo.name" className="ng-isolate-scope">
+                            <i className="icon_txt">            <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i>
+                        </document-icon> */}
+                        <div id = "forDocTitle">
+                            {/* <div className="chatroom-name ng-binding" title="Sample Text .DotInMiddle.txt">Sample Text .DotInMiddle.txt</div> */}
                             <div className="chatroom-size ng-binding">3.5KB</div>
                         </div>
                     </div>
                     <div className="chatroom-user">
                         <i className="icon_users"></i>
-                        <span className="chatroom-user-cnt ng-binding">3 명</span>
+                        <div id = "forDocUserCount">
+                            {/* <span className="chatroom-user-cnt ng-binding">3 명</span> */}
+                        </div>
                     </div>
                     <div className="chatroom-user">
                         <div className="chatroom-user-list ng-hide" >
@@ -71,7 +72,7 @@ class InfoHeader extends React.Component{
                 </div>
             );
         }
-        if(headerType ===InfoHeaderType.DEP){
+        if(infoheaderType ===InfoHeaderType.DEP){
             return (
                 <div className="wrapmsgr_header">
                         <div className="wrapmsgr_header_title ng-scope">
@@ -98,7 +99,7 @@ class InfoHeader extends React.Component{
                     </div>
             );
         }
-        if(headerType === InfoHeaderType.BOT){
+        if(infoheaderType === InfoHeaderType.BOT){
             return (
                 <div className="wrapmsgr_chatbot-info_div">
                             <p className="ng-binding">Wrapsody Chatbot에게 무엇이든 물어보세요!</p>
@@ -106,7 +107,7 @@ class InfoHeader extends React.Component{
                 </div>
             );
         }
-        if(headerType === InfoHeaderType.CREATE || InfoHeaderType.INVITE){
+        if(infoheaderType === InfoHeaderType.CREATE || InfoHeaderType.INVITE){
             return (
                 <div className="doc-chatroom-info_div">
                     <document-icon name="docInfo.detail.contentName" class="ng-isolate-scope"><i className="icon_txt">          <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i></document-icon>
@@ -125,7 +126,6 @@ class InfoHeader extends React.Component{
         );
 
     }
-
 
 }
 
