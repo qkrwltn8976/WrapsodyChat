@@ -13,8 +13,19 @@ import {HeaderType} from 'src/libs/enum-type';
 function App() {
     return (
       <Fragment>   
-        <h1>server test</h1>
-        <ServerTestCopy/>
+                <h1>테스트</h1>
+        <div className = "wrapmsgr_container">
+          <div className = "wrapmsgr_chat_list">
+            <Header docName = "" headerType = {HeaderType.CHAT}/>
+          <div className = "wrapmsgr_content">
+          {/* <ChatList/> */}
+          <DocumentChatRoom/>
+          <ServerTest/>
+        </div>
+          </div>
+        </div>
+        
+        {/* <BotChatRoom /> */}
       </Fragment>
     );
 }
