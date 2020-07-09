@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Component, Fragment } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { ChatList, ChatPage} from './app/pages';
+import { ChatList, DocumentChatRoom } from './app/pages'
 import CreateChatRoom from './app/pages/CreateChatRoom'
 import {Header} from './app/components';
 import "src/assets/css/wrapmsgr.css";

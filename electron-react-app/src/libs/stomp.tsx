@@ -21,12 +21,26 @@ export function createClient(login: string, passcode: string) {
     })
 }
 
-export  function subscribe(client: Client, userId: string, uuid: string, callback: any) {
-    let obj;
+export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
+    let obj : any;
     client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {
         if (message.body || message.isBinaryBody || message.command) {
             obj = JSON.parse(message.body);
-            callback(obj.payload);
+            
+            let payload = obj.payload;
+
+            // payload.Conversations.map((item: any) => {
+            //     console.log(item.name)
+            //     // ReactDOM.render(<h6>{item.name}</h6>, document.getElementById('root'));
+            // });
+            // // console.log(messages)
+            // ReactDOM.render(<div>{payload.Conversations.map((item: any) => <h6>{item.name}</h6>)}</div>, document.getElementById('wrapmsgr'));
+            // if(payload.Messages) {
+            //     ReactDOM.render(<div>{payload.Conversations.map((msg: Msg) => <h6>{item.name}</h6>)}</div>, document.getElementById('messageList'));
+            // };
+            // console.log(messages)
+            callback(payload);
+            
         }
         else {
             console.log("got empty message");
