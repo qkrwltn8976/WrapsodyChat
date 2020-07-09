@@ -38,10 +38,13 @@ class ChatPage extends Component{
                     
                     ReactDOM.render(<Fragment>
                         {payload.Conversations.map((item:any) => <li className = "ng-scope">
-            <document-icon></document-icon>
+            <document-icon className = "ng-scope ng-isolate-scope">
+            <i className="icon_doc">			<span className="path1"></span>			<span className="path2"></span>			<span className="path3"></span>			<span className="path4"></span>			<span className="path5"></span>			<span className="path6"></span>			<span className="path7"></span>			<span className="path8"></span>			<span className="path9"></span>			<span className="path10"></span>			<span className="path11"></span>			</i>
+            </document-icon>
             <div className = "title_5" id = "title_5">
                     <span className = "chatroom-name ng-binding">{item.name}</span>
-                    <span className = "chatroom-user-cnt ng-binding">{item.memberCount}</span>
+                    <span className="chatroom-user-cnt ng-binding">2</span>
+                    <span className="chatroom-user-cnt ng-binding">{item.memberCount}</span>
                 <i></i>
                     <span className = "chatroom-message-contents ng-binding">{item.latestMessage}</span>
             </div>
