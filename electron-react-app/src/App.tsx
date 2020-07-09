@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Component, Fragment } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { ChatList, BotChatRoom, DocumentChatRoom, ServerTest, ServerTestCopy} from './app/pages';
+import { ChatList, BotChatRoom, DocumentChatRoom, ServerTest} from './app/pages';
 import CreateChatRoom from './app/pages/CreateChatRoom'
 import {Header} from './app/components';
 import "src/assets/css/wrapmsgr.css";
@@ -20,7 +20,7 @@ function App() {
           <div className = "wrapmsgr_content">
           {/* <ChatList/> */}
           <DocumentChatRoom/>
-          <ServerTest/>
+          {/* <ServerTest/> */}
         </div>
           </div>
         </div>

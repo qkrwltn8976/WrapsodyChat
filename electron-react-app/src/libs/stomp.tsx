@@ -2,7 +2,8 @@ import { Client, IMessage } from "@stomp/stompjs";
 import {promisify} from 'es6-promisify';
 import { render } from "@testing-library/react";
 import React, { Component, Fragment } from 'react';
-import {Promise} from 'es6-promise';
+import ReactDOM from 'react-dom';
+
 export function createClient(login: string, passcode: string) {
     return new Client({
         brokerURL: "ws://192.168.100.30:9500/ws",
@@ -23,12 +24,26 @@ export function createClient(login: string, passcode: string) {
     })
 }
 
-export  function subscribe(client: Client, userId: string, uuid: string, callback: any) {
-    let obj;
+export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
+    let obj : any;
     client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {
         if (message.body || message.isBinaryBody || message.command) {
             obj = JSON.parse(message.body);
-            callback(obj.payload);
+            
+            let payload = obj.payload;
+
+            // payload.Conversations.map((item: any) => {
+            //     console.log(item.name)
+            //     // ReactDOM.render(<h6>{item.name}</h6>, document.getElementById('root'));
+            // });
+            // // console.log(messages)
+            // ReactDOM.render(<div>{payload.Conversations.map((item: any) => <h6>{item.name}</h6>)}</div>, document.getElementById('wrapmsgr'));
+            // if(payload.Messages) {
+            //     ReactDOM.render(<div>{payload.Conversations.map((msg: Msg) => <h6>{item.name}</h6>)}</div>, document.getElementById('messageList'));
+            // };
+            // console.log(messages)
+            callback(payload);
+            
         }
         else {
             console.log("got empty message");

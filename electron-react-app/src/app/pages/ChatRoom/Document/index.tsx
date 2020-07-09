@@ -53,7 +53,7 @@ function DocumentChatRoom() {
                                 {/* <MemberList memberListType = {MemberListType.CHAT} members = {members}/> */}
                             </div>   
                             <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass">
-                                <MsgList msgs={msgs} />
+                                <MsgList />
                                 <MsgInput/>
                             </div>       
                         </div>
