@@ -1,4 +1,8 @@
 import { Client, IMessage } from "@stomp/stompjs";
+import { render } from "@testing-library/react";
+import React, {Component, Fragment} from 'react';
+import { MsgList, MsgInput, Header, MemberList, InfoHeader, SearchBar } from '../app/components';
+import {HeaderType} from '../libs/enum-type';
 
 export function createClient(login: string, passcode: string) {
     return new Client({
@@ -17,27 +21,26 @@ export function createClient(login: string, passcode: string) {
     })
 }
 
-export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
+export function subscribe(client: Client, userId: string, uuid: string, callback: any){
     let obj;
     client.subscribe(`/exchange/user-${userId}`, (message:IMessage) =>  {
         if (message.body || message.isBinaryBody || message.command) {        
             obj = JSON.parse(message.body);
             // callbackify(obj);
-            // console.log(obj)
+            console.log("zzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
+            console.log(obj.resultCode);
             callback(obj.payload)
         }
         else {
             obj = {}
             console.log("got empty message");
-        }
-        
-            
+        }   
         return obj;
     }, {
         "x-queue-name": `user-${userId}-${uuid}`
     });
-
-    console.log(obj);
+    //console.log(obj);
+    
     return obj;
 }
 
@@ -49,5 +52,7 @@ export function publish(client: Client, api: string, userId: string, uuid: strin
         }),
         headers: { "reply-to": `user-admin-${uuid}`, "content-type": "application/json", "correlation_id ": api }
     })
+
+    
 }
 

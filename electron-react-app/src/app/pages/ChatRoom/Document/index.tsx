@@ -8,6 +8,7 @@ import "src/assets/css/wrapmsgr-icons.css";
 
 
 function DocumentChatRoom() {
+    let data: string;
     interface Msg {
         userId: string;
         msgBody: string;
@@ -38,7 +39,6 @@ function DocumentChatRoom() {
         { longName: "administrator", shortName: "ad", dept: "GS"},
         { longName: "administrator", shortName: "ad", dept: "디지털 페이지"},
     ];
-
 
     return (
         <React.Fragment>
