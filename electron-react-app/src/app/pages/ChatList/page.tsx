@@ -41,7 +41,7 @@ class ChatPage extends Component {
                 if (payload) {
                     if (payload.Conversations) {
                         ReactDOM.render(<Fragment>
-                            {payload.Conversations.map((item: any) => <li className="ng-scope">
+                            {payload.Conversations.map((item: any) => <li onClick={this.getConvo(item.convoId)} className="ng-scope">
                                 <document-icon className="ng-scope ng-isolate-scope">
                                     <i className="icon_doc">			<span className="path1"></span>			<span className="path2"></span>			<span className="path3"></span>			<span className="path4"></span>			<span className="path5"></span>			<span className="path6"></span>			<span className="path7"></span>			<span className="path8"></span>			<span className="path9"></span>			<span className="path10"></span>			<span className="path11"></span>			</i>
                                 </document-icon>
