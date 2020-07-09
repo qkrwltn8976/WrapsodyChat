@@ -1,5 +1,8 @@
 import { Client, IMessage } from "@stomp/stompjs";
-
+import {promisify} from 'es6-promisify';
+import { render } from "@testing-library/react";
+import React, { Component, Fragment } from 'react';
+import {Promise} from 'es6-promise';
 export function createClient(login: string, passcode: string) {
     return new Client({
         brokerURL: "ws://192.168.100.30:9500/ws",
@@ -14,31 +17,28 @@ export function createClient(login: string, passcode: string) {
         reconnectDelay: 500000,
         heartbeatIncoming: 100000,
         heartbeatOutgoing: 100000,
+        onUnhandledMessage: (messages: IMessage) => {
+            console.log(messages)
+        }
     })
 }
 
-export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
+export  function subscribe(client: Client, userId: string, uuid: string, callback: any) {
     let obj;
-    client.subscribe(`/exchange/user-${userId}`, (message:IMessage) =>  {
-        if (message.body || message.isBinaryBody || message.command) {        
+    client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {
+        if (message.body || message.isBinaryBody || message.command) {
             obj = JSON.parse(message.body);
-            // callbackify(obj);
-            // console.log(obj)
-            callback(obj.payload)
+            callback(obj.payload);
         }
         else {
-            obj = {}
             console.log("got empty message");
+            // return message.body;
         }
-        
-            
-        return obj;
+
     }, {
         "x-queue-name": `user-${userId}-${uuid}`
     });
-
-    console.log(obj);
-    return obj;
+    // return obj;
 }
 
 export function publish(client: Client, api: string, userId: string, uuid: string, payload: {}) {
@@ -48,6 +48,6 @@ export function publish(client: Client, api: string, userId: string, uuid: strin
             senderId: userId, locale: "ko-KR", payload,
         }),
         headers: { "reply-to": `user-admin-${uuid}`, "content-type": "application/json", "correlation_id ": api }
-    })
+    });
 }
 
