@@ -1,9 +1,5 @@
 import * as React from 'react';
 import {HeaderType} from 'src/libs/enum-type';
-import "src/assets/css/base.css";
-import "src/assets/css/wrapmsgr.css";
-import "src/assets/css/wrapmsgr-components.css";
-import "src/assets/css/wrapmsgr-icons.css";
 
 interface Props{
     docName?: string; // 채팅방 생성 헤더에서만 docName필요 나머지는 null
