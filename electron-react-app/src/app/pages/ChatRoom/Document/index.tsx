@@ -7,7 +7,7 @@ import "src/assets/css/wrapmsgr-icons.css";
 
 
 
-function DocumentChatRoom(props: {convoId: string}) {
+function DocumentChatRoom(props: {convoId: string, uuid: string}) {
     interface Msg {
         userId: string;
         msgBody: string;
@@ -54,7 +54,7 @@ function DocumentChatRoom(props: {convoId: string}) {
                                 <MemberList convoId = {props.convoId} memberListType = {MemberListType.CHAT} />
                             </div>   
                             <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass">
-                                <MsgList convoId={props.convoId}/>
+                                <MsgList convoId={props.convoId} uuid={props.uuid}/>
                                 <MsgInput/>
                             </div>       
                         </div>

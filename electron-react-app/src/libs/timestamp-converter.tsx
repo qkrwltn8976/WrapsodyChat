@@ -30,3 +30,13 @@ export function getDate(timestamp: number) {
     let formattedDate = month +' '+ day + ' (' + weekday + ')';
     return formattedDate;
 }
+
+export function getConvoDate(timestamp:number) {
+    let date = new Date(timestamp);
+    let year = date.getFullYear();
+    let month = date.getMonth()+1;
+    let day = date.getDate();
+
+    let formattedDate = year + '-' + month + '-' + day;
+    return formattedDate 
+}

@@ -20,6 +20,7 @@ export interface Msg {
 interface MsgProps {
     msgs: Msg[];
     convoId: string;
+    uuid: string;
 }
 
 function MsgDate(props: { date: number }) {
@@ -102,10 +103,11 @@ export function MsgBody(props: { msg: Msg }) {
 
 
 
-class MsgList extends React.Component<{convoId: string}, {}> {
+class MsgList extends React.Component<{convoId: string, uuid: string}, {}> {
     client: any;
     userId: string = "admin"
     convoId: string = "98f7e404-f6b7-4513-84b4-31aa1647bc6d";
+    uuid: string;
     stompConnection = () => {
         // return new Promise(function(resolve, reject) {
         this.client = createClient("admin", "1111");
@@ -122,9 +124,9 @@ class MsgList extends React.Component<{convoId: string}, {}> {
                 console.log(payload.Messages)
             });
 
-            publish(this.client, 'api.user.info', 'admin', '98f7e404-f6b7-4513-84b4-31aa1647bc6d', {});
-            publish(this.client, 'api.message.list', 'admin', '98f7e404-f6b7-4513-84b4-31aa1647bc6d', { 'convoId': this.convoId, "direction": "forward" });
-            publish(this.client, 'api.conversation.view', 'admin', '98f7e404-f6b7-4513-84b4-31aa1647bc6d', { 'convoId': this.convoId });
+            publish(this.client, 'api.user.info', 'admin', this.uuid, {});
+            publish(this.client, 'api.message.list', 'admin', this.uuid, { 'convoId': this.convoId, "direction": "forward" });
+            publish(this.client, 'api.conversation.view', 'admin', this.uuid, { 'convoId': this.convoId });
         }
 
         this.client.activate();
@@ -132,6 +134,7 @@ class MsgList extends React.Component<{convoId: string}, {}> {
     constructor(props: MsgProps) {
         super(props);
         this.convoId = props.convoId;
+        this.uuid = props.uuid;
         this.stompConnection();
     }
 
