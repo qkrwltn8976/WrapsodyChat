@@ -12,9 +12,9 @@ export function createClient(login: string, passcode: string) {
         debug: function (str) {
             console.log(str);
         },
-        reconnectDelay: 500000,
-        heartbeatIncoming: 100000,
-        heartbeatOutgoing: 100000,
+        reconnectDelay: 5000,
+        heartbeatIncoming: 10000,
+        heartbeatOutgoing: 10000,
         onUnhandledMessage: (messages: IMessage) => {
             console.log(messages)
         }
@@ -62,4 +62,3 @@ export function publish(client: Client, api: string, userId: string, uuid: strin
         headers: { "reply-to": `user-admin-${uuid}`, "content-type": "application/json", "correlation_id ": api }
     });
 }
-

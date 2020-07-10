@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import { IMessage } from "@stomp/stompjs";
 import { getTime, getDate } from 'src/libs/timestamp-converter';
 
-interface Msg {
+export interface Msg {
     sendUserId: string;
     body: string;
     messageId: string;
@@ -19,6 +19,7 @@ interface Msg {
 
 interface MsgProps {
     msgs: Msg[];
+    convoId: string;
 }
 
 function MsgDate(props: { date: number }) {
@@ -67,7 +68,7 @@ function UserMsg(props: { msg: Msg }) {
     )
 }
 
-function MsgBody(props: { msg: Msg }) {
+export function MsgBody(props: { msg: Msg }) {
     let msgbubble;
     let msgbody;
 
@@ -101,10 +102,10 @@ function MsgBody(props: { msg: Msg }) {
 
 
 
-class MsgList extends React.Component<{}, {}> {
+class MsgList extends React.Component<{convoId: string}, {}> {
     client: any;
     userId: string = "admin"
-
+    convoId: string = "98f7e404-f6b7-4513-84b4-31aa1647bc6d";
     stompConnection = () => {
         // return new Promise(function(resolve, reject) {
         this.client = createClient("admin", "1111");
@@ -112,7 +113,7 @@ class MsgList extends React.Component<{}, {}> {
         this.client.onConnect = () => {
             console.log("connected to Stomp");
 
-            subscribe(this.client, 'admin', '98f7e404-f6b7-4513-84b4-31aa1647bc6d', (payload: any) => {
+            subscribe(this.client, 'admin', this.convoId, (payload: any) => {
                 if (payload.Messages) {
                     ReactDOM.render(
                         <div>{payload.Messages.map((msg: Msg) => <MsgBody msg={msg} />)}</div>,
@@ -120,18 +121,17 @@ class MsgList extends React.Component<{}, {}> {
                 }
                 console.log(payload.Messages)
             });
-            //     const messages = this.props.msgs.map((msg: Msg) => {
-            // return (<MsgBody msg={msg} />)
-            // });
+
             publish(this.client, 'api.user.info', 'admin', '98f7e404-f6b7-4513-84b4-31aa1647bc6d', {});
-            publish(this.client, 'api.message.list', 'admin', '98f7e404-f6b7-4513-84b4-31aa1647bc6d', { 'convoId': '91fc0628c5fe4af4a14564f46f8ed17f', "direction": "forward" });
+            publish(this.client, 'api.message.list', 'admin', '98f7e404-f6b7-4513-84b4-31aa1647bc6d', { 'convoId': this.convoId, "direction": "forward" });
+            publish(this.client, 'api.conversation.view', 'admin', '98f7e404-f6b7-4513-84b4-31aa1647bc6d', { 'convoId': this.convoId });
         }
 
         this.client.activate();
     }
     constructor(props: MsgProps) {
         super(props);
-
+        this.convoId = props.convoId;
         this.stompConnection();
     }
 

@@ -45,13 +45,13 @@ function CreateChatRoom() {
                             <Header docName = "" headerType={HeaderType.CREATE}/>
                             <form name="manageDocRoomForm" ng-submit="submitDocRoom()" className="ng-pristine ng-valid">
                                 <div className="wrapmsgr_popup_body">
-                                    <InfoHeader props = {InfoHeaderType.CREATE}/>
+                                    {/* <InfoHeader props = {InfoHeaderType.CREATE}/> */}
                                     <div className="group">
                                         <div className="wrapmsgr_organ_tree ng-scope angular-ui-tree" ui-tree="organTreeOptions" data-clone-enabled="true" data-nodrop-enabled="true" data-drag-delay="100">
-                                            <MemberList memberListType = {MemberListType.SELECT} members = {members} groups = {groups}/>
+                                            {/* <MemberList memberListType = {MemberListType.SELECT} members = {members} groups = {groups}/> */}
                                         </div>    
                                         <div className="wrapmsgr_organ_tree right-list-col ng-scope angular-ui-tree" ui-tree="inviteTreeOptions">
-                                            <MemberList memberListType = {MemberListType.SELECTED} members = {members} groups = {groups}/>
+                                            {/* <MemberList memberListType = {MemberListType.SELECTED} members = {members} groups = {groups}/> */}
                                         </div>
                                     </div>
                                 </div>
