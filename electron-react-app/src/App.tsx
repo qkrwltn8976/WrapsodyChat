@@ -9,6 +9,7 @@ import "src/assets/css/wrapmsgr.css";
 import "src/assets/css/wrapmsgr-components.css";
 import "src/assets/css/wrapmsgr-icons.css";
 import {HeaderType} from 'src/libs/enum-type';
+import {ServerTest} from './app/pages'
 
 function App() {
     return (
