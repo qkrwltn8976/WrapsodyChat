@@ -4,7 +4,12 @@ import { MsgList, MsgInput, Header, SearchBar, Footer } from 'src/app/components
 import {ChatPage} from 'src/app/pages'
 import { HeaderType, SearchType } from '../../../libs/enum-type';
 
-
+declare global{ namespace JSX{
+    interface IntrinsicElements{
+        "document-icon": any;
+    }
+}
+}
 
 
 function ChatList() {
@@ -20,7 +25,7 @@ function ChatList() {
                         <SearchBar type = {SearchType.ROOM}/>
                         <div className= "wrapmsgr_chatroom_list">
                             <ul id = "chatList">
-                                <ChatPage/>
+                                <Chat/>
                             </ul>
                         </div>
                     </div>

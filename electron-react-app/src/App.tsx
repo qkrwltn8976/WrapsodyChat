@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Component, Fragment } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { ChatList, DocumentChatRoom } from './app/pages'
+import { Chat, DocumentChatRoom, ChatList } from './app/pages'
 import CreateChatRoom from './app/pages/CreateChatRoom'
 import {Header} from './app/components';
 import "src/assets/css/wrapmsgr.css";
@@ -18,7 +18,6 @@ function App() {
             <Header docName = "" headerType = {HeaderType.LIST}/>
           <div className = "wrapmsgr_content" >
             <ChatList/>
-            {/* <ChatPage/> */}
         </div>
           </div>
         </div>
