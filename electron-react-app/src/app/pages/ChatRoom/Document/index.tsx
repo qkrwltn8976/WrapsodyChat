@@ -13,7 +13,13 @@ interface RoomProps {
     msgs: Message[],
     members: User[]
 }
+
 class DocumentChatRoom extends React.Component<RoomProps, {}> {
+    constructor(props: RoomProps, state: {}) {
+        super(props, state);
+        // this.props.msgs = props.msgs;
+    }
+
     render() {
         return (
             <React.Fragment>

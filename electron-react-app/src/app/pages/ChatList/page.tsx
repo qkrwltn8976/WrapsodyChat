@@ -11,10 +11,12 @@ import { getConvoDate } from 'src/libs/timestamp-converter';
 interface IState {
     msgs: any;
     members: any;
+    convos: any;
     payload: any;
 }
 
 class ChatPage extends Component<{}, IState> {
+    _isMounted: boolean = false;
     roomName: [] = [];
     roomDate: [] = [];
     roomRead: [] = [];
@@ -24,18 +26,28 @@ class ChatPage extends Component<{}, IState> {
     convoId: string = "";
     uuid: string = "";
 
- 
+
     getConvo = (convoId: string) => (event: any) => {
         // e.currentTarget.dataset.id 
         // alert(convoId);
         console.log(this.state.payload)
-        publishApi(this.client, 'api.user.info', 'admin', this.uuid, {});
-        publishApi(this.client, 'api.message.list', 'admin', this.uuid, { 'convoId': this.convoId, "direction": "forward" });
-        publishApi(this.client, 'api.conversation.view', 'admin', this.uuid, { 'convoId': this.convoId });
-        
-        console.log(this.state.payload)
         this.convoId = convoId;
-        ReactDOM.render(<DocumentChatRoom convoId={this.convoId} uuid={this.uuid} members={this.state.members} msgs={this.state.msgs}/>, document.getElementById('root'));
+        // publishApi(this.client, 'api.user.info', 'admin', this.uuid, {});
+        publishApi(this.client, 'api.message.list', 'admin', this.uuid, { 'convoId': this.convoId, "direction": "forward" });
+        // this.client.onConnect = () => {
+        //     subscribe(this.client, 'admin', this.uuid, (payload: any) => {
+        //         if (payload) {
+        //             if (this._isMounted) {
+        //                 this.setState({ payload: payload })
+        //             }
+        //         }
+        //     })
+        publishApi(this.client, 'api.conversation.view', 'admin', this.uuid, { 'convoId': this.convoId });
+        // }
+        console.log('==================')
+        console.log(convoId);
+
+        ReactDOM.render(<DocumentChatRoom convoId={this.convoId} uuid={this.uuid} members={this.state.members} msgs={this.state.msgs} />, document.getElementById('root'));
         console.log(convoId);
     }
 
@@ -61,7 +73,7 @@ class ChatPage extends Component<{}, IState> {
             }
         }
     }
-    
+
     stompConnection = () => {
         this.client = createClient("admin", "1111");
         let obj = {};
@@ -70,12 +82,20 @@ class ChatPage extends Component<{}, IState> {
             console.log("connected to Stomp");
 
             subscribe(this.client, 'admin', this.uuid, (payload: any) => {
-                
+                console.log(this._isMounted)
                 if (payload) {
-                    this.setState({payload: payload})
+                    // if (this._isMounted) {
+                    //     this.setState({ payload: payload })
+                    // }
+                    if (payload.Conversations) {
+                        this.setState(
+                            { convos: payload.Conversations }
+                        )
+                    }
                     if (payload.Messages) {
-                        
-                        ReactDOM.render(<MsgList msgs={payload.Messages}/>, document.getElementById('DocumentChat'))
+                        this.setState({ ...this.state, msgs: payload.Messages })
+                        console.log(this.state.msgs)
+                        ReactDOM.render(<MsgList msgs={payload.Messages} />, document.getElementById('DocumentChat'))
                         let a = payload.Messages
                         ReactDOM.render(
                             <div>{payload.Messages.map((msg: Message) => <MsgBody msg={msg} />)}</div>,
@@ -85,7 +105,9 @@ class ChatPage extends Component<{}, IState> {
                         //     document.getElementById('MsgList'));
                     }
                     if (payload.Conversation) {
-                        
+
+                        this.setState({ members: payload.Members })
+                        console.log(this.state.members)
                         let docName;
                         let docIconName;
                         docName = payload.Conversation.name;
@@ -131,57 +153,53 @@ class ChatPage extends Component<{}, IState> {
                 }
             });
             publishApi(this.client, 'api.conversation.list', 'admin', this.uuid, {});
-
-
+            // console.log(this.uuid)
+            // publishApi(this.client, 'api.conversation.view', 'admin', this.uuid, { 'convoId': '726be416c95c48b09b2bb32bbf082c05' });
         }
         this.client.activate();
-        // })
     }
+
     constructor(props: {}, state: {}) {
         super(props, state);
-        
+
     }
+
     componentDidMount() {
         this.stompConnection();
+        this._isMounted = true;
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
     render() {
-        let convos = this.state.payload.Conversations;
-        console.log(this.state.payload)
-        if(convos!=undefined) {
-            console.log(convos)
-            convos.map((item:any) => {
-                console.log(item)
-            })
+        let convos = this.state.convos;
+        if (convos != undefined) {
             return (
                 <Fragment>
                     {convos.map((item: any) =>
-                                    <li onClick={this.getConvo(item.convoId)} className="ng-scope">
-                                        <document-icon className="ng-scope ng-isolate-scope">
-                                            <i className="icon_doc">            <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i>
-                                        </document-icon>
-                                        <div className="title_5" id="title_5">
-                                            <span className="chatroom-name ng-binding">{item.name}</span>
-                                            <span className="chatroom-user-cnt ng-binding">2</span>
-                                            <span className="chatroom-user-cnt ng-binding">{item.memberCount}</span>
-                                            <i></i>
-                                            <span className="chatroom-message-contents ng-binding">{item.latestMessage}</span>
-                                        </div>
-                                        <div className="wrapmsgr_right">
-                                            <span className="chatroom-date ng-binding">{getConvoDate(item.updatedAt)}</span>
-                                            <span className="wrapmsgr_unread_outer wrapmsgr_right ng-hide">
-                                                <span className="wrapmsgr_unread wrapmsgr_right ng-binding"></span>
-                                            </span>
-                                        </div>
-                                    </li>)
-                                }
-                    {/* <DocumentChatRoom/> */}
+                        <li onClick={this.getConvo(item.convoId)} className="ng-scope">
+                            <document-icon className="ng-scope ng-isolate-scope">
+                                <i className="icon_doc">            <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i>
+                            </document-icon>
+                            <div className="title_5" id="title_5">
+                                <span className="chatroom-name ng-binding">{item.name}</span>
+                                <span className="chatroom-user-cnt ng-binding">2</span>
+                                <span className="chatroom-user-cnt ng-binding">{item.memberCount}</span>
+                                <i></i>
+                                <span className="chatroom-message-contents ng-binding">{item.latestMessage}</span>
+                            </div>
+                            <div className="wrapmsgr_right">
+                                <span className="chatroom-date ng-binding">{getConvoDate(item.updatedAt)}</span>
+                                <span className="wrapmsgr_unread_outer wrapmsgr_right ng-hide">
+                                    <span className="wrapmsgr_unread wrapmsgr_right ng-binding"></span>
+                                </span>
+                            </div>
+                        </li>)
+                    }
                 </Fragment>)
-
         }
-        else {
-            return(<Fragment><div></div></Fragment>)
-        }
-        return(<Fragment></Fragment>)
+        return (<Fragment></Fragment>)
     }
 }
 export default ChatPage;
