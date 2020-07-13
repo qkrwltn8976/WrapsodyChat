@@ -33,12 +33,9 @@ class ChatPage extends Component<{}, IState> {
         console.log(this.state.payload)
         this.convoId = convoId;
 
-        publishApi(this.client, 'api.user.info', 'admin', this.uuid, {});
-        publishApi(this.client, 'api.message.list', 'admin', this.uuid, { 'convoId': this.convoId, "direction": "forward" });
-        publishApi(this.client, 'api.conversation.view', 'admin', this.uuid, { 'convoId': this.convoId });
 
 
-        ReactDOM.render(<DocumentChatRoom convoId={this.convoId} uuid={this.uuid} members={this.state.members} msgs={this.state.msgs} />, document.getElementById('root'));
+        ReactDOM.render(<DocumentChatRoom convoId={this.convoId} uuid={this.uuid} client={this.client} />, document.getElementById('root'));
         console.log(this.state.members);
     }
 

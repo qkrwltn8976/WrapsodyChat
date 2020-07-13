@@ -6,23 +6,47 @@ import { User } from 'src/models/User';
 import "src/assets/css/wrapmsgr.css";
 import "src/assets/css/wrapmsgr-components.css";
 import "src/assets/css/wrapmsgr-icons.css";
+import { Client } from '@stomp/stompjs';
+import { subscribe, publishApi } from 'src/libs/stomp';
 
 interface RoomProps {
     convoId: string,
     uuid: string,
-    msgs: Message[],
-    members: User[]
+    client: Client
 }
 
-class DocumentChatRoom extends React.Component<RoomProps, {}> {
+interface RoomState {
+    client: Client;
+    convoId: string;
+    uuid: string;
+    msgs: any;
+}
+
+class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
     constructor(props: RoomProps, state: {}) {
         super(props, state);
-        
+        this.state = ({
+            client : props.client,
+            convoId : props.convoId,
+            uuid : props.uuid,
+            msgs : []
+        })
         // this.props.msgs = props.msgs;
     }
 
     componentDidMount() {
-
+        subscribe(this.state.client, 'admin', this.state.uuid, (payload: any) => {
+            if (payload) {
+                if (payload.Messages) {
+                    this.setState({
+                        msgs: payload.Messages
+                    })
+                }
+            }
+        });
+        publishApi(this.state.client, 'api.user.info', 'admin', this.props.uuid, {});
+        publishApi(this.state.client, 'api.message.list', 'admin', this.props.uuid, { 'convoId': this.props.convoId, "direction": "forward" });
+        publishApi(this.state.client, 'api.conversation.view', 'admin', this.props.uuid, { 'convoId': this.props.convoId });
     }
 
     render() {
@@ -40,6 +64,9 @@ class DocumentChatRoom extends React.Component<RoomProps, {}> {
                                 </div>   
                                 <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass" id="DocumentChat">
                                     {/* <MsgList convoId={props.convoId} uuid={props.uuid} msgs={null}/> */}
+                                    {this.state.msgs.map((item:any) => {
+                                        return(<h6>{item.body}</h6>)}
+                                    )}
                                     <MsgInput convoId={this.props.convoId} uuid={this.props.uuid}/>
                                 </div>       
                             </div>
