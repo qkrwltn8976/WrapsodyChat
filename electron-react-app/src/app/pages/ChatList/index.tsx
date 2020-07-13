@@ -18,7 +18,7 @@ function ChatList() {
     return (
 
         <div id="wrapmsgr" className="ng-scope">
-            <div id="wrapmsgr_body"className="wrapmsgr_container ng-scope" >
+            <div id="wrapmsgr_body"className="wrapmsgr_container" >
                 <div className="wrapmsgr_chat_list">
                     <Header docName = "" headerType={HeaderType.LIST}/>
                     <div className="wrapmsgr_content">

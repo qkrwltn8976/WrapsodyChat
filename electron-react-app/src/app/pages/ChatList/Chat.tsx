@@ -7,12 +7,14 @@ import MsgList, { MsgBody, GetMsgs } from '../../components/MsgList';
 import { Message } from 'src/models/Message';
 import { v4 } from "uuid"
 import { getConvoDate } from 'src/libs/timestamp-converter';
+import {Conversation} from 'src/models/Conversation'
 
 interface IState {
     msgs: any;
     members: any;
     convos: any;
     payload: any;
+    len:number
 }
 
 class Chat extends Component<{}, IState> {
@@ -28,39 +30,28 @@ class Chat extends Component<{}, IState> {
 
 
     getConvo = (convoId: string) => (event: any) => {
-        // e.currentTarget.dataset.id 
-        // alert(convoId);
         console.log(this.state.payload)
         this.convoId = convoId;
-
-
 
         ReactDOM.render(<DocumentChatRoom convoId={this.convoId} uuid={this.uuid} client={this.client} />, document.getElementById('root'));
         console.log(this.state.members);
     }
 
-    getShortName = (name: string) => {
-        if (name) {
-            if (name.match(/[a-zA-Z]/)) {
-                var idx = name.lastIndexOf(" ");
-                if (idx > -1) {
-                    return name.substring(0, 1) + name.substring(idx + 1, idx + 2);
-                } else {
-                    return name.substring(0, 2);
-                }
-            } else {
-                if (name.length < 3) {
-                    return name.substring(0, 1);
-                } else if (name.length == 3) {
-                    return name.substring(1, 3);
-                } else if (name.length == 4) {
-                    return name.substring(2, 4);
-                } else {
-                    return name.substring(0, 2);
-                }
-            }
-        }
-    }
+    // sortByConvo = (c:any):any =>{
+    //     var len = c.length
+
+    //     for(var outer = len;outer>1;--outer){
+    //         for(var inner = 0;inner<outer;++inner){
+    //             if(c[inner].convoId<c[inner+1].convoId){
+    //                 var tmp = c[inner]
+    //                 c[inner] = c[inner+1]
+    //                 c[inner+1] = tmp
+    //             }
+    //         }
+    //     }
+    // }
+
+    
 
     stompConnection = () => {
         this.client = createClient("admin", "1111");
@@ -73,8 +64,24 @@ class Chat extends Component<{}, IState> {
                 console.log(this._isMounted)
                 if (payload) {
                     if (payload.Conversations) {
+                        console.log(payload.Conversations)
+                        console.log(payload.Conversations.length)
+
+                        for(var outer = payload.Conversations.length-1;outer>0;--outer){
+                            for(var inner = 0;inner<outer;++inner){
+                                if(payload.Conversations[inner].updatedAt<payload.Conversations[inner+1].updatedAt){
+                                    var tmp = payload.Conversations[inner]
+                                    payload.Conversations[inner] = payload.Conversations[inner+1]
+                                    payload.Conversations[inner+1] = tmp
+                                }
+                            }
+                        }
+                        
                         this.setState(
-                            { convos: payload.Conversations }
+                            { convos: payload.Conversations,
+                                len: payload.Conversations.length
+                            },
+                            
                         )
                     }
                 }
@@ -106,18 +113,19 @@ class Chat extends Component<{}, IState> {
                             <document-icon className="ng-scope ng-isolate-scope">
                                 <i className="icon_doc">            <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i>
                             </document-icon>
-                            <div className="title_5" id="title_5">
-                                <span className="chatroom-name ng-binding">{item.name}</span>
-                                <span className="chatroom-user-cnt ng-binding">2</span>
-                                <span className="chatroom-user-cnt ng-binding">{item.memberCount}</span>
+                            <div className="title_h5" id="title_5">
+                                <span className="chatroom-name">{item.name}</span>
+                                <span className="chatroom-user-cnt">{item.memberCount}</span>
                                 <i></i>
-                                <span className="chatroom-message-contents ng-binding">{item.latestMessage}</span>
+                                <span className="chatroom-message-contents">{item.latestMessage}</span>
                             </div>
                             <div className="wrapmsgr_right">
-                                <span className="chatroom-date ng-binding">{getConvoDate(item.updatedAt)}</span>
-                                <span className="wrapmsgr_unread_outer wrapmsgr_right ng-hide">
-                                    <span className="wrapmsgr_unread wrapmsgr_right ng-binding"></span>
-                                </span>
+                                <span className="chatroom-date">{getConvoDate(item.updatedAt)}</span>
+                                {item.unread===0 ? null:<span className="wrapmsgr_unread_outer">
+                                    <span className="wrapmsgr_unread">{item.unread}</span>
+                                </span>}
+                                
+
                             </div>
                         </li>)
                     }
