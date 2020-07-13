@@ -1,4 +1,5 @@
 import { time } from "console";
+import { Message } from 'src/models/Message';
 
 export function getTime(timestamp: number) {
     // let unix_timestamp = 1549312452
@@ -38,5 +39,11 @@ export function getConvoDate(timestamp:number) {
     let day = date.getDate();
 
     let formattedDate = year + '-' + month + '-' + day;
-    return formattedDate 
+
+    if(date.setHours(0,0,0,0) === new Date().setHours(0,0,0,0)) {
+        return getTime(timestamp);
+     } else {
+        return formattedDate;
+     } 
+    
 }

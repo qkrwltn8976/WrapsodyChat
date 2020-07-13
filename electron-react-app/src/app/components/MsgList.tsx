@@ -7,7 +7,7 @@ import { getTime, getDate } from 'src/libs/timestamp-converter';
 import { Message } from 'src/models/Message'
 
 interface MsgProps {
-    msgs: any;
+    msgs: Message[];
     // convoId: string;
     // uuid: string;
 }
@@ -57,111 +57,114 @@ function UserMsg(props: { msg: Message }) {
     )
 }
 
-export function MsgBody(props: { msg: Message }) {
-    let msgbubble;
-    let msgbody;
+// export function MsgBody(props: { msg: Message }) {
+//     let msgbubble;
+//     let msgbody;
 
-    if (props.msg.sendUserId === "@SYS@")
-        msgbubble = <SystemMsg msg={props.msg} />
-    else
-        msgbubble = <UserMsg msg={props.msg} />
+//     if (props.msg.sendUserId === "@SYS@")
+//         msgbubble = <SystemMsg msg={props.msg} />
+//     else
+//         msgbubble = <UserMsg msg={props.msg} />
 
-    if (props.msg.createdAt !== 0) {
-        let dateprops = <MsgDate date={getDate(props.msg.createdAt)} />;
-        msgbody = <React.Fragment>{dateprops}{msgbubble}</React.Fragment>;
-        // 더하기 메세지버블 + bubble
-    } else {
-        msgbody = msgbubble;
-    }
+//     if (props.msg.createdAt !== 0) {
+//         let dateprops = <MsgDate date={getDate(props.msg.createdAt)} />;
+//         msgbody = <React.Fragment>{dateprops}{msgbubble}</React.Fragment>;
+//         // 더하기 메세지버블 + bubble
+//     } else {
+//         msgbody = msgbubble;
+//     }
 
-    if(props.msg.sendUserId === "admin") {
-        return (    
-            <li id={props.msg.id} ng-repeat="message in current.messages" className="li-right ng-scope">
-                {msgbody}
-            </li>
-        )
-    } else {
-        return (    
-        <li id={props.msg.id} ng-repeat="message in current.messages"  className="ng-scope">
-            {msgbody}
-        </li>
-        )
-    }
-}
+//     if(props.msg.sendUserId === "admin") {
+//         return (    
+//             <li id={props.msg.id} ng-repeat="message in current.messages" className="li-right ng-scope">
+//                 {msgbody}
+//             </li>
+//         )
+//     } else {
+//         return (    
+//         <li id={props.msg.id} ng-repeat="message in current.messages"  className="ng-scope">
+//             {msgbody}
+//         </li>
+//         )
+//     }
+// }
 
-export function GetMsgs(props: { msgs: any, addMsgs: {} }) {
-
-    let msgs : [];
-
-
-    // console.log(props.msgs)
-    let messages = props.msgs.map((msg: Message) => {
-        return (<MsgBody msg={msg} />)
-    });
-    // addMsgs = (msg: any) => {
-    //     console.log(messages)
-    // }
-
-    return(<div>{messages}</div>)
-}
 
 interface MsgListState {
     msgs: Message[];
 }
 
-class MsgList extends React.Component<{ msgs: Message }, MsgListState> {
+class MsgList extends React.Component<{ msgs: Message[] }, MsgListState> {
     client: any;
     userId: string = "admin"
-    // convoId: string = "98f7e404-f6b7-4513-84b4-31aa1647bc6d";
-    // uuid: string;
 
+    isContinuous(before: Message, after: Message) {
+        if (!before || !after) {
+            return false;
+        }
+        
+        if (before.sendUserId != after.sendUserId) {
+            return false;
+        }
+        console.log(after)
+        console.log(before)
+        let diff = after.createdAt - before.createdAt;
+        let afterDate = new Date(after.createdAt);
+        let beforeDate = new Date(before.createdAt);
+        
+        return diff < 60 * 1000 && beforeDate.getMinutes() == afterDate.getMinutes();
+    }
 
-    stompConnection = () => {
-        // return new Promise(function(resolve, reject) {
-        this.client = createClient("admin", "1111");
+    getMsgBody(msg: Message, index: number) {
+        let msgbubble;
+        let msgbody;
 
-        this.client.onConnect = () => {
-            console.log("connected to Stomp");
+        if (msg.sendUserId === "@SYS@")
+            msgbubble = <SystemMsg msg={msg} />
+        else
+            msgbubble = <UserMsg msg={msg} />
 
-            // subscribe(this.client, 'admin', this.convoId, (payload: any) => {
-            //     // if (payload.Messages) {
-            //     //     ReactDOM.render(
-            //     //         <div>{payload.Messages.map((msg: Message) => <MsgBody msg={msg} />)}</div>,
-            //     //         document.getElementById('messageList'));
-            //     // }
-            //     // console.log(payload.Messages)
-            // });
-
-            // publishApi(this.client, 'api.user.info', 'admin', this.uuid, {});
-            // publishApi(this.client, 'api.message.list', 'admin', this.uuid, { 'convoId': this.convoId, "direction": "forward" });
-            // publishApi(this.client, 'api.conversation.view', 'admin', this.uuid, { 'convoId': this.convoId });
+        if (this.isContinuous(msg, this.state.msgs[index--])) {
+            let dateprops = <MsgDate date={getDate(msg.createdAt)} />;
+            msgbody = <React.Fragment>{dateprops}{msgbubble}</React.Fragment>;
+            // 더하기 메세지버블 + bubble
+        } else {
+            msgbody = msgbubble;
         }
 
-        this.client.activate();
+        if (msg.sendUserId === "admin") {
+            return (
+                <li id={msg.id} ng-repeat="message in current.messages" className="li-right ng-scope">
+                    {msgbody}
+                </li>
+            )
+        } else {
+            return (
+                <li id={msg.id} ng-repeat="message in current.messages" className="ng-scope">
+                    {msgbody}
+                </li>
+            )
+        }
     }
 
     constructor(props: MsgProps) {
         super(props);
-        // this.convoId = props.convoId;
-        // this.uuid = props.uuid;
-        this.stompConnection();
-
+        this.state = ({ msgs: props.msgs });
     }
 
     componentDidMount() {
-        
+        console.log(this.state.msgs);
     }
 
     render() {
-        // const messages = this.props.msgs.map((msg: Msg) => {
-        //     return (<MsgBody msg={msg} />)
-        // });
-
+        this.state = ({ msgs: this.props.msgs });
         return (
             <div className="wrapmsgr_content" ng-class="{'no-header': current.convo.convoType == 2}">
                 <div className="wrapmsgr_messages" in-view-container="" id="MsgList">
                     <ul id="messageList">
-                        {/* {messages} */}
+                        {this.state.msgs.map((msg: Message, index: number) => 
+                            this.getMsgBody(msg, index)
+                        )}
                     </ul>
                     <div className="wrapmsgr_latest_message ng-hide" ng-show="current.latestMessage" ng-click="messagesScrollToLatestMessage()">
                         <i className="icon_arrow_down"></i>

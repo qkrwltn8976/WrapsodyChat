@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { createClient, subscribe, publishApi } from 'src/libs/stomp';
 import ReactDOM from 'react-dom';
 import DocumentChatRoom from '../ChatRoom/Document';
-import MsgList, { MsgBody, GetMsgs } from '../../components/MsgList';
 import { Message } from 'src/models/Message';
 import { v4 } from "uuid"
 import { getConvoDate } from 'src/libs/timestamp-converter';
@@ -80,18 +79,7 @@ class ChatPage extends Component<{}, IState> {
                             { convos: payload.Conversations }
                         )
                     }
-                    if (payload.Messages) {
-                        this.setState({ ...this.state, msgs: payload.Messages })
-                        console.log(this.state.msgs)
-                        ReactDOM.render(<MsgList msgs={payload.Messages} />, document.getElementById('DocumentChat'))
-                        let a = payload.Messages
-                        ReactDOM.render(
-                            <div>{payload.Messages.map((msg: Message) => <MsgBody msg={msg} />)}</div>,
-                            document.getElementById('messageList'));
-                        // ReactDOM.render(
-                        //     <GetMsgs msgs= {a}/>,
-                        //     document.getElementById('MsgList'));
-                    }
+
                     if (payload.Conversation) {
 
                         this.setState({ members: payload.Members })
