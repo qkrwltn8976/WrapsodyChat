@@ -38,5 +38,11 @@ export function getConvoDate(timestamp:number) {
     let day = date.getDate();
 
     let formattedDate = year + '-' + month + '-' + day;
-    return formattedDate 
+
+    if(date.setHours(0,0,0,0) === new Date().setHours(0,0,0,0)) {
+        return getTime(timestamp);
+     } else {
+        return formattedDate;
+     } 
+    
 }
