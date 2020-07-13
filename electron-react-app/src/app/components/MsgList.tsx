@@ -1,33 +1,21 @@
 import * as React from 'react';
 import { render } from '@testing-library/react';
-import { createClient, subscribe, publish } from 'src/libs/stomp';
+import { createClient, subscribe, publishApi } from 'src/libs/stomp';
 import ReactDOM from 'react-dom';
 import { IMessage } from "@stomp/stompjs";
 import { getTime, getDate } from 'src/libs/timestamp-converter';
-
-export interface Msg {
-    sendUserId: string;
-    body: string;
-    messageId: string;
-    messageType: number;
-    type: string;
-    createdAt: number;
-    updatedAt: number;
-    isNotice: boolean;
-    recvConvoId: number;
-}
+import { Message } from 'src/models/Message'
 
 interface MsgProps {
-    msgs: Msg[];
-    convoId: string;
-    uuid: string;
+    msgs: any;
+    // convoId: string;
+    // uuid: string;
 }
 
-function MsgDate(props: { date: number }) {
-    let date = getDate(props.date)
+function MsgDate(props: { date: string }) {
     return (
         <div className="wrapmsgr_date ng-scope" ng-if="diffDays(current.messages[$index-1].createdAt, message.createdAt) >= 1">
-            <span className="ng-binding">{date}</span>
+            <span className="ng-binding">{props.date}</span>
         </div>
     )
 }
@@ -39,7 +27,7 @@ function SystemMsg(props: { msg: Message }) {
 
     // }
     // if (props.msg.type == "invite") {
-    msgspan = <span className="ng-binding">{props.msg.body}<a href="" className="wrapmsgr_right"></a></span>;
+    msgspan = <span className="ng-binding">administrator님이 김민지2님을 초대했습니다.<a href="" className="wrapmsgr_right"></a></span>;
     // }
 
     return (
@@ -49,7 +37,7 @@ function SystemMsg(props: { msg: Message }) {
     )
 }
 
-function UserMsg(props: { msg: Msg }) {
+function UserMsg(props: { msg: Message }) {
     let time: string = getTime(props.msg.createdAt);
     return (
         <div className="wrapmsgr_msg ng-scope" ng-if="message.messageType < MESSAGE_TYPE_SYSTEM" ng-className="{'continuous': isContinuous(current.messages[$index-1], message)}">
@@ -62,42 +50,35 @@ function UserMsg(props: { msg: Msg }) {
                     <div className="wrapmsgr_msg_body ng-binding" ng-bind-html="message.body | linky:'_blank'">{props.msg.body}</div>
                 </div>
                 <div className="wrapmsgr_msg_time" ng-hide="isContinuous(message, current.messages[$index+1])">
-                    <span className="ng-binding">{time}</span>
+                    <span className="ng-binding">{props.msg.createdAt}</span>
                 </div>
             </div>
         </div>
     )
 }
 
-export function MsgBody(props: { msg: Msg }) {
+export function MsgBody(props: { msg: Message }) {
     let msgbubble;
     let msgbody;
 
-    if (props.msg.sendUserId === "@SYS@")
+    if (props.msg.type === "system")
         msgbubble = <SystemMsg msg={props.msg} />
-    else
+    if (props.msg.type === "user")
         msgbubble = <UserMsg msg={props.msg} />
 
     if (props.msg.createdAt !== 0) {
-        let dateprops = <MsgDate date={props.msg.createdAt} />;
+        let dateprops = <MsgDate date={getDate(props.msg.createdAt)} />;
         msgbody = <React.Fragment>{dateprops}{msgbubble}</React.Fragment>;
         // 더하기 메세지버블 + bubble
     } else {
         msgbody = msgbubble;
     }
 
-    if (props.msg.sendUserId === 'admin') {
-        return (<li id={props.msg.messageId} ng-repeat="message in current.messages" className="ng-scope li-right">
+    return (
+        <li id={props.msg.id} ng-repeat="message in current.messages" ng-className="{'li-right': user.id == message.sendUserId}" className="ng-scope">
             {msgbody}
-        </li>)
-    } else {
-        return (
-
-            <li id={props.msg.messageId} ng-repeat="message in current.messages" ng-className="{'li-right': user.id == message.sendUserId}" className="ng-scope">
-                {msgbody}
-            </li>
-        )
-    }
+        </li>
+    )
 }
 
 export function GetMsgs(props: { msgs: any, addMsgs: {} }) {
@@ -151,41 +132,17 @@ class MsgList extends React.Component<{ msgs: Message }, MsgListState> {
         this.client.activate();
     }
 
-class MsgList extends React.Component<{convoId: string, uuid: string}, {}> {
-    client: any;
-    userId: string = "admin"
-    convoId: string = "98f7e404-f6b7-4513-84b4-31aa1647bc6d";
-    uuid: string;
-    stompConnection = () => {
-        // return new Promise(function(resolve, reject) {
-        this.client = createClient("admin", "1111");
-
-        this.client.onConnect = () => {
-            console.log("connected to Stomp");
-
-            subscribe(this.client, 'admin', this.convoId, (payload: any) => {
-                if (payload.Messages) {
-                    ReactDOM.render(
-                        <div>{payload.Messages.map((msg: Msg) => <MsgBody msg={msg} />)}</div>,
-                        document.getElementById('messageList'));
-                }
-                console.log(payload.Messages)
-            });
-
-            publish(this.client, 'api.user.info', 'admin', this.uuid, {});
-            publish(this.client, 'api.message.list', 'admin', this.uuid, { 'convoId': this.convoId, "direction": "forward" });
-            publish(this.client, 'api.conversation.view', 'admin', this.uuid, { 'convoId': this.convoId });
-        }
-
-        this.client.activate();
-    }
     constructor(props: MsgProps) {
         super(props);
-        this.convoId = props.convoId;
-        this.uuid = props.uuid;
+        // this.convoId = props.convoId;
+        // this.uuid = props.uuid;
         this.stompConnection();
+
     }
 
+    componentDidMount() {
+        
+    }
 
     render() {
         // const messages = this.props.msgs.map((msg: Msg) => {
@@ -194,7 +151,7 @@ class MsgList extends React.Component<{convoId: string, uuid: string}, {}> {
 
         return (
             <div className="wrapmsgr_content" ng-class="{'no-header': current.convo.convoType == 2}">
-                <div className="wrapmsgr_messages" in-view-container="">
+                <div className="wrapmsgr_messages" in-view-container="" id="MsgList">
                     <ul id="messageList">
                         {/* {messages} */}
                     </ul>

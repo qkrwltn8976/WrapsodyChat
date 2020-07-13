@@ -64,7 +64,7 @@ class BotChatRoom extends React.PureComponent {
             // });          
 
             var binaryData = this.generateBinaryData();
-            // this.client.publish({
+            // this.client.publishApi({
             //     destination: '/exchange/request/api.user.info',
             //     binaryBody: binaryData
             // })
@@ -97,10 +97,10 @@ class BotChatRoom extends React.PureComponent {
     }
 
     loginOnSubmit = () => {
-        this.client.publish({
-            destination: `/app/login/admin`,
-            body: ""
-        });
+        // this.client.publishApi({
+        //     destination: `/app/login/admin`,
+        //     body: ""
+        // });
     }
 
     componentDidMount() {

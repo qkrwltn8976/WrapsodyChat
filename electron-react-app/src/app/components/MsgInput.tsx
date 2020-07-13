@@ -73,39 +73,40 @@ class MsgInput extends React.Component<MsgInputProps, MsgInputState> {
             });
 
         }
+    }
 
-interface MsgState {
-    message: string;
-}
+// interface MsgState {
+//     message: string;
+// }
 
 // interface MsgProps {
 //     sendMessage: any;
 // }
 
-class MsgInput extends React.Component<{}, MsgState> {
-    handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-        this.setState({
-            message: e.target.value
-        })
-    }
+// class MsgInput extends React.Component<{}, MsgState> {
+//     handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+//         this.setState({
+//             message: e.target.value
+//         })
+//     }
 
-    handleSubmit(e: React.ChangeEvent<HTMLFormElement>) {
-        e.preventDefault()
-        // sendMessage(this.state.message)
+//     handleSubmit(e: React.ChangeEvent<HTMLFormElement>) {
+//         e.preventDefault()
+//         // sendMessage(this.state.message)
         
-        this.setState({
-          message: ''
-        })
-    }
+//         this.setState({
+//           message: ''
+//         })
+//     }
 
-    constructor() {
-        super({});
-        this.state = {
-            message: ''
-        }
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this)
-    }
+//     constructor() {
+//         super({});
+//         this.state = {
+//             message: ''
+//         }
+//         this.handleChange = this.handleChange.bind(this);
+//         this.handleSubmit = this.handleSubmit.bind(this)
+//     }
     render() {
         return (
             <div className="wrapmsgr_footer">
