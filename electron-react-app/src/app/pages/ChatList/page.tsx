@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { createClient, subscribe, publishApi } from 'src/libs/stomp';
 import ReactDOM from 'react-dom';
 import DocumentChatRoom from '../ChatRoom/Document';
-import MsgList, { MsgBody } from '../../components/MsgList';
 import { Message } from 'src/models/Message';
 import { v4 } from "uuid"
 import { getConvoDate } from 'src/libs/timestamp-converter';

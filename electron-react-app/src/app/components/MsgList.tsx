@@ -57,37 +57,37 @@ function UserMsg(props: { msg: Message }) {
     )
 }
 
-export function MsgBody(props: { msg: Message }) {
-    let msgbubble;
-    let msgbody;
+// export function MsgBody(props: { msg: Message }) {
+//     let msgbubble;
+//     let msgbody;
 
-    if (props.msg.sendUserId === "@SYS@")
-        msgbubble = <SystemMsg msg={props.msg} />
-    else
-        msgbubble = <UserMsg msg={props.msg} />
+//     if (props.msg.sendUserId === "@SYS@")
+//         msgbubble = <SystemMsg msg={props.msg} />
+//     else
+//         msgbubble = <UserMsg msg={props.msg} />
 
-    if (props.msg.createdAt !== 0) {
-        let dateprops = <MsgDate date={getDate(props.msg.createdAt)} />;
-        msgbody = <React.Fragment>{dateprops}{msgbubble}</React.Fragment>;
-        // 더하기 메세지버블 + bubble
-    } else {
-        msgbody = msgbubble;
-    }
+//     if (props.msg.createdAt !== 0) {
+//         let dateprops = <MsgDate date={getDate(props.msg.createdAt)} />;
+//         msgbody = <React.Fragment>{dateprops}{msgbubble}</React.Fragment>;
+//         // 더하기 메세지버블 + bubble
+//     } else {
+//         msgbody = msgbubble;
+//     }
 
-    if(props.msg.sendUserId === "admin") {
-        return (    
-            <li id={props.msg.id} ng-repeat="message in current.messages" className="li-right ng-scope">
-                {msgbody}
-            </li>
-        )
-    } else {
-        return (    
-        <li id={props.msg.id} ng-repeat="message in current.messages"  className="ng-scope">
-            {msgbody}
-        </li>
-        )
-    }
-}
+//     if(props.msg.sendUserId === "admin") {
+//         return (    
+//             <li id={props.msg.id} ng-repeat="message in current.messages" className="li-right ng-scope">
+//                 {msgbody}
+//             </li>
+//         )
+//     } else {
+//         return (    
+//         <li id={props.msg.id} ng-repeat="message in current.messages"  className="ng-scope">
+//             {msgbody}
+//         </li>
+//         )
+//     }
+// }
 
 
 interface MsgListState {
@@ -98,10 +98,58 @@ class MsgList extends React.Component<{ msgs: Message[] }, MsgListState> {
     client: any;
     userId: string = "admin"
 
+    isContinuous(before: Message, after: Message) {
+        if (!before || !after) {
+            return false;
+        }
+        
+        if (before.sendUserId != after.sendUserId) {
+            return false;
+        }
+        console.log(after)
+        console.log(before)
+        let diff = after.createdAt - before.createdAt;
+        let afterDate = new Date(after.createdAt);
+        let beforeDate = new Date(before.createdAt);
+        
+        return diff < 60 * 1000 && beforeDate.getMinutes() == afterDate.getMinutes();
+    }
+
+    getMsgBody(msg: Message, index: number) {
+        let msgbubble;
+        let msgbody;
+
+        if (msg.sendUserId === "@SYS@")
+            msgbubble = <SystemMsg msg={msg} />
+        else
+            msgbubble = <UserMsg msg={msg} />
+
+        if (this.isContinuous(msg, this.state.msgs[index--])) {
+            let dateprops = <MsgDate date={getDate(msg.createdAt)} />;
+            msgbody = <React.Fragment>{dateprops}{msgbubble}</React.Fragment>;
+            // 더하기 메세지버블 + bubble
+        } else {
+            msgbody = msgbubble;
+        }
+
+        if (msg.sendUserId === "admin") {
+            return (
+                <li id={msg.id} ng-repeat="message in current.messages" className="li-right ng-scope">
+                    {msgbody}
+                </li>
+            )
+        } else {
+            return (
+                <li id={msg.id} ng-repeat="message in current.messages" className="ng-scope">
+                    {msgbody}
+                </li>
+            )
+        }
+    }
+
     constructor(props: MsgProps) {
         super(props);
-        console.log(props.msgs)
-        this.state = ({msgs: props.msgs});
+        this.state = ({ msgs: props.msgs });
     }
 
     componentDidMount() {
@@ -109,18 +157,14 @@ class MsgList extends React.Component<{ msgs: Message[] }, MsgListState> {
     }
 
     render() {
-        // const messages = this.state.msgs.map((msg: Message) => {
-        //     console.log(msg);
-        //     return (<MsgBody msg={msg} />)
-        // });
-        this.state = ({msgs: this.props.msgs});
-        return (        
+        this.state = ({ msgs: this.props.msgs });
+        return (
             <div className="wrapmsgr_content" ng-class="{'no-header': current.convo.convoType == 2}">
                 <div className="wrapmsgr_messages" in-view-container="" id="MsgList">
                     <ul id="messageList">
-                        {this.state.msgs.map((msg: Message) => {
-                            return (<MsgBody msg={msg} />)
-                        })}
+                        {this.state.msgs.map((msg: Message, index: number) => 
+                            this.getMsgBody(msg, index)
+                        )}
                     </ul>
                     <div className="wrapmsgr_latest_message ng-hide" ng-show="current.latestMessage" ng-click="messagesScrollToLatestMessage()">
                         <i className="icon_arrow_down"></i>

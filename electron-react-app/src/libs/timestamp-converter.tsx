@@ -1,4 +1,5 @@
 import { time } from "console";
+import { Message } from 'src/models/Message';
 
 export function getTime(timestamp: number) {
     // let unix_timestamp = 1549312452
