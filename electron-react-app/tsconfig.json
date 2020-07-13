@@ -7,6 +7,7 @@
       "esnext"
     ],
     "baseUrl": ".",
+    "rootDir": "src",
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -21,7 +22,7 @@
     "jsx": "react"
   },
   "include": [
-    "./src/*"
+    "src"
   ],
   "extends": "./tsconfig.base.json"
 }

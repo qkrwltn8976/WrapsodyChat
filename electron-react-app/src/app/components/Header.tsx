@@ -1,13 +1,10 @@
 import * as React from 'react';
-import * as etype from '../../libs/enum-type';
-import '../../assets/css/wrapmsgr.css';
-import '../../assets/css/base.css';
-import '../../assets/css/wrapmsgr-components.css';
-import '../../assets/css/wrapmsgr-icons.css';
+import {HeaderType} from 'src/libs/enum-type';
 
 interface Props{
-    docName: string;
+    docName?: string; // 채팅방 생성 헤더에서만 docName필요 나머지는 null
     headerType: string;
+    convoId?: String;
 }
 // header가 받는 Props설정
 // 기존 javascript에서의 react props? 재사용을 위해서 내가 커스텀을 진행할 수 있도록 값을 props로 전달
@@ -19,14 +16,13 @@ class Header extends React.Component<Props>{
     } // 생성자
     
     render() {
-        const {docName, headerType} = this.props;
-        console.log("@@@@@@@@@@@@22", docName, headerType);
-        if(headerType === "chatRoom"){
+        const {docName, headerType, convoId} = this.props;
+        if(headerType === HeaderType.CHAT){
             return(
                 <div className = "wrapmsgr_header">
-                    <h1 className = "wrapmsgr_title">
-                        <span className = "ng-scope">{headerType}-</span>
-                        <span className = "ng-binding" title = {docName}>{docName}</span>
+                    <h1 className = "wrapmsgr_title" id = "forHeaderDocTitle">
+                        {/* <span className = "ng-scope">{headerType}-</span> */}
+                        {/* <span className = "ng-binding" title = {docName}>{docName}</span> */}
                     </h1>
                     <div className = "wrapmsgr-header-icon-wrap">
                         <a href = "">
@@ -35,29 +31,35 @@ class Header extends React.Component<Props>{
                     </div>
                 </div>
             );
-        }else if(headerType === "createChatRoom"){
+        }else if(headerType === HeaderType.CREATE){
             return(
-            <div className = "wrapmsgr_popup_header">
-                <h2 className = "title_h2">
-                <span>{headerType}</span>
-                </h2>
-                <a href = "">
-                    <i className = "icon_times">
-                    </i>
-                </a>
-            </div>
+                <div className="wrapmsgr_popup_header">
+                    <h2 className="title_h2">
+                        <span ng-if="manageMethod == 'create'" className="ng-scope">{headerType}</span>
+                    </h2>
+                    <a href=""><i className="icon_times" ng-click="hidePopup($event)"></i></a>
+                </div>
+            );    
+        }
+        else if(headerType === HeaderType.INVITE){
+            return(
+                <div className = "wrapmsgr_popup_header">
+                    <h2 className = "title_h2">
+                        <span>{headerType}</span>
+                    </h2>
+                    <a href ="">
+                        <i className = "icon_times">
+                        </i>
+                    </a>
+                </div>
             );    
         }
         else{
             return(
                 <div className = "wrapmsgr_header">
-                    <h1 className = "wrapmsgr_title">
-                        <span className = "ng-scope">읭{headerType}</span>
-                    </h1>
+                    <h1 className = "wrapmsgr_title">{headerType}</h1>
                     <div className = "wrapmsgr-header-icon-wrap">
-                        <a href = "">
-                            <i className = "icon_times" title = "Close"></i>
-                        </a>
+                        <a href = ""><i className = "icon_times" title = "Close" ng-click="showChatList = false"></i></a>
                     </div>
                 </div>
             );

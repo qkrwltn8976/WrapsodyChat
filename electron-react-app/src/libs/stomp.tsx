@@ -1,11 +1,32 @@
-import { Stomp } from "@stomp/stompjs";
+import { Client, IMessage } from "@stomp/stompjs";
+import { render } from "@testing-library/react";
+import React, { Component, Fragment } from 'react';
+export function createClient(login: string, passcode: string) {
+    return new Client({
+        brokerURL: "ws://192.168.100.30:9500/ws",
+        connectHeaders: {
+            login,
+            passcode,
+            host: "/wrapsody-oracle",
+        },
+        debug: function (str) {
+            console.log(str);
+        },
+        reconnectDelay: 5000,
+        heartbeatIncoming: 10000,
+        heartbeatOutgoing: 10000,
+        onUnhandledMessage: (messages: IMessage) => {
+            console.log(messages)
+        }
+    })
+}
 
 export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
     let obj : any;
     client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {
         if (message.body || message.isBinaryBody || message.command) {
             obj = JSON.parse(message.body);
-            console.log(obj)
+            
             let payload = obj.payload;
 
             // payload.Conversations.map((item: any) => {
@@ -32,7 +53,7 @@ export function subscribe(client: Client, userId: string, uuid: string, callback
     // return obj;
 }
 
-export function publishApi(client: Client, api: string, userId: string, uuid: string, payload: {}) {
+export function publish(client: Client, api: string, userId: string, uuid: string, payload: {}) {
     client.publish({
         destination: `/exchange/request/${api}`,
         body: JSON.stringify({
@@ -41,16 +62,3 @@ export function publishApi(client: Client, api: string, userId: string, uuid: st
         headers: { "reply-to": `user-admin-${uuid}`, "content-type": "application/json", "correlation_id ": api }
     });
 }
-
-export function publishChat(client: Client, api: string, uuid: string, payload: any) {
-    client.publish({
-        destination: `/exchange/request/${api}.${uuid}`,
-        body: JSON.stringify({
-            sendUserId: payload.sendUserId, recvConvoId: payload.recvConvoId, body: payload.body, messageType: 0
-        }),
-        headers: { __TypeId__: `com.wrapsody.messaging.model.Message`,"content-type": "application/json"}
-    });
-}
-
-// {"senderId":"admin","locale":"ko-KR","payload":{"convoId":"91fc0628c5fe4af4a14564f46f8ed17f"}}
-// {"sendUserId":"admin","recvConvoId":"91fc0628c5fe4af4a14564f46f8ed17f","body":"asdf","messageType":0}

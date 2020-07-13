@@ -15,9 +15,10 @@ class BotChatRoom extends React.PureComponent {
     name: String = "";
     state: any = { user: [], message: [] };
     constructor(props: { client: Client, name: string; }, state: {}) {
+        
         super(props, state);
         this.client = new Client({
-            brokerURL: "ws://192.168.100.30:9099/ws",
+            brokerURL: "ws://192.168.100.30:9500/ws",
             connectHeaders: {
                 login: "admin",
                 passcode: "1111",
@@ -31,21 +32,57 @@ class BotChatRoom extends React.PureComponent {
             heartbeatOutgoing: 10000
         });
 
+        console.log("connected to Stomp");
+
+        var callback = function(message: Message) {
+            // called when the client receives a STOMP message from the server
+            if (message.body||message.isBinaryBody||message.command) {
+              console.log("got message with body " + message.body)
+            } 
+              console.log("got empty message");
+        };
+
+
+        var uuidv4 = function() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+    
         // this.client.brokerURL = "ws://192.168.100.30:9500/ws";
         this.client.onConnect = () => {
 
             console.log("connected to Stomp");
+            
+            // this.client.subscribe("/exchange/user-admin", () => {
+            //     this.setState({
+            //         ...this.state,
+            //         // user: JSON.parse(f.body)
+            //     });
+            //     console.log('asdf')
+            // });          
 
             var binaryData = this.generateBinaryData();
-            // this.client.publishApi({
+            // this.client.publish({
             //     destination: '/exchange/request/api.user.info',
             //     binaryBody: binaryData
             // })
 
-            this.client.publish({
-                destination: '/exchange/request/api.user.info',
-                body: 'Hello world',
-            });
+            var callback = function(message:Message) {
+                // called when the client receives a STOMP message from the server
+                  if (message.body) {
+                    alert("got message with body " + message.body)
+                  } else {
+                    alert("got empty message");
+                  }
+                };
+        
+                var subscription = this.client.subscribe("/queue/test", callback);
+        
+                // Explicit subscription id
+                var mySubId = 'my-subscription-id-001';
+                this.client.subscribe("/exchange/user-admin", callback, { id: mySubId });
 
         };
 
@@ -70,6 +107,14 @@ class BotChatRoom extends React.PureComponent {
         let client: String;
         let name: String;
         let state = { user: [], message: [] };
+    }
+
+    generateBinaryData(){
+    return {
+        senderID: "admin",
+        locale: "ko-KR"
+    }
+
     }
 
     render() {

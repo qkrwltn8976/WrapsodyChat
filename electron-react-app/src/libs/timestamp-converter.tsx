@@ -11,10 +11,10 @@ export function getTime(timestamp: number) {
     let minutes = "0" + date.getMinutes();
     // Seconds part from the timestamp
     // var seconds = "0" + date.getSeconds();
-
+    
     // Will display time in 10:30:23 format
     let formattedTime = hours + ':' + minutes.substr(-2);
-
+    
     // console.log(formattedTime);
     return formattedTime;
 }
@@ -23,31 +23,20 @@ export function getDate(timestamp: number) {
     let date = new Date(timestamp);
     let week = ['일', '월', '화', '수', '목', '금', '토'];
 
-    let month = date.getMonth() + 1 + '월';
+    let month = date.getMonth()+1 + '월';
     let day = date.getDate() + '일';
     let weekday = week[date.getDay()] + '요일';
 
-    let formattedDate = month + ' ' + day + ' (' + weekday + ')';
+    let formattedDate = month +' '+ day + ' (' + weekday + ')';
     return formattedDate;
 }
 
-export function getConvoDate(timestamp: number) {
+export function getConvoDate(timestamp:number) {
     let date = new Date(timestamp);
     let year = date.getFullYear();
-    let month = date.getMonth() + 1;
+    let month = date.getMonth()+1;
     let day = date.getDate();
 
-    let hour = date.getHours();
-    let minute = date.getMinutes();
-
     let formattedDate = year + '-' + month + '-' + day;
-    let formattedTime = hour + ':' + minute;
-
-    let today = new Date().setHours(0, 0, 0, 0);
-    let Day = date.setHours(0, 0, 0, 0);
-
-    if (today === Day) 
-        return formattedTime;
-     else
-        return formattedDate;
+    return formattedDate 
 }

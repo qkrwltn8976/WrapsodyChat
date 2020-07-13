@@ -3,7 +3,7 @@ import {render} from '@testing-library/react';
 import ReactDOM from 'react-dom';
 import {InfoHeaderType} from "src/libs/enum-type"
 import { Client, Message, StompSubscription, Stomp, StompConfig, IMessage } from "@stomp/stompjs";
-import { createClient, subscribe, publishApi } from 'src/libs/stomp';
+import { createClient, subscribe, publish } from 'src/libs/stomp';
 
 interface Props{ 
     infoheaderType: string;
@@ -25,12 +25,12 @@ class InfoHeader extends React.Component<Props>{
             console.log("connected to Stomp");
 
             subscribe(this.client, 'admin', this.convoId, (payload: any) => {
-                // if(payload.Conversation){
-                //     console.log("pppppppppppppppppppppppppppp");
-                //     console.log(payload);
-                //     console.log("cccccccccccccccccccccccccccc");
-                //     console.log(payload.Conversations);
-                // }
+                if(payload.Conversation){
+                    console.log("pppppppppppppppppppppppppppp");
+                    console.log(payload);
+                    console.log("cccccccccccccccccccccccccccc");
+                    console.log(payload.Conversations);
+                }
                 
                 // if (!payload.Conversations) {
                 //     let docName;
@@ -54,7 +54,7 @@ class InfoHeader extends React.Component<Props>{
                 //     );
                 // }
             });
-            publishApi(this.client, 'api.conversation.view', 'admin', '98f7e404-f6b7-4513-84b4-31aa1647bc6d', {'convoId': this.convoId});   
+            publish(this.client, 'api.conversation.view', 'admin', '98f7e404-f6b7-4513-84b4-31aa1647bc6d', {'convoId': this.convoId});   
         }
         this.client.activate();
     }
@@ -159,10 +159,6 @@ class InfoHeader extends React.Component<Props>{
 
     }
 
-function InfoHeader() {
-    return (
-        <div></div>
-    );
 }
 
 export default InfoHeader;
