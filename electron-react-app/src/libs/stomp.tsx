@@ -2,6 +2,7 @@ import { Stomp } from "@stomp/stompjs";
 import { Client, IMessage } from "@stomp/stompjs";
 import { render } from "@testing-library/react";
 import React, { Component, Fragment } from 'react';
+import { v4 } from "uuid";
 
 export function createClient(login: string, passcode: string) {
     return new Client({
@@ -23,12 +24,34 @@ export function createClient(login: string, passcode: string) {
     })
 }
 
+export const client=createClient('admin','1111')
+
+export function connect (api:string, userId:string) {
+    var queue = v4()
+    var res:any
+    client.onConnect = function () {
+        subscribe(client, userId, queue, (payload:any) => { 
+            if(payload!==null){
+                res=payload
+                //console.log(res)
+            }
+            
+        });
+        publishApi(client, api, userId, queue, {});    
+        
+        //console.log(res)
+    }
+    client.activate()
+    return res
+}
+
+
 export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
     let obj : any;
     client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {
         if (message.body || message.isBinaryBody || message.command) {
             obj = JSON.parse(message.body);
-            console.log(obj)
+            //console.log(obj)
             let payload = obj.payload;
 
             // payload.Conversations.map((item: any) => {
