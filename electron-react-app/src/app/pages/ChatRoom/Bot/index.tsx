@@ -36,13 +36,11 @@ class BotChatRoom extends React.PureComponent {
 
             console.log("connected to Stomp");
 
-            this.client.subscribe("/exchange/user-admin", () => {
-                this.setState({
-                    ...this.state,
-                    // user: JSON.parse(f.body)
-                });
-                console.log('asdf')
-            });
+            var binaryData = this.generateBinaryData();
+            // this.client.publishApi({
+            //     destination: '/exchange/request/api.user.info',
+            //     binaryBody: binaryData
+            // })
 
             this.client.publish({
                 destination: '/exchange/request/api.user.info',

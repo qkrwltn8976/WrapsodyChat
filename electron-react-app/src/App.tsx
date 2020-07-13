@@ -4,12 +4,10 @@ import logo from './logo.svg';
 import './App.css';
 import { ChatList, BotChatRoom, DocumentChatRoom} from './app/pages';
 import {Header} from './app/components';
-import { render } from '@testing-library/react';
-import {Client, Message} from '@stomp/stompjs';
-import "./assets/css/wrapmsgr.css";
-import "./assets/css/wrapmsgr-components.css";
-import "./assets/css/wrapmsgr-icons.css";
-import * as etype from './libs/enum-type';
+import "src/assets/css/wrapmsgr.css";
+import "src/assets/css/wrapmsgr-components.css";
+import "src/assets/css/wrapmsgr-icons.css";
+import {HeaderType} from 'src/libs/enum-type';
 
 function App() {
   // let StompJs = require('@stomp/stompjs');
