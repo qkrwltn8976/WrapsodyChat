@@ -17,7 +17,12 @@ interface RoomProps {
 class DocumentChatRoom extends React.Component<RoomProps, {}> {
     constructor(props: RoomProps, state: {}) {
         super(props, state);
+        
         // this.props.msgs = props.msgs;
+    }
+
+    componentDidMount() {
+
     }
 
     render() {

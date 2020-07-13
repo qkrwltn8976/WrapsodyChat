@@ -50,7 +50,7 @@ function UserMsg(props: { msg: Message }) {
                     <div className="wrapmsgr_msg_body ng-binding" ng-bind-html="message.body | linky:'_blank'">{props.msg.body}</div>
                 </div>
                 <div className="wrapmsgr_msg_time" ng-hide="isContinuous(message, current.messages[$index+1])">
-                    <span className="ng-binding">{props.msg.createdAt}</span>
+                    <span className="ng-binding">{getTime(props.msg.createdAt)}</span>
                 </div>
             </div>
         </div>
@@ -61,9 +61,9 @@ export function MsgBody(props: { msg: Message }) {
     let msgbubble;
     let msgbody;
 
-    if (props.msg.type === "system")
+    if (props.msg.sendUserId === "@SYS@")
         msgbubble = <SystemMsg msg={props.msg} />
-    if (props.msg.type === "user")
+    else
         msgbubble = <UserMsg msg={props.msg} />
 
     if (props.msg.createdAt !== 0) {
@@ -74,11 +74,19 @@ export function MsgBody(props: { msg: Message }) {
         msgbody = msgbubble;
     }
 
-    return (
-        <li id={props.msg.id} ng-repeat="message in current.messages" ng-className="{'li-right': user.id == message.sendUserId}" className="ng-scope">
+    if(props.msg.sendUserId === "admin") {
+        return (    
+            <li id={props.msg.id} ng-repeat="message in current.messages" className="li-right ng-scope">
+                {msgbody}
+            </li>
+        )
+    } else {
+        return (    
+        <li id={props.msg.id} ng-repeat="message in current.messages"  className="ng-scope">
             {msgbody}
         </li>
-    )
+        )
+    }
 }
 
 export function GetMsgs(props: { msgs: any, addMsgs: {} }) {

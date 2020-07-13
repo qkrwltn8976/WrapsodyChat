@@ -32,23 +32,14 @@ class ChatPage extends Component<{}, IState> {
         // alert(convoId);
         console.log(this.state.payload)
         this.convoId = convoId;
-        // publishApi(this.client, 'api.user.info', 'admin', this.uuid, {});
+
+        publishApi(this.client, 'api.user.info', 'admin', this.uuid, {});
         publishApi(this.client, 'api.message.list', 'admin', this.uuid, { 'convoId': this.convoId, "direction": "forward" });
-        // this.client.onConnect = () => {
-        //     subscribe(this.client, 'admin', this.uuid, (payload: any) => {
-        //         if (payload) {
-        //             if (this._isMounted) {
-        //                 this.setState({ payload: payload })
-        //             }
-        //         }
-        //     })
         publishApi(this.client, 'api.conversation.view', 'admin', this.uuid, { 'convoId': this.convoId });
-        // }
-        console.log('==================')
-        console.log(convoId);
+
 
         ReactDOM.render(<DocumentChatRoom convoId={this.convoId} uuid={this.uuid} members={this.state.members} msgs={this.state.msgs} />, document.getElementById('root'));
-        console.log(convoId);
+        console.log(this.state.members);
     }
 
     getShortName = (name: string) => {
@@ -153,15 +144,12 @@ class ChatPage extends Component<{}, IState> {
                 }
             });
             publishApi(this.client, 'api.conversation.list', 'admin', this.uuid, {});
-            // console.log(this.uuid)
-            // publishApi(this.client, 'api.conversation.view', 'admin', this.uuid, { 'convoId': '726be416c95c48b09b2bb32bbf082c05' });
         }
         this.client.activate();
     }
 
     constructor(props: {}, state: {}) {
         super(props, state);
-
     }
 
     componentDidMount() {
