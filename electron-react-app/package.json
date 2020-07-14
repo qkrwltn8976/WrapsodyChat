@@ -4,6 +4,8 @@
     "private": true,
     "main": "public/Main.js",
     "homepage": "./",
+    "baseUrl": ".",
+    "rootDir": "src",
     "dependencies": {
         "@stomp/stompjs": "^5.4.4",
         "@testing-library/jest-dom": "^4.2.4",
