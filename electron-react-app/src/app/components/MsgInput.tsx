@@ -32,13 +32,12 @@ class MsgInput extends React.Component<MsgInputProps, MsgInputState> {
     }
 
     handleKeyPressed = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        // e.preventDefault();
-        // console.log(e.keyCode === 13)
         if (e.keyCode === 13) {
             this.sendMsg();
             this.setState({
                 message: ''
             });
+            e.preventDefault();
         }
     }
 
@@ -66,38 +65,6 @@ class MsgInput extends React.Component<MsgInputProps, MsgInputState> {
         this.convoId = props.convoId;
     }
 
-// interface MsgState {
-//     message: string;
-// }
-
-// interface MsgProps {
-//     sendMessage: any;
-// }
-
-// class MsgInput extends React.Component<{}, MsgState> {
-//     handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
-//         this.setState({
-//             message: e.target.value
-//         })
-//     }
-
-//     handleSubmit(e: React.ChangeEvent<HTMLFormElement>) {
-//         e.preventDefault()
-//         // sendMessage(this.state.message)
-        
-//         this.setState({
-//           message: ''
-//         })
-//     }
-
-//     constructor() {
-//         super({});
-//         this.state = {
-//             message: ''
-//         }
-//         this.handleChange = this.handleChange.bind(this);
-//         this.handleSubmit = this.handleSubmit.bind(this)
-//     }
     render() {
         return (
             <div className="wrapmsgr_footer">
