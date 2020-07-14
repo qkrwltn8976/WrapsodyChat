@@ -5,7 +5,8 @@ import ReactDOM from 'react-dom';
 import DocumentChatRoom from '../ChatRoom/Document';
 import { v4 } from "uuid"
 import { getConvoDate } from 'src/libs/timestamp-converter';
-import {Conversation} from 'src/models/Conversation'
+import {getDocType} from 'src/libs/messengerLoader'
+import { url } from 'inspector';
 
 interface IState {
     msgs: any;
@@ -25,7 +26,7 @@ class Chat extends Component<{}, IState> {
     state: any = { payload: [] };
     convoId: string = "";
     uuid: string = "";
-
+    chatBotImgPath = "http://ecm.dev.fasoo.com:9400/images/icon_bot_wrapsody.png"
 
     getConvo = (convoId: string) => (event: any) => {
         console.log(this.state.payload)
@@ -65,6 +66,7 @@ class Chat extends Component<{}, IState> {
                         console.log(payload.Conversations)
                         console.log(payload.Conversations.length)
 
+                        //채팅방 시간순 정렬
                         for(var outer = payload.Conversations.length-1;outer>0;--outer){
                             for(var inner = 0;inner<outer;++inner){
                                 if(payload.Conversations[inner].updatedAt<payload.Conversations[inner+1].updatedAt){
@@ -76,10 +78,9 @@ class Chat extends Component<{}, IState> {
                         }
                         
                         this.setState(
-                            { convos: payload.Conversations,
+                            {   convos: payload.Conversations,
                                 len: payload.Conversations.length
                             },
-                            
                         )
                     }
                 }
@@ -108,9 +109,15 @@ class Chat extends Component<{}, IState> {
                 <Fragment>
                     {convos.map((item: any) =>
                         <li onClick={this.getConvo(item.convoId)} className="ng-scope">
-                            <document-icon className="ng-scope ng-isolate-scope">
-                                <i className="icon_doc">            <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i>
-                            </document-icon>
+                            {item.convoType ===2? 
+                                <span className = "user-photo" style = {{backgroundImage:'url(http://ecm.dev.fasoo.com:9400/images/icon_bot_wrapsody.png)'}}></span>:
+                                <document-icon className="ng-scope ng-isolate-scope">
+                                <i className= {getDocType(item.name)}>
+                                    <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            
+                                </i>
+                                </document-icon>
+                            }
+                            
                             <div className="title_h5" id="title_5">
                                 <span className="chatroom-name">{item.name}</span>
                                 <span className="chatroom-user-cnt">{item.memberCount}</span>
@@ -119,9 +126,11 @@ class Chat extends Component<{}, IState> {
                             </div>
                             <div className="wrapmsgr_right">
                                 <span className="chatroom-date">{getConvoDate(item.updatedAt)}</span>
-                                {item.unread===0 ? null:<span className="wrapmsgr_unread_outer">
-                                    <span className="wrapmsgr_unread">{item.unread}</span>
-                                </span>}
+                                {item.unread===0 ? null:
+                                    <span className="wrapmsgr_unread_outer">
+                                        <span className="wrapmsgr_unread">{item.unread}</span>
+                                    </span>
+                                }
                                 
 
                             </div>
