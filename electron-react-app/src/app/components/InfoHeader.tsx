@@ -2,11 +2,12 @@ import * as React from 'react';
 import {render} from '@testing-library/react';
 import ReactDOM from 'react-dom';
 import {InfoHeaderType} from "src/libs/enum-type"
+import { getDocType } from 'src/libs/messengerLoader'
 
 interface Props{ 
     infoheaderType: string;
     memberCount: number;
-    docName?: string;
+    docName: string;
 }
 
 class InfoHeader extends React.Component<Props>{
@@ -24,7 +25,7 @@ class InfoHeader extends React.Component<Props>{
                 <div className="wrapmsgr_header">
                     <div className="wrapmsgr_header_title ng-scope" id = "forDocIcon">
                         <document-icon name="current.convo.name" className="ng-isolate-scope">
-                            <i className="icon_txt">            <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i>
+                            <i className={getDocType(this.props.docName)}>            <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i>
                         </document-icon>
                         <div className="chatroom-name ng-binding" title="Sample Text .DotInMiddle.txt">{this.props.docName}</div>
                         <div className="chatroom-size ng-binding">3.5KB</div>
