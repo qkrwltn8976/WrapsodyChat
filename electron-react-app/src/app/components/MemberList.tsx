@@ -1,39 +1,66 @@
 import * as React from 'react';
+import { Member } from 'src/models/Member';
+// interface Member {
+//     longName: string;
+//     shortName: string;
+//     dept: string;
+// }
 
-interface Member {
+interface Group {
     longName: string;
     shortName: string;
-    dept: string;
-}
-
-interface Group{
-    longName: string;
-    shortName: string;  
 }
 
 interface Props {
     memberListType: string;
     convoId?: string;
+    members: Member[]
 }
 
 
-
 class MemberList extends React.Component<Props>{
+    getShortName = (name: string) => {
+        if (name) {
+            if (name.match(/[a-zA-Z]/)) {
+                var idx = name.lastIndexOf(" ");
+                if (idx > -1) {
+                    return name.substring(0, 1) + name.substring(idx + 1, idx + 2);
+                } else {
+                    return name.substring(0, 2);
+                }
+            } else {
+                if (name.length < 3) {
+                    return name.substring(0, 1);
+                } else if (name.length == 3) {
+                    return name.substring(1, 3);
+                } else if (name.length == 4) {
+                    return name.substring(2, 4);
+                } else {
+                    return name.substring(0, 2);
+                }
+            }
+        }
+    }
+
     constructor(props: Props) {
         super(props);
-    } 
+    }
     render() {
         const { memberListType, convoId } = this.props;
         if (memberListType == 'chat') {
             return (
-                <ul id = "forMemberList">
-                    {/* members.map(member =>
-                    <li ng-repeat="member in current.members | memberFilter:search.user:users | orderBy:'userName'" ng-class="{'has-grn-dot': false, 'has-red-dot': false}" wrapmsgr-user-profile="users[member.userId]" className="ng-scope ng-isolate-scope">
-                        <span className="user-photo ng-binding ng-isolate-scope no-photo green">{member.shortName}</span>
-                        <div className="ng-binding">{member.shortName} ({member.longName})</div>
-                        <div className="sub-info ng-binding">{member.dept}</div>
-                    </li>
-                    ) */}
+                <ul id="forMemberList">
+                    {this.props.members.map(member => {
+                        if(member.userName) {
+                        return(<li ng-repeat="member in current.members | memberFilter:search.user:users | orderBy:'userName'" ng-class="{'has-grn-dot': false, 'has-red-dot': false}" wrapmsgr-user-profile="users[member.userId]" className="ng-scope ng-isolate-scope">
+                            <span className="user-photo ng-binding ng-isolate-scope no-photo green">{this.getShortName(member.userName)}</span>
+                            <div className="ng-binding">{member.userName} ({member.userId})</div>
+                            <div className="sub-info ng-binding">dept1</div>
+                        </li>)
+                        } else {
+                            return <li></li>
+                        }
+                    })}
                 </ul>
             );
         } else if (memberListType == 'select') {
@@ -141,7 +168,7 @@ export default MemberList;
 //         </li><!-- end ngRepeat: node in docInfo.organ --><!-- ngInclude: 'organ_renderer' -->
 
 //         {/* 멤버끝, 그룹시작 */}
-        
+
 //         <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className="ng-scope angular-ui-tree-node" expand-on-hover="false">
 //             <div className="organ_wrapper ng-scope">
 //                 <span ng-style="node.type === 'dept' &amp;&amp; !node.hasChildren &amp;&amp; {'visibility': 'hidden'}">

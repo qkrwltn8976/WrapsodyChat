@@ -2,7 +2,8 @@ import * as React from 'react';
 import { MsgList, MsgInput, Header, MemberList, InfoHeader, SearchBar } from '../../../components';
 import { HeaderType, MemberListType, RoomType, InfoHeaderType } from '../../../../libs/enum-type';
 import { Message } from 'src/models/Message';
-import { User } from 'src/models/User';
+import { Member } from 'src/models/Member';
+import { Conversation } from 'src/models/Conversation';
 import "src/assets/css/wrapmsgr.css";
 import "src/assets/css/wrapmsgr-components.css";
 import "src/assets/css/wrapmsgr-icons.css";
@@ -20,6 +21,8 @@ interface RoomState {
     convoId: string;
     uuid: string;
     msgs: Message[];
+    members: Member[];
+    convo: Conversation;
 }
 
 class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
@@ -41,7 +44,13 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
             client : props.client,
             convoId : props.convoId,
             uuid : props.uuid,
-            msgs : []
+            msgs : [],
+            members : [],
+            convo : {
+                convoId:props.convoId, convoType:0, roomType:0, name:'',
+                readAt:0, unread:0, memberCount:0, notificationType:0,
+                latestMessage: '', latestMessageAt: 0, createdAt: 0 , updatedAt: 0 
+            }
         })
         // this.props.msgs = props.msgs;
     }
@@ -49,13 +58,28 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
     componentDidMount() {
         subscribe(this.state.client, 'admin', this.state.uuid, (payload: any) => {
             if (payload) {
+                console.log('+++++++++++++++++++')
+                console.log(payload)
+                console.log('+++++++++++++++++++')
                 if (payload.Messages) {
                     this.setState({
                         msgs: payload.Messages
                     })
                 }
+
+                if (payload.Members) {
+                    this.setState({
+                        members: payload.Members
+                })
+                }
+                if (payload.Conversation) {
+                    this.setState({
+                        convo: payload.Conversation
+                    })
+                }
+                }
             }
-        });
+        );
         publishApi(this.state.client, 'api.user.info', 'admin', this.props.uuid, {});
         publishApi(this.state.client, 'api.message.list', 'admin', this.props.uuid, { 'convoId': this.props.convoId, "direction": "forward" });
         publishApi(this.state.client, 'api.conversation.view', 'admin', this.props.uuid, { 'convoId': this.props.convoId });
@@ -63,19 +87,19 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
 
     render() {
         let sendMsg = this.sendMsg;
-        console.log('++++++++++=')
-        console.log(this.state.msgs)
+        // console.log('++++++++++=')
+        console.log(this.state)
         return (
             <React.Fragment>
                 <div id="wrapmsgr" className="ng-scope">
                     <div id="wrapmsgr_body" ng-controller="WrapMsgrController" className="wrapmsgr_container ng-scope" data-ws="ws://ecm.dev.fasoo.com:9500/ws" data-vhost="/wrapsody-oracle" data-fpns-enabled="true" data-weboffice-enabled="true">
                         <div className="wrapmsgr_chat wrapmsgr_state_normalize wrapmsgr_viewmode_full" ng-class="[chatroomState, viewModeClass, {false: 'disabled'}[loggedIn]]" ng-show="current.convo">
-                            <Header convoId = {this.props.convoId} docName = "" headerType = {HeaderType.CHAT} />
+                            <Header convoId = {this.props.convoId} docName = {this.state.convo.name} headerType = {HeaderType.CHAT} />
                             <div className="wrapmsgr_content  wrapmsgr_viewmode_full doc-chatroom" ng-class="[{1: 'doc-chatroom', 2: 'wrapmsgr_chatbot'}[current.convo.convoType], viewModeClass]">     
-                                <InfoHeader convoId = {this.props.convoId} infoheaderType = {InfoHeaderType.DOC} />
+                                <InfoHeader docName = {this.state.convo.name} memberCount = {this.state.convo.memberCount} infoheaderType = {InfoHeaderType.DOC} />
                                 <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
                                     <SearchBar/>
-                                    <MemberList convoId = {this.props.convoId} memberListType = {MemberListType.CHAT} />
+                                    <MemberList convoId = {this.props.convoId} memberListType = {MemberListType.CHAT} members = {this.state.members}/>
                                 </div>   
                                 <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass" id="DocumentChat">
                                     <MsgList msgs={this.state.msgs}/>

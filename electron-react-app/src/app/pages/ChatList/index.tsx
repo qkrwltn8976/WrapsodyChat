@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Chat from "src/app/pages/ChatList/Chat";
 import { MsgList, MsgInput, Header, SearchBar, Footer } from 'src/app/components';
-import {ChatPage} from 'src/app/pages'
 import { HeaderType, SearchType } from '../../../libs/enum-type';
 import { useState } from 'react';
 

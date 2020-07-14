@@ -28,8 +28,6 @@ class MsgList extends React.Component<{ msgs: Message[] }, MsgListState> {
         if (before.sendUserId != after.sendUserId) {
             return false;
         }
-        console.log(after)
-        console.log(before)
         let diff = after.createdAt - before.createdAt;
         let afterDate = new Date(after.createdAt);
         let beforeDate = new Date(before.createdAt);
@@ -58,13 +56,8 @@ class MsgList extends React.Component<{ msgs: Message[] }, MsgListState> {
 
     getSystemMsg(msg: Message) {
         let msgspan;
-        // if (props.msg.type === "enter") {
-        //     msgspan = <span className="ng-binding">조상원님이 입장하셨습니다.<a href="" className="wrapmsgr_right"></a></span>
 
-        // }
-        // if (props.msg.type == "invite") {
         msgspan = <span className="ng-binding">administrator님이 김민지2님을 초대했습니다.<a href="" className="wrapmsgr_right"></a></span>;
-        // }
 
         return (
             <div className="wrapmsgr_msg_system ng-scope" ng-className="{revision: message.messageType == MESSAGE_TYPE_SYSTEM_REVISION}" ng-if="message.messageType >= MESSAGE_TYPE_SYSTEM">
@@ -76,8 +69,7 @@ class MsgList extends React.Component<{ msgs: Message[] }, MsgListState> {
     getUserMsg(msg: Message, index: number) {
         let time;
         if (!this.isContinuous(msg, this.state.msgs[index+1])) {
-            console.log(!this.isContinuous(msg, this.state.msgs[index++]))
-            time = <div className="wrapmsgr_msg_time" ng-hide="isContinuous(message, current.messages[$index+1])">
+            time = <div className="wrapmsgr_msg_time">
                 <span className="ng-binding">{getTime(msg.createdAt)}</span>
             </div>;
         }
@@ -122,7 +114,7 @@ class MsgList extends React.Component<{ msgs: Message[] }, MsgListState> {
         }
         
 
-        if (msg.sendUserId === "admin") {
+        if (msg.sendUserId === "admin") { // 나중에 자신의 sendUserId로 수정
             return (
                 <li id={msg.id} ng-repeat="message in current.messages" className="li-right ng-scope">
                     {msgbody}
@@ -144,6 +136,7 @@ class MsgList extends React.Component<{ msgs: Message[] }, MsgListState> {
 
     componentDidMount() {
         console.log(this.state.msgs);
+        this.setState({ msgs: this.props.msgs });
     }
 
     render() {

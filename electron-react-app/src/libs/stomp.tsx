@@ -16,8 +16,8 @@ export function createClient(login: string, passcode: string) {
             console.log(str);
         },
         reconnectDelay: 500000,
-        heartbeatIncoming: 100000,
-        heartbeatOutgoing: 100000,
+        heartbeatIncoming: 10000,
+        heartbeatOutgoing: 10000,
         onUnhandledMessage: (messages: IMessage) => {
             console.log(messages)
         }
