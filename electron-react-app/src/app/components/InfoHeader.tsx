@@ -2,12 +2,11 @@ import * as React from 'react';
 import {render} from '@testing-library/react';
 import ReactDOM from 'react-dom';
 import {InfoHeaderType} from "src/libs/enum-type"
-import { Client, Message, StompSubscription, Stomp, StompConfig, IMessage } from "@stomp/stompjs";
-import { createClient, subscribe, publishApi } from 'src/libs/stomp';
 
 interface Props{ 
     infoheaderType: string;
-    convoId: string;
+    memberCount: number;
+    docName?: string;
 }
 
 class InfoHeader extends React.Component<Props>{
@@ -19,21 +18,21 @@ class InfoHeader extends React.Component<Props>{
     }
 
     render(){
-        const {infoheaderType, convoId} = this.props;
+        const {infoheaderType} = this.props;
         if( infoheaderType === InfoHeaderType.DOC){
             return (
                 <div className="wrapmsgr_header">
                     <div className="wrapmsgr_header_title ng-scope" id = "forDocIcon">
-                        {/* <document-icon name="current.convo.name" className="ng-isolate-scope">
+                        <document-icon name="current.convo.name" className="ng-isolate-scope">
                             <i className="icon_txt">            <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i>
-                        </document-icon> */}
-                        {/* <div className="chatroom-name ng-binding" title="Sample Text .DotInMiddle.txt">Sample Text .DotInMiddle.txt</div> */}
-                        {/* <div className="chatroom-size ng-binding">3.5KB</div> */}
+                        </document-icon>
+                        <div className="chatroom-name ng-binding" title="Sample Text .DotInMiddle.txt">{this.props.docName}</div>
+                        <div className="chatroom-size ng-binding">3.5KB</div>
                     </div>
                     <div className="chatroom-user">
                         <i className="icon_users"></i>
                         <div id = "forDocUserCount">
-                            {/* <span className="chatroom-user-cnt ng-binding">3 명</span> */}
+                            <span className="chatroom-user-cnt ng-binding">{this.props.memberCount} 명</span>
                         </div>
                     </div>
                     {/* <div className="chatroom-user">

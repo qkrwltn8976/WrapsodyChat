@@ -1,10 +1,10 @@
 import * as React from 'react';
-
-interface Member {
-    longName: string;
-    shortName: string;
-    dept: string;
-}
+import { Member } from 'src/models/Member';
+// interface Member {
+//     longName: string;
+//     shortName: string;
+//     dept: string;
+// }
 
 interface Group{
     longName: string;
@@ -14,11 +14,34 @@ interface Group{
 interface Props {
     memberListType: string;
     convoId?: string;
+    members: Member[]
 }
 
 
-
 class MemberList extends React.Component<Props>{
+    getShortName = (name: string) => {
+        if (name) {
+            if (name.match(/[a-zA-Z]/)) {
+                var idx = name.lastIndexOf(" ");
+                if (idx > -1) {
+                    return name.substring(0, 1) + name.substring(idx + 1, idx + 2);
+                } else {
+                    return name.substring(0, 2);
+                }
+            } else {
+                if (name.length < 3) {
+                    return name.substring(0, 1);
+                } else if (name.length == 3) {
+                    return name.substring(1, 3);
+                } else if (name.length == 4) {
+                    return name.substring(2, 4);
+                } else {
+                    return name.substring(0, 2);
+                }
+            }
+        }
+    }
+
     constructor(props: Props) {
         super(props);
     } 
@@ -27,13 +50,13 @@ class MemberList extends React.Component<Props>{
         if (memberListType == 'chat') {
             return (
                 <ul id = "forMemberList">
-                    {/* members.map(member =>
+                    {this.props.members.map(member =>
                     <li ng-repeat="member in current.members | memberFilter:search.user:users | orderBy:'userName'" ng-class="{'has-grn-dot': false, 'has-red-dot': false}" wrapmsgr-user-profile="users[member.userId]" className="ng-scope ng-isolate-scope">
-                        <span className="user-photo ng-binding ng-isolate-scope no-photo green">{member.shortName}</span>
-                        <div className="ng-binding">{member.shortName} ({member.longName})</div>
-                        <div className="sub-info ng-binding">{member.dept}</div>
+                        <span className="user-photo ng-binding ng-isolate-scope no-photo green">{this.getShortName(member.userName)}</span>
+                        <div className="ng-binding">{member.userName} ({member.userId})</div>
+                        <div className="sub-info ng-binding">dept1</div>
                     </li>
-                    ) */}
+                    )}
                 </ul>
             );
         } else if (memberListType == 'select') {

@@ -38,28 +38,6 @@ class ChatPage extends Component<{}, IState> {
         console.log(this.state.members);
     }
 
-    getShortName = (name: string) => {
-        if (name) {
-            if (name.match(/[a-zA-Z]/)) {
-                var idx = name.lastIndexOf(" ");
-                if (idx > -1) {
-                    return name.substring(0, 1) + name.substring(idx + 1, idx + 2);
-                } else {
-                    return name.substring(0, 2);
-                }
-            } else {
-                if (name.length < 3) {
-                    return name.substring(0, 1);
-                } else if (name.length == 3) {
-                    return name.substring(1, 3);
-                } else if (name.length == 4) {
-                    return name.substring(2, 4);
-                } else {
-                    return name.substring(0, 2);
-                }
-            }
-        }
-    }
 
     stompConnection = () => {
         this.client = createClient("admin", "1111");
@@ -77,53 +55,6 @@ class ChatPage extends Component<{}, IState> {
                     if (payload.Conversations) {
                         this.setState(
                             { convos: payload.Conversations }
-                        )
-                    }
-
-                    if (payload.Conversation) {
-
-                        this.setState({ members: payload.Members })
-                        console.log(this.state.members)
-                        let docName;
-                        let docIconName;
-                        docName = payload.Conversation.name;
-                        docIconName = "icon_" + docName.substr(docName.lastIndexOf('.') + 1, 3).toLowerCase() + ".svg";
-                        ReactDOM.render(
-                            <span className="chatroom-user-cnt ng-binding">{payload.Conversation.memberCount} 명</span>,
-                            document.getElementById('forDocUserCount')
-                        );
-                        ReactDOM.render(
-                            <>
-                                <document-icon name={docIconName} className="ng-isolate-scope">
-                                    <i className="icon_txt">            <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i>
-                                </document-icon>
-                                <div>
-                                    <div className="chatroom-name ng-binding" title="Sample Text .DotInMiddle.txt">{docName}</div>
-                                    <div className="chatroom-size ng-binding">3.5KB</div>
-                                </div>
-                            </>
-                            , document.getElementById('forDocIcon')
-                        );
-                        ReactDOM.render(
-                            <>
-                                <span className="ng-scope">Document Chat Room-</span>
-                                <span className="ng-binding" title={docName}>{docName}</span>
-                            </>
-                            , document.getElementById('forHeaderDocTitle')
-                        )
-                        ReactDOM.render(
-                            <>
-                                {
-                                    payload.Members.map((member: any) =>
-                                        <li ng-repeat="member in current.members | memberFilter:search.user:users | orderBy:'userName'" ng-class="{'has-grn-dot': false, 'has-red-dot': false}" wrapmsgr-user-profile={member.userId} className="ng-scope ng-isolate-scope">
-                                            <span className="user-photo ng-binding ng-isolate-scope no-photo green">{this.getShortName(member.userName)}</span>
-                                            <div className="ng-binding">{member.userId} ({member.userName})</div>
-                                            <div className="sub-info ng-binding">랩소디</div>
-                                        </li>
-                                    )
-                                }
-                            </>
-                            , document.getElementById('forMemberList')
                         )
                     }
                 }
