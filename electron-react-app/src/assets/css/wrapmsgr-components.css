@@ -62,7 +62,7 @@
 }
 .wrapmsgr_container .user-profile .contact span {
 	display: inline-block;
-	width: 199px;
+	max-width: 199px;
 	overflow: hidden;
 	white-space: nowrap;
     text-overflow: ellipsis;
@@ -176,7 +176,7 @@
     z-index: 1000;
     width: 100%;
     height: 100%;
-	background-color: #00000030;
+	background-color: rgba(0, 0, 0, 0.3);
     top: 0;
     left: 0;
     cursor: zoom-out;

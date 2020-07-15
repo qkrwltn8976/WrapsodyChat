@@ -6,6 +6,7 @@ import { IMessage } from "@stomp/stompjs";
 import { getTime, getDate } from 'src/libs/timestamp-converter';
 import { Message } from 'src/models/Message';
 import { connect } from 'src/libs/stomp';
+import { getShortName } from 'src/libs/messengerLoader';
 
 interface MsgProps {
     msgs: Message[];
@@ -73,13 +74,14 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         let time;
         if (!this.isContinuous(msg, this.state.msgs[index+1])) {
             time = <div className="wrapmsgr_msg_time">
+                <span className="wrapmsgr_msg_unread ng-binding">1</span>
                 <span className="ng-binding">{getTime(msg.createdAt)}</span>
             </div>;
         }
         return (
             <div className="wrapmsgr_msg ng-scope" ng-if="message.messageType < MESSAGE_TYPE_SYSTEM" ng-className="{'continuous': isContinuous(current.messages[$index-1], message)}">
                 <div className="wrapmsgr_msg_user ng-isolate-scope" ng-attr-title="{{users[message.sendUserId].userName}}" wrapmsgr-user-profile="users[message.sendUserId]" user-profile-disabled="message.sendUserId.substr(0, 5) == '@BOT@'" title="administrator">
-                    <span className="user-photo ng-binding ng-isolate-scope no-photo cyan">ad</span>
+        <span className="user-photo ng-binding ng-isolate-scope no-photo cyan">{getShortName(msg.sendUserId)}</span>
                 </div>
                 <div className="wrapmsgr_msg_userid ng-binding">{msg.sendUserId}</div>
                 <div className="wrapmsgr_msg_bubble-wrap">

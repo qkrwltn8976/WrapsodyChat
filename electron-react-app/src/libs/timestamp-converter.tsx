@@ -7,14 +7,24 @@ export function getTime(timestamp: number) {
     // multiplied by 1000 so that the argument is in milliseconds, not seconds.
     let date = new Date(timestamp);
     // Hours part from the timestamp
-    let hours = date.getHours();
+    let hours : number = date.getHours();
+    let cov_hours : string;
+
+    if(hours >= 12) {
+        if(hours > 12) {
+            hours -= 12;
+        }
+        cov_hours = "오후 " + hours;
+    } else {
+        cov_hours = "오전 " + hours;
+    }
     // Minutes part from the timestamp
     let minutes = "0" + date.getMinutes();
     // Seconds part from the timestamp
     // var seconds = "0" + date.getSeconds();
     
     // Will display time in 10:30:23 format
-    let formattedTime = hours + ':' + minutes.substr(-2);
+    let formattedTime = cov_hours + ':' + minutes.substr(-2);
     
     // console.log(formattedTime);
     return formattedTime;

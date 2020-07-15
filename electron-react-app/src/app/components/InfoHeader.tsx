@@ -32,9 +32,7 @@ class InfoHeader extends React.Component<Props>{
                     </div>
                     <div className="chatroom-user">
                         <i className="icon_users"></i>
-                        <div id = "forDocUserCount">
-                            <span className="chatroom-user-cnt ng-binding">{this.props.memberCount} 명</span>
-                        </div>
+                        <span className="chatroom-user-cnt ng-binding">{this.props.memberCount} 명</span>
                     </div>
                     {/* <div className="chatroom-user">
                         <div className="chatroom-user-list ng-hide" >
