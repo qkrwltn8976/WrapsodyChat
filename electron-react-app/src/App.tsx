@@ -12,15 +12,12 @@ import {HeaderType} from 'src/libs/enum-type';
 
 function App() {
     return (
-      <Fragment>   
-        <div className = "wrapmsgr_container">
-          <div className = "wrapmsgr_chat_list">
-            <Header docName = "" headerType = {HeaderType.LIST}/>
+      <Fragment> 
+        <div id="wrapmsgr" className="ng-scope">
           <div className = "wrapmsgr_content" >
             <ChatList/>
         </div>
-          </div>
-        </div>
+        </div>  
         {/* <DocumentChatRoom convoId="91fc0628c5fe4af4a14564f46f8ed17f"/> */}
         {/* <BotChatRoom /> */}
       </Fragment>

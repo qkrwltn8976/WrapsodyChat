@@ -1,6 +1,6 @@
 import { Component, Fragment } from 'react';
 import React, { useState } from 'react';
-import { createClient, subscribe, publishApi } from 'src/libs/stomp';
+import { client, subscribe, publishApi } from 'src/libs/stomp';
 import ReactDOM from 'react-dom';
 import DocumentChatRoom from '../ChatRoom/Document';
 import { v4 } from "uuid"
@@ -32,7 +32,7 @@ class Chat extends Component<{}, IState> {
         console.log(this.state.payload)
         this.convoId = convoId;
 
-        ReactDOM.render(<DocumentChatRoom convoId={this.convoId} uuid={this.uuid} client={this.client} />, document.getElementById('root'));
+        ReactDOM.render(<DocumentChatRoom convoId={this.convoId} />, document.getElementById('root'));
         console.log(this.state.members);
     }
 
@@ -53,13 +53,14 @@ class Chat extends Component<{}, IState> {
     
 
     stompConnection = () => {
-        this.client = createClient("admin", "1111");
+        this.client = client;
         let obj = {};
         this.uuid = v4();
         this.client.onConnect = () => {
             console.log("connected to Stomp");
 
-            subscribe(this.client, 'admin', this.uuid, (payload: any) => {
+            subscribe(this.client, 'admin', this.uuid, (obj: any) => {
+                let payload = obj.payload;
                 console.log(this._isMounted)
                 if (payload) {
                     if (payload.Conversations) {
@@ -83,6 +84,9 @@ class Chat extends Component<{}, IState> {
                             },
                         )
                     }
+                } else {
+                    console.log('============chatlist subscribe===============')
+                    console.log(obj)
                 }
             });
             publishApi(this.client, 'api.conversation.list', 'admin', this.uuid, {});

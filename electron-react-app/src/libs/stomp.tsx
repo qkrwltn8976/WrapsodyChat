@@ -24,9 +24,9 @@ export function createClient(login: string, passcode: string) {
     })
 }
 
-export const client=createClient('admin','1111')
+export const client = createClient('admin','1111');
 
-export function connect (api:string, userId:string) {
+export function connect (api:string, userId:string, payload: {}) {
     var queue = v4()
     var res:any
     client.onConnect = function () {
@@ -37,7 +37,7 @@ export function connect (api:string, userId:string) {
             }
             
         });
-        publishApi(client, api, userId, queue, {});    
+        publishApi(client, api, userId, queue, payload);    
         
         //console.log(res)
     }
@@ -51,25 +51,10 @@ export function subscribe(client: Client, userId: string, uuid: string, callback
     client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {
         if (message.body || message.isBinaryBody || message.command) {
             obj = JSON.parse(message.body);
-            //console.log(obj)
-            let payload = obj.payload;
-
-            // payload.Conversations.map((item: any) => {
-            //     console.log(item.name)
-            //     // ReactDOM.render(<h6>{item.name}</h6>, document.getElementById('root'));
-            // });
-            // // console.log(messages)
-            // ReactDOM.render(<div>{payload.Conversations.map((item: any) => <h6>{item.name}</h6>)}</div>, document.getElementById('wrapmsgr'));
-            // if(payload.Messages) {
-            //     ReactDOM.render(<div>{payload.Conversations.map((msg: Msg) => <h6>{item.name}</h6>)}</div>, document.getElementById('messageList'));
-            // };
-            // console.log(messages)
-            callback(payload);
-            
+            callback(obj); 
         }
         else {
             console.log("got empty message");
-            // return message.body;
         }
 
     }, {

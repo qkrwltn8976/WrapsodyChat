@@ -12,10 +12,7 @@ declare global{ namespace JSX{
 
 
 function ChatList() {
-
-
     return (
-
         <div id="wrapmsgr" className="ng-scope">
             <div id="wrapmsgr_body"className="wrapmsgr_container" >
                 <div className="wrapmsgr_chat_list">

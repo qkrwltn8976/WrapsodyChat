@@ -4,11 +4,12 @@ import { createClient, subscribe, publishApi } from 'src/libs/stomp';
 import ReactDOM from 'react-dom';
 import { IMessage } from "@stomp/stompjs";
 import { getTime, getDate } from 'src/libs/timestamp-converter';
-import { Message } from 'src/models/Message'
+import { Message } from 'src/models/Message';
+import { connect } from 'src/libs/stomp';
 
 interface MsgProps {
     msgs: Message[];
-    // convoId: string;
+    convoId: string;
     // uuid: string;
 }
 
@@ -16,9 +17,11 @@ interface MsgListState {
     msgs: Message[];
 }
 
-class MsgList extends React.Component<{ msgs: Message[] }, MsgListState> {
+class MsgList extends React.Component<MsgProps, MsgListState> {
     client: any;
     userId: string = "admin"
+    private scrollTarget = React.createRef<HTMLDivElement>();
+    private scrollView = React.createRef<HTMLDivElement>();
 
     isContinuous(before: Message, after: Message) {
         if (!before || !after) {
@@ -57,7 +60,7 @@ class MsgList extends React.Component<{ msgs: Message[] }, MsgListState> {
     getSystemMsg(msg: Message) {
         let msgspan;
 
-        msgspan = <span className="ng-binding">administrator님이 김민지2님을 초대했습니다.<a href="" className="wrapmsgr_right"></a></span>;
+        msgspan = <span className="ng-binding">{msg.body}<a href="" className="wrapmsgr_right"></a></span>;
 
         return (
             <div className="wrapmsgr_msg_system ng-scope" ng-className="{revision: message.messageType == MESSAGE_TYPE_SYSTEM_REVISION}" ng-if="message.messageType >= MESSAGE_TYPE_SYSTEM">
@@ -129,6 +132,35 @@ class MsgList extends React.Component<{ msgs: Message[] }, MsgListState> {
         }
     }
 
+    messagesScrollToMessage() {
+
+    }
+
+    messageOnScroll() {
+        console.log('scrolling')
+    }
+
+    messagesScrollToBottom() {
+
+    }
+
+    messagesScrollToLatestMessage() {
+        const node: HTMLDivElement | null = this.scrollTarget.current; //get the element via ref
+
+        if (node) { //current ref can be null, so we have to check
+            node.scrollIntoView({behavior: 'auto', inline: 'start'}); //scroll to the targeted element
+        }
+
+        const scrollView: HTMLDivElement | null = this.scrollView.current;
+        if (scrollView) {
+            scrollView.addEventListener('scroll', this.messageOnScroll);
+        }
+        // window.addEventListener('scroll', this.messageOnScroll);
+
+        // connect('api.message.list', 'admin', { 'convoId': this.props.convoId, "direction": "backward", "afterAt": 1594776538458, "beforeAt": 0 })
+        // publishApi(this.state.client, 'api.message.list', 'admin', this.props.uuid, { 'convoId': this.props.convoId, "direction": "forward", "afterAt": 1594776538458 });
+    }
+
     constructor(props: MsgProps) {
         super(props);
         this.state = ({ msgs: props.msgs });
@@ -137,19 +169,25 @@ class MsgList extends React.Component<{ msgs: Message[] }, MsgListState> {
     componentDidMount() {
         console.log(this.state.msgs);
         this.setState({ msgs: this.props.msgs });
+        this.messagesScrollToLatestMessage();
+    }
+
+    componentDidUpdate() {
+        this.messagesScrollToLatestMessage();
     }
 
     render() {
         this.state = ({ msgs: this.props.msgs });
         return (
             <div className="wrapmsgr_content" ng-class="{'no-header': current.convo.convoType == 2}">
-                <div className="wrapmsgr_messages" in-view-container="" id="MsgList">
-                    <ul id="messageList">
+                <div className="wrapmsgr_messages" in-view-container="" ref={this.scrollView}>
+                    <ul>
                         {this.state.msgs.map((msg: Message, index: number) =>
                             this.getMsgBody(msg, index)
                         )}
                     </ul>
-                    <div className="wrapmsgr_latest_message ng-hide" ng-show="current.latestMessage" ng-click="messagesScrollToLatestMessage()">
+                    <div ref={this.scrollTarget} data-explanation="This is where we scroll to"></div>
+                    <div className="wrapmsgr_latest_message ng-hide" ng-show="current.latestMessage" onClick={this.messagesScrollToLatestMessage}>
                         <i className="icon_arrow_down"></i>
                     </div>
                 </div>
