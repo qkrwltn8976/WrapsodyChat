@@ -7,6 +7,10 @@ import { v4 } from "uuid"
 import { getConvoDate } from '@/renderer/libs/timestamp-converter';
 import {getDocType} from '@/renderer/libs/messengerLoader'
 
+
+const {remote} = require('electron')
+const {BrowserWindow} = remote
+
 interface IState {
     msgs: any;
     members: any;
@@ -42,7 +46,8 @@ class Chat extends Component<props> {
         console.log(this.state.payload)
         this.convoId = convoId;
 
-        ReactDOM.render(<DocumentChatRoom convoId={this.convoId} uuid={this.uuid} client={this.client} />, document.getElementById('root'));
+        const win = new BrowserWindow()
+        // ReactDOM.render(<DocumentChatRoom convoId={this.convoId} uuid={this.uuid} client={this.client} />, document.getElementById('root'));
     }
 
     stompConnection = () => {

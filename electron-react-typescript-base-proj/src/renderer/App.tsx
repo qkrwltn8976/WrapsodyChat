@@ -8,13 +8,6 @@ import "@public/wrapmsgr-components.css"
 import "@public/wrapmsgr-icons.css"
 
 export function App(){
-    var remote = require('remote')
-    var windowManager = remote.require('electron-window-manager');
- 
-    // Create a new window
-    var win = windowManager.createNew('win2', 'Windows #2');
-    win.open();
-
     return(
         <Fragment>
             <ChatList/>

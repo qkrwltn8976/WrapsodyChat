@@ -15,7 +15,8 @@ function createWindow(): void {
         webPreferences: {
             webSecurity: false,
             devTools: process.env.NODE_ENV === 'production' ? false : true
-        }
+        },
+        titleBarStyle:'hidden'
     });
 
     // and load the index.html of the app.
