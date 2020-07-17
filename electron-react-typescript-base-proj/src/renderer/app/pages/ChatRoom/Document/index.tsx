@@ -5,12 +5,11 @@ import { Message} from '../../../../models/Message';
 import { Member } from '../../../../models/Member';
 import { Conversation } from '../../../../models/Conversation';
 import { Client } from '@stomp/stompjs'
-import { subscribe, publishApi, publishChat } from '@/renderer/libs/stomp';
+import { subscribe, publishApi, publishChat, client } from '@/renderer/libs/stomp';
+import { v4 } from 'uuid';
 
 interface RoomProps {
     convoId: string,
-    uuid: string,
-    client: Client
 }
 
 interface RoomState {
@@ -23,10 +22,11 @@ interface RoomState {
 }
 
 class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
+    
     sendMsg(msg: Message) {
         console.log(msg);
         console.log('=============')
-        publishChat(this.props.client, 'chat.short.convo', this.props.uuid, msg);
+        publishChat(client, 'chat.short.convo', this.state.uuid, msg);
 
         this.setState({
             msgs: this.state.msgs.concat(msg) 
@@ -37,10 +37,11 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
 
     constructor(props: RoomProps, state: {}) {
         super(props, state);
+        
         this.state = ({
-            client : props.client,
+            client : client,
             convoId : props.convoId,
-            uuid : props.uuid,
+            uuid : v4(),
             msgs : [],
             members : [],
             convo : {
@@ -49,12 +50,17 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                 latestMessage: '', latestMessageAt: 0, createdAt: 0 , updatedAt: 0 
             }
         })
-        // this.props.msgs = props.msgs;
+
+        console.log(this.state.convoId)
     }
 
     componentDidMount() {
-        subscribe(this.state.client, 'admin', this.state.uuid, (payload: any) => {
+
+        client.onConnect = () => {
+            console.log("connected to Stomp");
+        subscribe(client, 'admin', this.state.uuid, (payload: any) => {
             if (payload) {
+                console.log(window.location.href)
                 console.log('+++++++++++++++++++')
                 console.log(payload)
                 console.log('+++++++++++++++++++')
@@ -77,9 +83,12 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                 }
             }
         );
-        publishApi(this.state.client, 'api.user.info', 'admin', this.props.uuid, {});
-        publishApi(this.state.client, 'api.message.list', 'admin', this.props.uuid, { 'convoId': this.props.convoId, "direction": "forward" });
-        publishApi(this.state.client, 'api.conversation.view', 'admin', this.props.uuid, { 'convoId': this.props.convoId });
+        publishApi(client, 'api.user.info', 'admin', this.state.uuid, {});
+        publishApi(client, 'api.message.list', 'admin', this.state.uuid, { 'convoId': this.props.convoId, "direction": "forward" });
+        publishApi(client, 'api.conversation.view', 'admin', this.state.uuid, { 'convoId': this.props.convoId });
+        }
+
+        client.activate()
     }
 
     render() {
@@ -100,7 +109,7 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                                 </div>   
                                 <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass" id="DocumentChat">
                                     <MsgList msgs={this.state.msgs}/>
-                                    <MsgInput convoId={this.props.convoId} uuid={this.props.uuid} sendMsg = {sendMsg.bind(this)}/>
+                                    <MsgInput convoId={this.props.convoId} uuid={this.state.uuid} sendMsg = {sendMsg.bind(this)}/>
                                 </div>       
                             </div>
                         </div>

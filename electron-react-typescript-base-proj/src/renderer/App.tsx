@@ -1,16 +1,27 @@
 import * as React from 'react';
 import { Component, Fragment } from 'react';
-import {Header} from './app/components';
-import {HeaderType} from './libs/enum-type';
-import {ChatList} from './app/pages'
+import {ChatList, DocumentChatRoom} from './app/pages'
 import "@public/wrapmsgr.css"
 import "@public/wrapmsgr-components.css"
 import "@public/wrapmsgr-icons.css"
+import {Route, HashRouter, Switch, BrowserRouter} from 'react-router-dom'
 
 export function App(){
+    console.log(window.location.href)
     return(
         <Fragment>
-            <ChatList/>
+            <HashRouter >
+            <Switch>
+                <Route path="/document/:convoId" component = {DocumentChatRoom} />
+                <Route path="/" component = {ChatList} />
+            </Switch>
+            </HashRouter>
+            
+            {/* <ViewManager /> */}
+            {/* <ViewManager> */}
+                {/* <ChatList/> */}
+            {/* </ViewManager> */}
+            
         </Fragment>
     )
 }

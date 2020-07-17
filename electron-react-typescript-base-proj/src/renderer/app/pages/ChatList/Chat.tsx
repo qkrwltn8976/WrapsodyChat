@@ -1,16 +1,20 @@
 import { Component, Fragment } from 'react';
 import React from 'react';
-import { createClient, subscribe, publishApi } from '@/renderer/libs/stomp';
+import { createClient, subscribe, publishApi, client } from '@/renderer/libs/stomp';
 import ReactDOM from 'react-dom';
 import DocumentChatRoom from '../ChatRoom/Document';
 import { v4 } from "uuid"
 import { getConvoDate } from '@/renderer/libs/timestamp-converter';
 import {getDocType} from '@/renderer/libs/messengerLoader'
+import { Link } from 'react-router-dom';
+import * as path from 'path';
+import * as url from 'url';
+import ViewManger from 'src/renderer/viewManager'
+import ViewManager from 'src/renderer/viewManager';
 
-
-const {remote} = require('electron')
+const {remote, webContents} = require('electron')
 const {BrowserWindow} = remote
-
+console.log(__dirname)
 interface IState {
     msgs: any;
     members: any;
@@ -29,7 +33,6 @@ class Chat extends Component<props> {
     roomName: [] = [];
     roomDate: [] = [];
     roomRead: [] = [];
-    client: any;
     payload: any;
     search: string = "";
     state: any = { 
@@ -42,22 +45,26 @@ class Chat extends Component<props> {
 
     
 
-    getConvo = (convoId: string) => (event: any) => {
-        console.log(this.state.payload)
-        this.convoId = convoId;
+    getConvo = (convoId: string, name:string) => (event: any) => {
+        const chatWindow = new BrowserWindow()
 
-        const win = new BrowserWindow()
-        // ReactDOM.render(<DocumentChatRoom convoId={this.convoId} uuid={this.uuid} client={this.client} />, document.getElementById('root'));
+        
+        // // and load the index.html of the app.
+        chatWindow.loadURL(
+            __dirname+"/index.html#/document/"+convoId          
+        );
+
+        chatWindow.setTitle(name)
+        
     }
 
     stompConnection = () => {
-        this.client = createClient("admin", "1111");
         let obj = {};
         this.uuid = v4();
-        this.client.onConnect = () => {
+        client.onConnect = () => {
             console.log("connected to Stomp");
 
-            subscribe(this.client, 'admin', this.uuid, (payload: any) => {
+            subscribe(client, 'admin', this.uuid, (payload: any) => {
                 console.log(this._isMounted)
                 if (payload) {
                     if (payload.Conversations) {
@@ -81,9 +88,9 @@ class Chat extends Component<props> {
                     }
                 }
             });
-            publishApi(this.client, 'api.conversation.list', 'admin', this.uuid, {});
+            publishApi(client, 'api.conversation.list', 'admin', this.uuid, {});
         }
-        this.client.activate();
+        client.activate();
     }
 
     constructor(props: props) {
@@ -111,18 +118,18 @@ class Chat extends Component<props> {
 
     
     render() {
-
+        console.log(window.location.href)
         let convos = this.state.convos
-            
         if (convos != undefined) {
 
             return (
                 <Fragment>
                     {convos.map((item: any) =>
                     <Fragment>
+                        {/* <Link to = {"/document/"+item.convoId}> */}
                         {/* 검색 활성화 */}
                         {this.props.search === null || item.name.toLowerCase().includes(this.props.search.toLowerCase())?
-                        <li onClick={this.getConvo(item.convoId)} className="ng-scope">
+                        <li onClick={this.getConvo(item.convoId, item.name)} className="ng-scope">
                         {/* /챗봇, 문서채팅방의 아이콘 표시/ */}
                         {item.convoType ===2? 
                             <span className = "user-photo" style = {{backgroundImage:'url(http://ecm.dev.fasoo.com:9400/images/icon_bot_wrapsody.png)'}}></span>:
@@ -153,7 +160,7 @@ class Chat extends Component<props> {
                     :
                     <Fragment></Fragment>
                         }
-                        
+                        {/* </Link> */}
                         </Fragment>
                         )
                     }
