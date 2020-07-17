@@ -1,0 +1,195 @@
+.wrapmsgr_container .user-profile{
+	position: fixed;
+	padding-top: 20px;
+	width: 270px;
+	height: auto;
+	border-radius: 5px;
+	box-shadow: 5px 5px 20px 0 rgba(62, 63, 66, 0.12);
+	border: solid 1px #d7d8db;
+	background-color: #fff;
+	z-index: 9999;
+}
+.wrapmsgr_container .user-profile *{letter-spacing: 0;}
+.wrapmsgr_container .user-profile >.icon.profile_close{
+	width: 14px;
+	height: 14px;
+	background-position: -100px -200px;
+	position: absolute;
+	right: 12px;
+	top: 12px;
+}
+.wrapmsgr_container .user-profile > div {
+	padding: 0 20px;
+}
+.wrapmsgr_container .user-profile > div:first-child {
+	overflow: hidden;
+}
+.wrapmsgr_container .user-profile > div:first-child > * {
+	float: left;
+	width: 170px;
+	overflow: hidden;
+	white-space: nowrap;
+}
+.wrapmsgr_container .user-profile > div:first-child > span.user-photo{
+	margin-right: 10px;
+	width: 48px;
+	height: 48px;
+	line-height: 46px;
+	font-size: 16px;
+	border-radius: 48px;
+}
+.wrapmsgr_container .user-profile > div:first-child > span.user-photo.no-photo{
+    text-indent: 0;
+    line-height: 48px;
+    text-align: center;
+    font-size: 16px;
+    background-image: none !important;
+}
+.wrapmsgr_container .user-profile > div:first-child > div > span:first-child {
+	display: block;
+	font-size: 14px;
+	width: 170px;
+	overflow: hidden;
+	white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.wrapmsgr_container .user-profile > div:first-child > div > span:last-child:before {
+	content: 'ㆍ';
+}
+.wrapmsgr_container .user-profile .contact {
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+.wrapmsgr_container .user-profile .contact span {
+	display: inline-block;
+	width: 199px;
+	overflow: hidden;
+	white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.wrapmsgr_container .user-profile .contact > div {
+	margin-top: 10px;
+}
+.wrapmsgr_container .user-profile .contact > div i {
+	font-size: 18px;
+}
+.wrapmsgr_container .user-profile .contact > div i + * {
+	display: inline-block;
+	margin-left: 8px;
+}
+
+.wrapmsgr_container .user-photo{
+	display: inline-block;
+    background-color: #f2f4f7;
+    background-size: cover;
+    background-position: 50%;
+    text-indent: -9999px;
+	padding: 0 2px;
+	min-width: 32px;
+	height: 32px;
+	text-align: center;
+	line-height: 30px;
+	border: 1px solid transparent;
+	border-radius: 32px;
+	cursor: pointer;
+}
+.wrapmsgr_container .user-photo.no-photo{
+	text-indent: 0;
+	line-height: 30px;
+	font-size: 13px;
+	font-weight: 500;
+	color: #eee;
+	background-image: none;
+}
+.wrapmsgr_container .user-photo.red {
+	color: #f6705e;
+	background-color: #feeae7;
+	border-color: #feeae7;
+}
+.wrapmsgr_container .user-photo.orange {
+	color: #f6aa2e;
+	background-color: #fff0dc;
+	border-color: #fff0dc;
+}
+.wrapmsgr_container .user-photo.yellow {
+	color: #e5be00;
+	background-color: #fff6c4;
+	border-color: #fff6c4;
+}
+.wrapmsgr_container .user-photo.cyan {
+	color: #27bdb8;
+	background-color: #cff1f1;
+	border-color: #cff1f1;
+}
+.wrapmsgr_container .user-photo.green {
+	color: #25c16f;
+	background-color: #dff6ea;
+	border-color: #dff6ea;
+}
+.wrapmsgr_container .user-photo.blue {
+	color: #4c86f4;
+	background-color: #d9e7ff;
+	border-color: #d9e7ff;	
+}
+.wrapmsgr_container .user-photo.purple {
+	color: #8d65fc;
+	background-color: #ece8ff;
+	border-color: #ece8ff;
+}
+
+.wrapmsgr_container .user-photo.group {
+	color: #fff !important;
+	border-radius: 5px;
+	cursor: auto;
+}
+.wrapmsgr_container .user-photo.group.red {
+	background-color: #f6705e;
+	border-color: #f6705e;
+}
+.wrapmsgr_container .user-photo.group.orange {
+	background-color: #f6aa2e;
+	border-color: #f6aa2e;
+}
+.wrapmsgr_container .user-photo.group.yellow {
+	background-color: #e5be00;
+	border-color: #e5be00;
+}
+.wrapmsgr_container .user-photo.group.cyan {
+	background-color: #27bdb8;
+	border-color: #27bdb8;
+}
+.wrapmsgr_container .user-photo.group.green {
+	background-color: #25c16f;
+	border-color: #25c16f
+}
+.wrapmsgr_container .user-photo.group.blue {
+	background-color: #4c86f4;
+	border-color: #4c86f4;	
+}
+.wrapmsgr_container .user-photo.group.purple {
+	background-color: #8d65fc;
+	border-color: #8d65fc;
+}
+
+.wrapmsgr_container .fullscreen-view_div{
+    position: fixed;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+	background-color: #00000030;
+    top: 0;
+    left: 0;
+    cursor: zoom-out;
+}
+.wrapmsgr_container .fullscreen-view_div .fullscreen-view_img{
+	position: absolute;
+	left: 50%;
+	top: 50%;
+    transform: translate(-50%, -50%);
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.wrapmsgr_container .fullscreen-view-element{
+	cursor: zoom-in;
+}
