@@ -13,10 +13,10 @@ function createMainWindow(): void {
     mainWindow = new BrowserWindow({
         height: 760,
         width: 450,
-        webPreferences: {
-            webSecurity: false,
-            devTools: process.env.NODE_ENV === 'production' ? false : true
-        },
+        frame:false,
+        minHeight:180,
+        minWidth: 360,
+        titleBarStyle:'hidden'
     });
 
     // and load the index.html of the app.
@@ -28,48 +28,17 @@ function createMainWindow(): void {
         })
     );
 
-    // Emitted when the window is closed.
-    mainWindow.on('closed', () => {
-        // Dereference the window object, usually you would store windows
-        // in an array if your app supports multi windows, this is the time
-        // when you should delete the corresponding element.
-        mainWindow = null;
-    });
+    mainWindow.show()
+
+    // // Emitted when the window is closed.
+    // mainWindow.on('closed', () => {
+    //     // Dereference the window object, usually you would store windows
+    //     // in an array if your app supports multi windows, this is the time
+    //     // when you should delete the corresponding element.
+    //     console.log('bye')
+    //     mainWindow = null;
+    // });
 }
-
-function createChatWindow(){
-        // Create the browser window.
-        chatWindow = new BrowserWindow({
-            height: 700,
-            width: 800,
-            webPreferences: {
-                webSecurity: false,
-                devTools: process.env.NODE_ENV === 'production' ? false : true
-            },
-            titleBarStyle:'hidden'
-        });
-    
-        // and load the index.html of the app.
-        chatWindow.loadURL(
-            url.format({
-                pathname: path.join(__dirname, './index.html?chatRoom'),
-                protocol: 'file:',
-                slashes: true
-            })
-            
-        );
-    
-        // Emitted when the window is closed.
-        chatWindow.on('closed', () => {
-            // Dereference the window object, usually you would store windows
-            // in an array if your app supports multi windows, this is the time
-            // when you should delete the corresponding element.
-        });
-}
-
-
-
-
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

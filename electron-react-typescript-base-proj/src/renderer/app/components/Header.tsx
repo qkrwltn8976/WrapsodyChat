@@ -1,6 +1,8 @@
 import * as React from 'react';
 import {HeaderType} from '@/renderer/libs/enum-type';
 
+const remote = require('electron').remote
+
 interface Props{
     docName?: string; // 채팅방 생성 헤더에서만 docName필요 나머지는 null
     headerType: string;
@@ -15,8 +17,15 @@ class Header extends React.Component<Props>{
         super(props);
     } // 생성자
     
+    closeWindow = (event:any)=>{
+        console.log('bye')
+        var win = remote.getCurrentWindow()
+        win.close()
+    }
+
     render() {
-        const {docName, headerType, convoId} = this.props;
+        const {docName, headerType} = this.props;
+        
         if(headerType === HeaderType.CHAT){
             return(
                 <div className = "wrapmsgr_header">
@@ -26,7 +35,7 @@ class Header extends React.Component<Props>{
                     </h1>
                     <div className = "wrapmsgr-header-icon-wrap">
                         <a href = "">
-                            <i className = "icon_times" title = "Close"></i>
+                            <i className = "icon_times" title = "Close" onClick={this.closeWindow}></i>
                         </a>
                     </div>
                 </div>
@@ -37,7 +46,7 @@ class Header extends React.Component<Props>{
                     <h2 className="title_h2">
                         <span ng-if="manageMethod == 'create'" className="ng-scope">{headerType}</span>
                     </h2>
-                    <a href=""><i className="icon_times" ng-click="hidePopup($event)"></i></a>
+                    <a href=""><i className="icon_times" onClick={this.closeWindow}></i></a>
                 </div>
             );    
         }
@@ -48,18 +57,28 @@ class Header extends React.Component<Props>{
                         <span>{headerType}</span>
                     </h2>
                     <a href ="">
-                        <i className = "icon_times">
+                        <i className = "icon_times" onClick={this.closeWindow}>
                         </i>
                     </a>
                 </div>
             );    
+        }
+        else if(headerType === HeaderType.LIST){
+            return(
+                <div className="wrapmsgr_header">
+				    <h1 className="wrapmsgr_title">Wrapsody Chat</h1>
+				        <div className="wrapmsgr-header-icon-wrap">
+			 		        <a href=""><i className="icon_times" title="닫기" onClick={this.closeWindow}></i></a>
+			 	    </div>
+			</div>
+            )
         }
         else{
             return(
                 <div className = "wrapmsgr_header">
                     <h1 className = "wrapmsgr_title">{headerType}</h1>
                     <div className = "wrapmsgr-header-icon-wrap">
-                        <a href = ""><i className = "icon_times" title = "Close" ng-click="showChatList = false"></i></a>
+                        <a href = ""><i className = "icon_times" title = "Close" onClick={this.closeWindow}></i></a>
                     </div>
                 </div>
             );

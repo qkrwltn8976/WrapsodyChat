@@ -46,7 +46,16 @@ class Chat extends Component<props> {
     
 
     getConvo = (convoId: string, name:string) => (event: any) => {
-        const chatWindow = new BrowserWindow()
+        const chatWindow = new BrowserWindow(
+            {
+                titleBarStyle: "hidden",
+                frame:false,
+                width:800,
+                height:700,
+                minHeight: 200,
+                minWidth: 400
+            }
+        )
 
         
         // // and load the index.html of the app.
@@ -55,6 +64,8 @@ class Chat extends Component<props> {
         );
 
         chatWindow.setTitle(name)
+
+        chatWindow.show()
         
     }
 

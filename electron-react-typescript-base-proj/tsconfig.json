@@ -15,7 +15,7 @@
     "esModuleInterop": true,
     "noImplicitAny": false,
     "noImplicitThis": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "sourceMap": true,
     "target": "esnext"
   },
