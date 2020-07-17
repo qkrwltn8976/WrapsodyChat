@@ -43,7 +43,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
 
     
 
-    getConvo = (convoId: string, name:string, readAt:any) => (event: any) => {
+    getConvo = (convoId: string, name:string) => (event: any) => {
         const chatWindow = new BrowserWindow(
             {
                 titleBarStyle: "hidden",
@@ -58,7 +58,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
         
         // // and load the index.html of the app.
         chatWindow.loadURL(
-            __dirname+"/index.html#/document/"+convoId+"/"+readAt          
+            __dirname+"/index.html#/document/"+convoId          
         );
 
         chatWindow.setTitle(name)
@@ -145,7 +145,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
                         {/* <Link to = {"/document/"+item.convoId}> */}
                         {/* 검색 활성화 */}
                         {this.props.search === null || item.name.toLowerCase().includes(this.props.search.toLowerCase())?
-                        <li onClick={this.getConvo(item.convoId, item.name, item.readAt)} className="ng-scope">
+                        <li onClick={this.getConvo(item.convoId, item.name)} className="ng-scope">
                         {/* /챗봇, 문서채팅방의 아이콘 표시/ */}
                         {item.convoType ===2? 
                             <span className = "user-photo" style = {{backgroundImage:'url(http://ecm.dev.fasoo.com:9400/images/icon_bot_wrapsody.png)'}}></span>:
