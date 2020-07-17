@@ -164,7 +164,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
     }
 
-    messagesScrollToLatestMessage() {
+    messagesScrollToLatestMessage = () => {
         const node: HTMLDivElement | null = this.scrollTarget.current; //get the element via ref
 
         if (node) { //current ref can be null, so we have to check
@@ -207,10 +207,11 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
                             this.getMsgBody(msg, index)
                         )}
                     </ul>
-                    <div ref={this.scrollTarget} data-explanation="This is where we scroll to"></div>
                     <div className="wrapmsgr_latest_message ng-hide" ng-show="current.latestMessage" onClick={this.messagesScrollToLatestMessage}>
                         <i className="icon_arrow_down"></i>
                     </div>
+                    <div ref={this.scrollTarget} data-explanation="This is where we scroll to"></div>
+
                 </div>
             </div>
         )
