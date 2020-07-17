@@ -7,18 +7,14 @@ import { Conversation } from 'src/models/Conversation';
 import "src/assets/css/wrapmsgr.css";
 import "src/assets/css/wrapmsgr-components.css";
 import "src/assets/css/wrapmsgr-icons.css";
-import { Client } from '@stomp/stompjs';
 import { client, subscribe, publishApi, publishChat } from 'src/libs/stomp';
 import { v4 } from "uuid"
 
 interface RoomProps {
-    convoId: string,
-    // client: Client
+    convo: Conversation,
 }
 
 interface RoomState {
-    // client: Client;
-    convoId: string;
     uuid: string;
     msgs: Message[];
     members: Member[];
@@ -30,42 +26,35 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
         console.log(msg);
         console.log('=============')
         publishChat(client, 'chat.short.convo', this.state.uuid, msg);
-
-        // this.setState({
-        //     msgs: this.state.msgs.concat(msg)
-        // });
-
-        // console.log(this.state.msgs)
     }
 
     constructor(props: RoomProps, state: {}) {
         super(props, state);
         this.state = ({
-            // client: client,
-            convoId: props.convoId,
             uuid:  v4(),
             msgs: [],
             members: [],
-            convo: {
-                convoId: props.convoId, convoType: 0, roomType: 0, name: '',
-                readAt: 0, unread: 0, memberCount: 0, notificationType: 0,
-                latestMessage: '', latestMessageAt: 0, createdAt: 0, updatedAt: 0
-            }
-        })
-        // this.props.msgs = props.msgs;
+            convo: this.props.convo
+        });
     }
 
     componentDidMount() {
         subscribe(client, 'admin', this.state.uuid, (obj: any) => {
             let payload = obj.payload;
             if (payload) {
-                console.log('+++++++++++++++++++')
-                console.log(payload)
-                console.log('+++++++++++++++++++')
                 if (payload.Messages) {
                     this.setState({
                         msgs: payload.Messages
+                    });
+
+                    let unread:number = 0;
+                    payload.Messages.map((msg: Message) => {
+                        if(msg.messageType < 240) {
+                            if(msg.sendUserId !== 'admin')
+                                unread++;
+                        }
                     })
+                    console.log('안읽은 메세지' + unread)
                 }
 
                 if (payload.Members) {
@@ -74,52 +63,59 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                     })
                 }
                 if (payload.Conversation) {
-                    this.setState({
-                        convo: payload.Conversation
-                    })
-                    // if(this.state.convo.latestMessageAt != undefined && (this.state.convo.latestMessageAt > payload.Conversation.latestMessageAt ) || payload.Conversation.latestMessageAt == undefined) {
-                    //     if (!payload.MessageId) {
-                    //         console.log('메세지리스트 호출')
-                    //         let afterAt = this.state.msgs.length > 0 ? this.state.msgs[this.state.msgs.length-1].createdAt : 0;
-                    //         publishApi(this.state.client, 'api.message.list', 'admin', this.props.uuid, { 'convoId': this.props.convoId, "direction": "forward", "afterAt": afterAt, "beforeAt": this.state.convo.latestMessageAt });
-                    //     }
-                    // } else {
-                    //     console.log('설정')
+                    if(this.state.convo.latestMessageAt != undefined && (this.state.convo.latestMessageAt > payload.Conversation.latestMessageAt ) || payload.Conversation.latestMessageAt == undefined) {
+                        if (!payload.MessageId) {
+                            console.log('메세지리스트 호출')
+                            let afterAt = this.state.msgs.length > 0 ? this.state.msgs[this.state.msgs.length-1].createdAt : 0;
+                            // publishApi(client, 'api.message.list', 'admin', this.props.uuid, { 'convoId': this.props.convoId, "direction": "forward", "afterAt": afterAt, "beforeAt": this.state.convo.latestMessageAt });
+                        }
+                    } else {
+                        console.log('설정')
                         
-                    // }
+                    }
+                    
                 } 
                 
             } else {
                 console.log(obj);
-                this.setState({
-                    msgs: this.state.msgs.concat(obj)
-                });
+                if(obj.body) { // 받은 메세지 처리
+                    this.setState({
+                        msgs: this.state.msgs.concat(obj)
+                    });
+
+                    if(obj.sendUserId !== 'admin') { // 추후 변경
+                        console.log('읽어')
+                        // publishApi(client, 'api.conversation.read', 'admin', this.state.uuid, { 'convoId': this.state.convoId });
+                    }
+                }
+                
+                if(obj.readAt) { // 읽음 처리
+                    console.log(obj.readAt)
+                }
             }
         });
         // publishApi(this.state.client, 'api.user.info', 'admin', this.props.uuid, {});
-        publishApi(client, 'api.conversation.view', 'admin', this.state.uuid, { 'convoId': this.props.convoId });
-        
+        publishApi(client, 'api.conversation.view', 'admin', this.state.uuid, { 'convoId': this.state.convo.convoId });
     }
 
     render() {
         let sendMsg = this.sendMsg;
-        // console.log('++++++++++=')
-        console.log(this.state)
+
         return (
             <React.Fragment>
                 <div id="wrapmsgr" className="ng-scope">
                     <div id="wrapmsgr_body" ng-controller="WrapMsgrController" className="wrapmsgr_container ng-scope" data-ws="ws://ecm.dev.fasoo.com:9500/ws" data-vhost="/wrapsody-oracle" data-fpns-enabled="true" data-weboffice-enabled="true">
                         <div className="wrapmsgr_chat wrapmsgr_state_normalize wrapmsgr_viewmode_full" ng-class="[chatroomState, viewModeClass, {false: 'disabled'}[loggedIn]]" ng-show="current.convo">
-                            <Header convoId={this.props.convoId} docName={this.state.convo.name} headerType={HeaderType.CHAT} />
+                            <Header convoId={ this.state.convo.convoId} docName={this.state.convo.name} headerType={HeaderType.CHAT} />
                             <div className="wrapmsgr_content  wrapmsgr_viewmode_full doc-chatroom" ng-class="[{1: 'doc-chatroom', 2: 'wrapmsgr_chatbot'}[current.convo.convoType], viewModeClass]">
                                 <InfoHeader docName={this.state.convo.name} memberCount={this.state.convo.memberCount} infoheaderType={InfoHeaderType.DOC} />
                                 <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
                                     <SearchBar />
-                                    <MemberList convoId={this.props.convoId} memberListType={MemberListType.CHAT} members={this.state.members} />
+                                    <MemberList convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} members={this.state.members} />
                                 </div>
                                 <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass" id="DocumentChat">
-                                    <MsgList msgs={this.state.msgs} convoId={this.props.convoId} />
-                                    <MsgInput convoId={this.props.convoId} uuid={this.state.uuid} sendMsg={sendMsg.bind(this)} />
+                                    <MsgList msgs={this.state.msgs} convo={this.state.convo}/>
+                                    <MsgInput convoId={this.state.convo.convoId} uuid={this.state.uuid} sendMsg={sendMsg.bind(this)} />
                                 </div>
                             </div>
                         </div>

@@ -50,6 +50,7 @@ class MsgInput extends React.Component<MsgInputProps, MsgInputState> {
             body: this.state.message,
             createdAt: Date.now(),
             updatedAt: Date.now(),
+            messageType: 0
         }
         this.props.sendMsg(msg);
     }
