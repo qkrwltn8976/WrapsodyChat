@@ -12,7 +12,7 @@ export function App(){
         <Fragment>
             <HashRouter >
             <Switch>
-                <Route path="/document/:convo" component = {DocumentChatRoom} />
+                <Route path="/document/:convo/:readAt" component = {DocumentChatRoom} />
                 <Route path="/" component = {ChatList} />
             </Switch>
             </HashRouter>
