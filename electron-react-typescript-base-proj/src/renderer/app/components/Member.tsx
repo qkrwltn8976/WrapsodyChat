@@ -1,12 +1,20 @@
 import * as React from 'react';
 
+
 interface MemberInfo{
     longName: string;
     shortName: string;
     dept: string;
 }
 
+
 class Member extends React.Component<MemberInfo>{
+    state = {
+        checked: [],
+        expanded: [],
+    };
+
+
     constructor(props: MemberInfo){
         super(props);
     }
@@ -19,7 +27,27 @@ class Member extends React.Component<MemberInfo>{
                 <div className="sub-info ng-binding">{dept}</div>
             </li>
         );
-       
     }
 }
 export default Member;
+
+
+
+// class Widget extends React.Component {
+//     state = {
+//         checked: [],
+//         expanded: [],
+//     };
+
+//     render() {
+//         return (
+//             <CheckboxTree
+//                 nodes={nodes}
+//                 checked={this.state.checked}
+//                 expanded={this.state.expanded}
+//                 onCheck={checked => this.setState({ checked })}
+//                 onExpand={expanded => this.setState({ expanded })}
+//             />
+//         );
+//     }
+// }
