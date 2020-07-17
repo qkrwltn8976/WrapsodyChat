@@ -6,29 +6,27 @@ import DocumentChatRoom from '../ChatRoom/Document';
 import { v4 } from "uuid"
 import { getConvoDate } from '@/renderer/libs/timestamp-converter';
 import {getDocType} from '@/renderer/libs/messengerLoader'
-import { Link } from 'react-router-dom';
-import * as path from 'path';
-import * as url from 'url';
-import ViewManger from 'src/renderer/viewManager'
-import ViewManager from 'src/renderer/viewManager';
+import { Client } from '@stomp/stompjs';
+import { Conversation } from '@/renderer/models/Conversation';
+import { sortConvos } from '@/renderer/libs/sort';
+
 
 const {remote, webContents} = require('electron')
 const {BrowserWindow} = remote
 console.log(__dirname)
-interface IState {
-    msgs: any;
-    members: any;
-    convos: any;
-    payload: any;
-    len:number;
-    search: string;
+
+interface ChatListState {
+    client: Client,
+    convos: Conversation[],
+    len: number,
+    uuid: string;
 }
 
-interface props{
-    search:string
+interface ChatListProps {
+    search: string
 }
 
-class Chat extends Component<props> {
+class Chat extends Component<ChatListProps, ChatListState> {
     _isMounted: boolean = false;
     roomName: [] = [];
     roomDate: [] = [];
@@ -71,42 +69,49 @@ class Chat extends Component<props> {
 
     stompConnection = () => {
         let obj = {};
-        this.uuid = v4();
         client.onConnect = () => {
-            console.log("connected to Stomp");
-
-            subscribe(client, 'admin', this.uuid, (payload: any) => {
+            subscribe(client, 'admin', this.state.uuid, (obj: any) => {
+                let payload = obj.payload;
                 console.log(this._isMounted)
+                console.log(payload)
                 if (payload) {
                     if (payload.Conversations) {
-
                         //채팅방 시간순 정렬
-                        for(var outer = payload.Conversations.length-1;outer>0;--outer){
-                            for(var inner = 0;inner<outer;++inner){
-                                if(payload.Conversations[inner].updatedAt<payload.Conversations[inner+1].updatedAt){
-                                    var tmp = payload.Conversations[inner]
-                                    payload.Conversations[inner] = payload.Conversations[inner+1]
-                                    payload.Conversations[inner+1] = tmp
-                                }
-                            }
-                        }
-                        
                         this.setState(
-                            {   convos: payload.Conversations,
+                            {
+                                convos: sortConvos(payload.Conversations),
                                 len: payload.Conversations.length
                             },
                         )
+
+                    }
+                } else {
+                    if (obj.body) {
+                        console.log(obj)
+                        const index = this.state.convos.findIndex(convo => convo.convoId === obj.recvConvoId),
+                            convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call
+                            convos[index].latestMessage = obj.body;
+                            convos[index].unread += 1;
+                            convos[index].latestMessageAt = obj.updatedAt;
+                            this.setState({ convos:sortConvos(convos) });
+
+                        // console.log(this.state.convos)
                     }
                 }
             });
-            publishApi(client, 'api.conversation.list', 'admin', this.uuid, {});
+            publishApi(client, 'api.conversation.list', 'admin', this.state.uuid, {});
         }
         client.activate();
     }
 
-    constructor(props: props) {
+    constructor(props: ChatListProps) {
         super(props);
-
+        this.state = ({
+            uuid: v4(),
+            convos: [],
+            len: 0,
+            client: client
+        })
 
     }
 

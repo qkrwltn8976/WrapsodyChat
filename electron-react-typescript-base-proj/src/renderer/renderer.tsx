@@ -4,7 +4,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import {App} from './App'
-import ViewManager from './viewManager'
 
 // Import the styles here to process them with webpack
 

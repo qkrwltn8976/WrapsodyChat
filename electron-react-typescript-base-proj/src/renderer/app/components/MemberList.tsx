@@ -1,10 +1,6 @@
 import * as React from 'react';
 import { Member } from '../../models/Member';
-// interface Member {
-//     longName: string;
-//     shortName: string;
-//     dept: string;
-// }
+import { getShortName } from '../../libs/messengerLoader';
 
 interface Group {
     longName: string;
@@ -19,28 +15,7 @@ interface Props {
 
 
 class MemberList extends React.Component<Props>{
-    getShortName = (name: string) => {
-        if (name) {
-            if (name.match(/[a-zA-Z]/)) {
-                var idx = name.lastIndexOf(" ");
-                if (idx > -1) {
-                    return name.substring(0, 1) + name.substring(idx + 1, idx + 2);
-                } else {
-                    return name.substring(0, 2);
-                }
-            } else {
-                if (name.length < 3) {
-                    return name.substring(0, 1);
-                } else if (name.length == 3) {
-                    return name.substring(1, 3);
-                } else if (name.length == 4) {
-                    return name.substring(2, 4);
-                } else {
-                    return name.substring(0, 2);
-                }
-            }
-        }
-    }
+
 
     constructor(props: Props) {
         super(props);
@@ -53,7 +28,7 @@ class MemberList extends React.Component<Props>{
                     {this.props.members.map(member => {
                         if(member.userName) {
                         return(<li ng-repeat="member in current.members | memberFilter:search.user:users | orderBy:'userName'" ng-class="{'has-grn-dot': false, 'has-red-dot': false}" wrapmsgr-user-profile="users[member.userId]" className="ng-scope ng-isolate-scope">
-                            <span className="user-photo ng-binding ng-isolate-scope no-photo green">{this.getShortName(member.userName)}</span>
+                            <span className="user-photo ng-binding ng-isolate-scope no-photo green">{getShortName(member.userName)}</span>
                             <div className="ng-binding">{member.userName} ({member.userId})</div>
                             <div className="sub-info ng-binding">dept1</div>
                         </li>)
@@ -136,6 +111,8 @@ class MemberList extends React.Component<Props>{
 }
 
 export default MemberList;
+
+
 
 // <div class="wrapmsgr_organ_tree ng-scope angular-ui-tree" ui-tree="organTreeOptions" data-clone-enabled="true" data-nodrop-enabled="true" data-drag-delay="100">
 //     <div class="wrapmsgr_organ_tree_header">
