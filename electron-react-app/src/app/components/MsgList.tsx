@@ -75,16 +75,20 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     getUserMsg(msg: Message, index: number) {
         let time;
         let profile;
-        if (!this.isContinuous(msg, this.state.msgs[index + 1])) {
-            time = <div className="wrapmsgr_msg_time">
-                <span className="wrapmsgr_msg_unread ng-binding">1</span>
-                <span className="ng-binding">{getTime(msg.createdAt)}</span>
-            </div>;
+        if (!this.isContinuous(this.state.msgs[index-1], msg)) {
             profile = <React.Fragment><div className="wrapmsgr_msg_user ng-isolate-scope" ng-attr-title="{{users[message.sendUserId].userName}}" wrapmsgr-user-profile="users[message.sendUserId]" user-profile-disabled="message.sendUserId.substr(0, 5) == '@BOT@'" title="administrator">
                 <span className="user-photo ng-binding ng-isolate-scope no-photo cyan">{getShortName(msg.sendUserId)}</span>
             </div>
                 <div className="wrapmsgr_msg_userid ng-binding">{msg.sendUserId}</div></React.Fragment>
         }
+        if (!this.isContinuous(msg, this.state.msgs[index + 1])) {
+            time = <div className="wrapmsgr_msg_time">
+                <span className="wrapmsgr_msg_unread ng-binding">1</span>
+                <span className="ng-binding">{getTime(msg.createdAt)}</span>
+            </div>;
+        }
+
+        // {'continuous': isContinuous(current.messages[$index-1], message)}
         return (
             <div className="wrapmsgr_msg ng-scope" ng-if="message.messageType < MESSAGE_TYPE_SYSTEM" ng-className="{'continuous': isContinuous(current.messages[$index-1], message)}">
                 {profile}

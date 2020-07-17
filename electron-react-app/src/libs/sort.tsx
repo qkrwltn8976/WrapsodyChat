@@ -1,7 +1,6 @@
 import { Conversation } from 'src/models/Conversation';
 
 export function sortConvos(convos: Conversation[]) {
-    console.log(convos)
     for (var outer = convos.length - 1; outer > 0; --outer) {
         for (var inner = 0; inner < outer; ++inner) {
             let prev = convos[inner].latestMessageAt ? convos[inner].latestMessageAt : 0;
