@@ -91,7 +91,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
                         const index = this.state.convos.findIndex(convo => convo.convoId === obj.recvConvoId),
                             convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call
                             convos[index].latestMessage = obj.body;
-                            convos[index].unread += 1;
+                            if(obj.sendUserId!=='admin'){convos[index].unread += 1;}
                             convos[index].latestMessageAt = obj.updatedAt;
                             this.setState({ convos:sortConvos(convos) });
 
