@@ -1,6 +1,7 @@
 import * as React from 'react';
-import {InfoHeaderType} from "@/renderer/libs/enum-type"
-import { getDocType } from '@/renderer/libs/messengerLoader'
+import ReactDOM from 'react-dom';
+import {InfoHeaderType} from "../../libs/enum-type"
+import { getDocType } from '../../libs/messengerLoader'
 
 interface Props{ 
     infoheaderType: string;
@@ -30,9 +31,7 @@ class InfoHeader extends React.Component<Props>{
                     </div>
                     <div className="chatroom-user">
                         <i className="icon_users"></i>
-                        <div id = "forDocUserCount">
-                            <span className="chatroom-user-cnt ng-binding">{this.props.memberCount} 명</span>
-                        </div>
+                        <span className="chatroom-user-cnt ng-binding">{this.props.memberCount} 명</span>
                     </div>
                     {/* <div className="chatroom-user">
                         <div className="chatroom-user-list ng-hide" >

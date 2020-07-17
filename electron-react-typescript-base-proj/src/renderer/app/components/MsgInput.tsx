@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { createClient, publishChat, subscribe } from '@/renderer/libs/stomp';
-import { Client } from '@stomp/stompjs'
-import { Message } from '../../models/Message'
+import { createClient, publishChat, subscribe } from '../../libs/stomp';
+import { Client } from '@stomp/stompjs';
+import { Message } from '../../models/Message';
 
 interface MsgInputState {
     message: string;
@@ -50,6 +50,7 @@ class MsgInput extends React.Component<MsgInputProps, MsgInputState> {
             body: this.state.message,
             createdAt: Date.now(),
             updatedAt: Date.now(),
+            messageType: 0
         }
         this.props.sendMsg(msg);
     }

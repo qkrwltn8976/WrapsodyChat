@@ -4,7 +4,7 @@ import React, { Component, Fragment } from 'react';
 import { v4 } from "uuid";
 
 export function createClient(login: string, passcode: string) {
-    return new Client({
+    let client = new Client({
         brokerURL: "ws://192.168.100.30:9500/ws",
         connectHeaders: {
             login,
@@ -20,29 +20,20 @@ export function createClient(login: string, passcode: string) {
         onUnhandledMessage: (messages: IMessage) => {
             console.log(messages)
         }
-    })
-}
+    });
 
-export const client=createClient('admin','1111')
-
-export function connect (api:string, userId:string) {
-    var queue = v4()
-    var res:any
-    client.onConnect = function () {
-        subscribe(client, userId, queue, (payload:any) => { 
-            if(payload!==null){
-                res=payload
-                //console.log(res)
-            }
-            
+    client.onConnect = () => {
+        console.log("connected to Stomp");
+        subscribe(client, 'admin', v4(), (obj: any) => {
+            let payload = obj.payload;
+            console.log(payload);
         });
-        publishApi(client, api, userId, queue, {});    
-        
-        //console.log(res)
     }
-    client.activate()
-    return res
+    client.activate();
+    return client;
 }
+
+export const client = createClient('admin','1111');
 
 
 export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
@@ -50,25 +41,10 @@ export function subscribe(client: Client, userId: string, uuid: string, callback
     client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {
         if (message.body || message.isBinaryBody || message.command) {
             obj = JSON.parse(message.body);
-            //console.log(obj)
-            let payload = obj.payload;
-
-            // payload.Conversations.map((item: any) => {
-            //     console.log(item.name)
-            //     // ReactDOM.render(<h6>{item.name}</h6>, document.getElementById('root'));
-            // });
-            // // console.log(messages)
-            // ReactDOM.render(<div>{payload.Conversations.map((item: any) => <h6>{item.name}</h6>)}</div>, document.getElementById('wrapmsgr'));
-            // if(payload.Messages) {
-            //     ReactDOM.render(<div>{payload.Conversations.map((msg: Msg) => <h6>{item.name}</h6>)}</div>, document.getElementById('messageList'));
-            // };
-            // console.log(messages)
-            callback(payload);
-            
+            callback(obj); 
         }
         else {
             console.log("got empty message");
-            // return message.body;
         }
 
     }, {
