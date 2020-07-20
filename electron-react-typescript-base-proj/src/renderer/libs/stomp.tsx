@@ -1,9 +1,23 @@
 import { Stomp } from "@stomp/stompjs";
 import { Client, IMessage } from "@stomp/stompjs";
-import React, { Component, Fragment } from 'react';
 import { v4 } from "uuid";
+import { createContext, useState } from "react";
+
+ var userName = ""
+
+export function setUserInfo(username:string, password: string){
+    console.log(username, password)
+    userName = username
+    client = createClient(username, password)
+}
+
+export function getUserName(){
+    return userName
+}
 
 export function createClient(login: string, passcode: string) {
+    console.log(login)
+    console.log(passcode)
     let client = new Client({
         brokerURL: "ws://192.168.100.30:9500/ws",
         connectHeaders: {
@@ -29,12 +43,12 @@ export function createClient(login: string, passcode: string) {
             console.log(payload);
         });
     }
+
     client.activate();
     return client;
 }
 
-export const client = createClient('admin','1111');
-
+export var client: Client
 
 export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
     let obj : any;

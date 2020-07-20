@@ -70,7 +70,6 @@ class InfoHeader extends React.Component<Props, ShowState>{
    
     render(){
         const {convoType} = this.props;
-        let show_class = this.state.isShow ? "wrapmsgr_dropdown_menu" : "wrapmsgr_dropdown_menu_hide";
         if( convoType === ConvoType.DOC){
             return (
                 <div className="wrapmsgr_header">
