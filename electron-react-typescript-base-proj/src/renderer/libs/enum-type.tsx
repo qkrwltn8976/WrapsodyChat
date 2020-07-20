@@ -3,11 +3,19 @@ export enum MSG {
     SYSTIME = 'systemTime',
     SYSETR = 'systemEnter'
 }
-export enum RoomType {
-    BOT = 'bot',
-    DOC = 'doc',
-    DEP = 'dep'
+
+export enum ConvoType {
+    BOT = 2,
+    DEP = 2,
+    DOC = 1,
 }
+
+export enum RoomType {
+    BOT = 2,
+    DOC = 3,
+    DEP = 2,
+}
+
 export enum InfoHeaderType{
     BOT = 'bot',
     DOC = 'doc',
