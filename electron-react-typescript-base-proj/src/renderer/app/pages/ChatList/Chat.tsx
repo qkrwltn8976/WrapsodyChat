@@ -44,6 +44,12 @@ class Chat extends Component<ChatListProps, ChatListState> {
     
 
     getConvo = (convoId: string, name:string) => (event: any) => {
+
+        const index = this.state.convos.findIndex(convo => convo.convoId === convoId),
+        convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call
+        convos[index].unread = 0;
+        this.setState({ convos });
+        
         const chatWindow = new BrowserWindow(
             {
                 titleBarStyle: "hidden",
@@ -94,8 +100,6 @@ class Chat extends Component<ChatListProps, ChatListState> {
                             if(obj.sendUserId!=='admin'){convos[index].unread += 1;}
                             convos[index].latestMessageAt = obj.updatedAt;
                             this.setState({ convos:sortConvos(convos) });
-
-                        // console.log(this.state.convos)
                     }
                 }
             });
