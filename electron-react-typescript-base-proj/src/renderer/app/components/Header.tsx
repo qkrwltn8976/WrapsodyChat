@@ -28,7 +28,7 @@ class Header extends React.Component<Props>{
         
         if(headerType === HeaderType.CHAT){
             return(
-                <div className = "wrapmsgr_header">
+                <div className = "wrapmsgr_title_header">
                     <h1 className = "wrapmsgr_title" id = "forHeaderDocTitle">
                         <span className = "ng-scope">{headerType}-</span>
                         <span className = "ng-binding" title = {docName}>{docName}</span>
@@ -65,7 +65,7 @@ class Header extends React.Component<Props>{
         }
         else if(headerType === HeaderType.LIST){
             return(
-                <div className="wrapmsgr_header">
+                <div className="wrapmsgr_title_header">
 				    <h1 className="wrapmsgr_title">Wrapsody Chat</h1>
 				        <div className="wrapmsgr-header-icon-wrap">
 			 		        <a href=""><i className="icon_times" title="닫기" onClick={this.closeWindow}></i></a>
@@ -75,7 +75,7 @@ class Header extends React.Component<Props>{
         }
         else{
             return(
-                <div className = "wrapmsgr_header">
+                <div className = "wrapmsgr_title_header">
                     <h1 className = "wrapmsgr_title">{headerType}</h1>
                     <div className = "wrapmsgr-header-icon-wrap">
                         <a href = ""><i className = "icon_times" title = "Close" onClick={this.closeWindow}></i></a>

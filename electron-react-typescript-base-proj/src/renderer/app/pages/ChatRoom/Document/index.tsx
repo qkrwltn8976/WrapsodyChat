@@ -4,7 +4,7 @@ import { HeaderType, MemberListType, RoomType, InfoHeaderType } from '../../../.
 import { Message } from '../../../../models/Message';
 import { Member } from '../../../../models/Member';
 import { Conversation } from '../../../../models/Conversation';
-import { client, subscribe, publishApi, publishChat } from '../../../../libs/stomp';
+import { subscribe, publishApi, publishChat, client } from '../../../../libs/stomp';
 import { v4 } from "uuid"
 
 interface RoomProps {

@@ -1,22 +1,18 @@
 import { Component, Fragment } from 'react';
 import React from 'react';
-import { createClient, subscribe, publishApi, client } from '@/renderer/libs/stomp';
-import ReactDOM from 'react-dom';
-import DocumentChatRoom from '../ChatRoom/Document';
+import { subscribe, publishApi, getUserName } from '@/renderer/libs/stomp';
 import { v4 } from "uuid"
 import { getConvoDate } from '@/renderer/libs/timestamp-converter';
 import {getDocType} from '@/renderer/libs/messengerLoader'
-import { Client } from '@stomp/stompjs';
+// import { Client } from '@stomp/stompjs';
 import { Conversation } from '@/renderer/models/Conversation';
 import { sortConvos } from '@/renderer/libs/sort';
-
+import StompClient from '@/renderer/libs/stompClient';
 
 const {remote, webContents} = require('electron')
 const {BrowserWindow} = remote
-console.log(__dirname)
 
 interface ChatListState {
-    client: Client,
     convos: Conversation[],
     len: number,
     uuid: string;
@@ -54,20 +50,19 @@ class Chat extends Component<ChatListProps, ChatListState> {
                 minWidth: 400
             }
         )
-
-        
         // // and load the index.html of the app.
         chatWindow.loadURL(
             __dirname+"/index.html#/document/"+convoId          
         );
 
         chatWindow.setTitle(name)
-
         chatWindow.show()
         
     }
 
     stompConnection = () => {
+        console.log("chchchchch")
+        let client = StompClient.getConnection();
         let obj = {};
         client.onConnect = () => {
             subscribe(client, 'admin', this.state.uuid, (obj: any) => {
@@ -110,7 +105,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
             uuid: v4(),
             convos: [],
             len: 0,
-            client: client
+            client: {}
         })
 
     }
