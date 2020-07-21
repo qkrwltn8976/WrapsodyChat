@@ -8,7 +8,7 @@ import { createContext, useState } from "react";
 export function setUserInfo(username:string, password: string){
     console.log(username, password)
     userName = username
-    client = createClient(username, password)
+    // client = createClient(username, password)
 }
 
 export function getUserName(){
@@ -48,8 +48,8 @@ export function createClient(login: string, passcode: string) {
     return client;
 }
 
-export var client: Client
-
+// export var client: Client
+export const client = createClient('admin', '1111')
 export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
     let obj : any;
     client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {

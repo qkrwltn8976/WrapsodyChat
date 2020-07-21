@@ -1,10 +1,10 @@
 import { Component, Fragment } from 'react';
 import React from 'react';
-import { subscribe, publishApi, getUserName } from '@/renderer/libs/stomp';
+import { subscribe, publishApi, getUserName, client } from '@/renderer/libs/stomp';
 import { v4 } from "uuid"
 import { getConvoDate } from '@/renderer/libs/timestamp-converter';
 import {getDocType} from '@/renderer/libs/messengerLoader'
-// import { Client } from '@stomp/stompjs';
+import { Client } from '@stomp/stompjs';
 import { Conversation } from '@/renderer/models/Conversation';
 import { sortConvos } from '@/renderer/libs/sort';
 import StompClient from '@/renderer/libs/stompClient';
@@ -109,7 +109,8 @@ class Chat extends Component<ChatListProps, ChatListState> {
             uuid: v4(),
             convos: [],
             len: 0,
-            client: {}
+            // client: {}
+            client: client
         })
 
     }
