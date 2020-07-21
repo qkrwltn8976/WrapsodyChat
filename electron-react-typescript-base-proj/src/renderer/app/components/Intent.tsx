@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { BotIntent } from '@/renderer/models/BotIntent';
-import { publishApi, subscribe } from '@/renderer/libs/stomp';
+import { client, publishApi, subscribe } from '@/renderer/libs/stomp';
 import { v4 } from 'uuid';
-import StompClient from '@/renderer/libs/stompClient';
+// import StompClient from '@/renderer/libs/stompClient';
 
 interface IntentProps {
     intent: BotIntent
@@ -27,7 +27,7 @@ class Intent extends React.Component<IntentProps, IntentState>{
             this.setState({active:false})
         } else {
             this.setState({active:true});
-            StompClient.publishApi('api.bot.command.list', 'admin', this.state.uuid, { 'botUserId': e.botUserId, 'groupId': e.groupId });
+            publishApi(client, 'api.bot.command.list', 'admin', this.state.uuid, { 'botUserId': e.botUserId, 'groupId': e.groupId });
         }
         
         console.log({botUserId: e.botUserId, groupId: e.groupId})
@@ -45,9 +45,8 @@ class Intent extends React.Component<IntentProps, IntentState>{
 
 
     componentDidMount() {
-        let client = StompClient.getConnection();
         client.onConnect = () => {
-            StompClient.subscribe( 'admin', this.state.uuid, (obj:any) => {
+            subscribe(client, 'admin', this.state.uuid, (obj:any) => {
                 console.log(obj)
                 let payload = obj.payload;
                 if (payload) {
