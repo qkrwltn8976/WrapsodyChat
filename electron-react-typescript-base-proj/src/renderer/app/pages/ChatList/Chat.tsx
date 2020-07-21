@@ -1,21 +1,24 @@
-import { Component, Fragment } from 'react';
+import { Component, Fragment, useContext } from 'react';
 import React from 'react';
-import { subscribe, publishApi, getUserName, client } from '@/renderer/libs/stomp';
+import { subscribe, publishApi, createClient } from '@/renderer/libs/stomp';
 import { v4 } from "uuid"
 import { getConvoDate } from '@/renderer/libs/timestamp-converter';
 import {getDocType} from '@/renderer/libs/messengerLoader'
 import { Client } from '@stomp/stompjs';
 import { Conversation } from '@/renderer/models/Conversation';
 import { sortConvos } from '@/renderer/libs/sort';
-import StompClient from '@/renderer/libs/stompClient';
+;
 
 const {remote, webContents} = require('electron')
+const Store = require('electron-store')
+const store = new Store()
 const {BrowserWindow} = remote
 
 interface ChatListState {
     convos: Conversation[],
     len: number,
-    uuid: string;
+    uuid: string,
+    client: Client;
 }
 
 interface ChatListProps {
@@ -33,7 +36,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
         payload: [],
     };
     convoId: string = "";
-    uuid: string = "";
+    uuid: string = v4();
     chatBotImgPath = "http://ecm.dev.fasoo.com:9400/images/icon_bot_wrapsody.png"
 
 
@@ -67,11 +70,11 @@ class Chat extends Component<ChatListProps, ChatListState> {
     }
 
     stompConnection = () => {
-        console.log("chchchchch")
-        let client = StompClient.getConnection();
+        var client = createClient(store.get("username"), store.get("password") )
+        console.log(client)
         let obj = {};
         client.onConnect = () => {
-            subscribe(client, 'admin', this.state.uuid, (obj: any) => {
+            subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
                 let payload = obj.payload;
                 console.log(this._isMounted)
                 console.log(payload)
@@ -92,13 +95,13 @@ class Chat extends Component<ChatListProps, ChatListState> {
                         const index = this.state.convos.findIndex(convo => convo.convoId === obj.recvConvoId),
                             convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call
                             convos[index].latestMessage = obj.body;
-                            if(obj.sendUserId!=='admin'){convos[index].unread += 1;}
+                            if(obj.sendUserId!==store.get("username")){convos[index].unread += 1;}
                             convos[index].latestMessageAt = obj.updatedAt;
                             this.setState({ convos:sortConvos(convos) });
                     }
                 }
             });
-            publishApi(client, 'api.conversation.list', 'admin', this.state.uuid, {});
+            publishApi(client, 'api.conversation.list', store.get("username"), this.state.uuid, {});
         }
         client.activate();
     }
@@ -134,7 +137,6 @@ class Chat extends Component<ChatListProps, ChatListState> {
 
     
     render() {
-        console.log(window.location.href)
         let convos = this.state.convos
         if (convos != undefined) {
 

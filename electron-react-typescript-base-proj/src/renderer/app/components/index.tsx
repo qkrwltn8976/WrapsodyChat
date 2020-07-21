@@ -4,8 +4,7 @@ export { default as InfoHeader } from './InfoHeader';
 export { default as Member } from './Member';
 export { default as MemberList } from './MemberList';
 export { default as MsgInput } from './MsgInput';
-export { default as QuestonList } from './QuestionList';
+export { default as IntentList } from './IntentList';
 export { default as SearchBar } from './SearchBar';
 export { default as MsgList } from './MsgList';
-
-
+export { default as Intent } from './Intent';

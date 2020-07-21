@@ -1,26 +1,27 @@
-import React, { Fragment, useState } from 'react'
-import  { client, setUserInfo} from '@/renderer/libs/stomp'
-import * as Stomp from '@/renderer/libs/stompClient';
-import { Redirect } from 'react-router'
-import { Header } from '../../components'
+import React, { Fragment, useState, createContext, useContext } from 'react'
+import { createClient } from '@/renderer/libs/stomp'
+
 const remote = require('electron').remote
 
-function handleClick (userinfo: any){
-    // setUserInfo(userinfo.username, userinfo.password)
-    let stomp = new Stomp.StompClient(userinfo.username, userinfo.password);
-    console.log(Stomp)
-    setTimeout(() => { 
-        if(Stomp.StompClient){
-            console.log("yeyeyeye")
-            var win = remote.getCurrentWindow()
-            win.loadURL(__dirname+"/index.html#/chatlist/")
-            win.show()
-        }
-        else 
-            console.log("nononono")
-     }, 5000)
+//electron-store 라이브러리 사용하여 id / pw 저장
+const Store = require('electron-store')
+const store = new Store()
+
+async function handleClick (userinfo: any){
+
+    const client = createClient(userinfo.username, userinfo.password)
+    store.set("username", userinfo.username)
+    store.set("password", userinfo.password)
+    
+
+    if(client.connected){
+        console.log("yess")
+        var win  = remote.getCurrentWindow()
+         win.loadURL(__dirname+"/index.html#/chatlist/")
+    }
 
     
+
 }
 
 function Login(){
@@ -36,11 +37,10 @@ function Login(){
             />
 
         <div>
-            <button className="login_btn" name ="Login" value="Login" onClick = {(e) =>handleClick(userinfo)}/>
+            <button className="wrapmsgr_button" name ="Login" value="Login" onClick = {(e) =>handleClick(userinfo)}/>
         </div>
 
         </Fragment>
-        
     )
 }
 
