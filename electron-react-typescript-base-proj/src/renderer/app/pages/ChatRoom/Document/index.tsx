@@ -4,10 +4,12 @@ import { HeaderType, MemberListType, RoomType, InfoHeaderType } from '../../../.
 import { Message } from '../../../../models/Message';
 import { Member } from '../../../../models/Member';
 import { Conversation } from '../../../../models/Conversation';
+import { Bot } from '@/renderer/models/Bot'
+import { BotIntent } from '@/renderer/models/BotIntent';
 import { client, subscribe, publishApi, publishChat } from '../../../../libs/stomp';
 import { v4 } from "uuid"
 import * as type from '@/renderer/libs/enum-type';
-import QuestionList from '@/renderer/app/components/QuestionList';
+import IntentList from '@/renderer/app/components/IntentList';
 
 interface RoomProps {
     match: any,
@@ -18,6 +20,8 @@ interface RoomState {
     msgs: Message[];
     members: Member[];
     convo: Conversation;
+    bot?: Bot,
+    botIntent?: BotIntent[]
 }
 
 class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
@@ -55,7 +59,6 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
 
     componentDidMount() {
         client.onConnect = () => {
-            console.log('connectjaskdfjaslkdjfskljfklds')
             subscribe(client, 'admin', this.state.uuid, (obj: any) => {
                 let payload = obj.payload;
                 if (payload) {
@@ -64,15 +67,6 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                         this.setState({
                             msgs: payload.Messages
                         });
-
-                        // let unread:number = 0;
-                        // payload.Messages.map((msg: Message) => {
-                        //     if(msg.messageType < 240) {
-                        //         if(msg.sendUserId !== 'admin')
-                        //             unread++;
-                        //     }
-                        // })
-                        // console.log('안읽은 메세지' + unread)
                     }
 
                     if (payload.Members) {
@@ -80,21 +74,25 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                             members: payload.Members
                         })
                     }
+
                     if (payload.Conversation) {
                         this.setState({
                             convo: payload.Conversation
                         })
-                        // if(this.state.convo.latestMessageAt != undefined && (this.state.convo.latestMessageAt > payload.Conversation.latestMessageAt ) || payload.Conversation.latestMessageAt == undefined) {
-                        //     if (!payload.MessageId) {
-                        //         console.log('메세지리스트 호출')
-                        //         let afterAt = this.state.msgs.length > 0 ? this.state.msgs[this.state.msgs.length-1].createdAt : 0;
-                        //         // publishApi(client, 'api.message.list', 'admin', this.props.uuid, { 'convoId': this.props.convoId, "direction": "forward", "afterAt": afterAt, "beforeAt": this.state.convo.latestMessageAt });
-                        //     }
-                        // } else {
-                        //     console.log('설정')
+                    }
 
-                        // }
+                    // console.log(payload.Bot)
+                    // console.log(payload.BotIntentGroup)
+                    if (payload.Bot) {
+                        this.setState({
+                            bot: payload.Bot
+                        })
+                    }
 
+                    if (payload.BotIntentGroup) {
+                        this.setState({
+                            botIntent: payload.BotIntentGroup
+                        })
                     }
 
                 } else {
@@ -122,36 +120,23 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
 
     }
 
-    getAside(convoType: number) {
-        if (convoType === type.ConvoType.BOT) {
-            return (
-                <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
-                    <QuestionList />
-                </div>
-            )
-        }
-        if (convoType === type.ConvoType.DOC) {
-            return (
-                <React.Fragment>
-                    <InfoHeader convoType={this.state.convo.convoType} docName={this.state.convo.name} memberCount={this.state.convo.memberCount} />
-                    <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
-                        <SearchBar /><MemberList convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} members={this.state.members} />
-                    </div></React.Fragment>
-            )
-
-        }
-    }
-
     render() {
         let sendMsg = this.sendMsg;
         let aside, viewModeClass;
         if (this.state.convo.convoType === type.ConvoType.BOT) {
             viewModeClass = 'wrapmsgr_chatbot'
+            aside = <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
+                <IntentList bot={this.state.bot} botIntent={this.state.botIntent} convoId={this.state.convo.convoId} notificationType={this.state.convo.notificationType}/>
+            </div>
         }
         else {
             viewModeClass = 'doc-chatroom'
+            aside = <React.Fragment>
+                <InfoHeader convoType={this.state.convo.convoType} docName={this.state.convo.name} memberCount={this.state.convo.memberCount} />
+                <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
+                    <SearchBar /><MemberList convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} members={this.state.members} />
+                </div></React.Fragment>
         }
-        aside = this.getAside(this.state.convo.convoType)
 
         return (
             <React.Fragment>

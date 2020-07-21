@@ -4,6 +4,8 @@
 .group:after{ clear: both;}
 .group{zoom: 1;}
 
+.hidden { display:none; }
+
 .white-bg{
 	background: #fff;
 	height: 100%;

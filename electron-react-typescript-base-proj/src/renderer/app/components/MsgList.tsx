@@ -3,6 +3,7 @@ import { getTime, getDate } from '../../libs/timestamp-converter';
 import { Message } from '../../models/Message';
 import { Conversation } from '../../models/Conversation';
 import { getShortName } from '../../libs/messengerLoader';
+import { Attachment } from '@/renderer/models/Attachment';
 
 interface MsgProps {
     msgs: Message[];
@@ -22,7 +23,6 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     private scrollView = React.createRef<HTMLDivElement>();
 
     isReadAt(before: number, after: number) {
-        console.log(this.state.unreadExists)
         return this.state.convo && this.state.unreadExists && this.state.convo.readAt >= before && this.state.convo.readAt < after;
     }
 
@@ -72,10 +72,25 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         )
     }
 
+    getAttachments(attach: Attachment[]) {
+        console.log(attach)
+        return (
+            <React.Fragment>
+                <div className="wrapmsgr_msg_body ng-binding" ng-bind-html="message.body | linky:'_blank'"></div>
+
+                <div className="wrapmsgr_msg_attachment ng-scope" ng-repeat="attachment in message.attachments">
+                    <div className="wrapmsgr_msg_title ng-binding">{attach[0].title}</div>
+                    <img ng-attr-src="{{ 'http://ecm.dev.fasoo.com:9400' + attachment.uri }}" ng-if="attachment.attachmentType == 1" fullscreen-view="" img-load="onAttachmentLoaded()" className="ng-scope fullscreen-view-element" src={"http://ecm.dev.fasoo.com:9400" + attach[0].uri} />
+                </div>
+            </React.Fragment>
+        )
+    }
     getUserMsg(msg: Message, index: number) {
         let time;
         let profile;
-        if (!this.isContinuous(this.state.msgs[index-1], msg)) {
+        let msgbubble;
+
+        if (!this.isContinuous(this.state.msgs[index - 1], msg)) {
             profile = <React.Fragment><div className="wrapmsgr_msg_user ng-isolate-scope" ng-attr-title="{{users[message.sendUserId].userName}}" wrapmsgr-user-profile="users[message.sendUserId]" user-profile-disabled="message.sendUserId.substr(0, 5) == '@BOT@'" title="administrator">
                 <span className="user-photo ng-binding ng-isolate-scope no-photo cyan">{getShortName(msg.sendUserId)}</span>
             </div>
@@ -88,13 +103,18 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
             </div>;
         }
 
-        // {'continuous': isContinuous(current.messages[$index-1], message)}
+        if (msg.attachments.length != 0) {
+            msgbubble = this.getAttachments(msg.attachments);
+        } else {
+            msgbubble =
+                <div className="wrapmsgr_msg_body ng-binding" ng-bind-html="message.body | linky:'_blank'">{msg.body}</div>;
+        }
         return (
             <div className="wrapmsgr_msg ng-scope" ng-if="message.messageType < MESSAGE_TYPE_SYSTEM" ng-className="{'continuous': isContinuous(current.messages[$index-1], message)}">
                 {profile}
                 <div className="wrapmsgr_msg_bubble-wrap">
                     <div className="wrapmsgr_msg_bubble">
-                        <div className="wrapmsgr_msg_body ng-binding" ng-bind-html="message.body | linky:'_blank'">{msg.body}</div>
+                        {msgbubble}
                     </div>
                     {time}
                 </div>
@@ -108,8 +128,10 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
         if (msg.sendUserId === "@SYS@")
             msgbubble = this.getSystemMsg(msg.body);
-        else
+        else {
             msgbubble = this.getUserMsg(msg, index);
+        }
+
 
 
         let prev = this.state.msgs[index - 1];
@@ -126,9 +148,6 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         else
             readUntil = '';
         msgbody = <React.Fragment>{readUntil}{msgbubble}</React.Fragment>;
-
-        console.log(readAt)
-
 
         if (diff >= 1) {
             let dateprops = this.getMsgDate(msg.createdAt);
@@ -186,7 +205,6 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     }
 
     componentDidMount() {
-        console.log(this.state.msgs);
         this.setState({ msgs: this.props.msgs });
         this.messagesScrollToLatestMessage();
     }
