@@ -1,8 +1,8 @@
 import { Stomp } from "@stomp/stompjs";
 import { Client, IMessage } from "@stomp/stompjs";
 import { v4 } from "uuid";
-import { createContext, useState } from "react";
-import React from "react";
+const Store = require('electron-store')
+const store = new Store()
 
 export function createClient(login: string, passcode: string) {
     console.log(login)
@@ -36,6 +36,7 @@ export function createClient(login: string, passcode: string) {
     client.activate();
     return client;
 }
+export var client = createClient(store.get("username"), store.get("password"))
 
 export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
     let obj : any;

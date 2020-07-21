@@ -2,6 +2,8 @@ import React, { Fragment, useState, createContext, useContext } from 'react'
 import { createClient } from '@/renderer/libs/stomp'
 
 const remote = require('electron').remote
+
+//electron-store 라이브러리 사용하여 id / pw 저장
 const Store = require('electron-store')
 const store = new Store()
 
