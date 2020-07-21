@@ -112,8 +112,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
             uuid: v4(),
             convos: [],
             len: 0,
-            // client: {}
-            client: client
+            client: {}
         })
 
     }

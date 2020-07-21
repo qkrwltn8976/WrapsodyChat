@@ -14,10 +14,9 @@ export function App(){
             <HashRouter >
             <Switch>
                 <Route exact path="/document/:convo" component = {DocumentChatRoom} />
-                {/* <Route path="/chatlist" component = {ChatList} /> */}
-                <Route exact path="/" component = {ChatList} />
-                {/* <Route path="/" component = {Login}/> */}
-                {/* <Route render={() => <Redirect to="/"/>}/> */}
+                <Route path="/chatlist" component = {ChatList} />
+                <Route exact path="/" component = {Login}/> 
+                <Route render={() => <Redirect to="/"/> }/>
                 <Route exact path="/invite/:convo" component = {CreateChatRoom} />
             </Switch>
             </HashRouter>            
