@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { ConvoType, InfoHeaderType} from "../../libs/enum-type"
 import { getDocType } from '../../libs/messengerLoader'
 
+
 interface Props{ 
     convoType: number,
     // infoheaderType: string;
@@ -10,14 +11,63 @@ interface Props{
     docName: string;
 }
 
-class InfoHeader extends React.Component<Props>{
+interface ShowState{
+    isShow: boolean;
+    wrapmsgr_dropdown_menu:string;
+    ngScope: string;
+    iconPlus: string;
+    leaveClass: string;
+    iconLogOut: string;
+    invite: string;
+    leave: string;
+}
+
+class InfoHeader extends React.Component<Props, ShowState>{
     client: any;
     payload: any;
     convoId: string = "98f7e404-f6b7-4513-84b4-31aa1647bc6d";
     constructor(props: Props){
         super(props);
+        this.state = {
+            isShow: false,
+            wrapmsgr_dropdown_menu: "",
+            ngScope: "",
+            iconPlus: "",
+            leaveClass: "",
+            iconLogOut: "",
+            invite: "",
+            leave: "",
+        };
     }
-
+    
+    showClick = (e) => {
+        e.preventDefault();
+        if(this.state.isShow == false){
+            this.setState({
+                isShow : true,
+                wrapmsgr_dropdown_menu: "wrapmsgr_dropdown_menu",
+                ngScope: "ng-scope",
+                iconPlus: "icon_plus",
+                leaveClass: "ng-scope ng-enter-prepare",
+                iconLogOut: "icon_log_out",
+                leave: "Leave",
+                invite:"Invite",
+            })
+        }
+        else{
+            this.setState({
+                isShow: false,
+                wrapmsgr_dropdown_menu: "",
+                ngScope: "",
+                iconPlus: "",
+                leaveClass: "",
+                iconLogOut: "",
+                leave: "",
+                invite: "",
+          })
+        }
+    }
+   
     render(){
         const {convoType} = this.props;
         if( convoType === ConvoType.DOC){
@@ -46,14 +96,14 @@ class InfoHeader extends React.Component<Props>{
                         <a href="" ><i className="icon_download" title="다운로드"></i></a>
                         <a href=""><i className="icon_bell"></i></a>
                         <div className="ng-isolate-scope">
-                            <a href=""><i className="icon_ellipsis_h" title="더 보기"></i></a>
-                            <div className="wrapmsgr_dropdown_menu">
-                                {/* <div title="대화 상대 초대" className="ng-scope" >
-                                    <i className="icon_plus"></i>
-                                </div> */}
-                                {/* <div title="나가기" className="ng-scope ng-enter-prepare">
-                                    <i className="icon_log_out"></i>나가기
-                                </div> */}
+                            <a href=""><i className="icon_ellipsis_h" title="더 보기" onClick = {this.showClick}></i></a>
+                             <div className={this.state.wrapmsgr_dropdown_menu} style={{position: "absolute"}}>
+                                <div title="대화 상대 초대" className={this.state.ngScope} >
+                                    <i className={this.state.iconPlus}></i>{this.state.invite} 
+                                </div>
+                                <div title="나가기" className={this.state.leaveClass}>
+                                    <i className={this.state.iconLogOut}></i>{this.state.leave}
+                                </div>
                             </div>
                         </div>
                     </div>
