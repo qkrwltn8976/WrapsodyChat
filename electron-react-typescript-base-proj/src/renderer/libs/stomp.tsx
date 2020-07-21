@@ -2,18 +2,7 @@ import { Stomp } from "@stomp/stompjs";
 import { Client, IMessage } from "@stomp/stompjs";
 import { v4 } from "uuid";
 import { createContext, useState } from "react";
-
- var userName = ""
-
-export function setUserInfo(username:string, password: string){
-    console.log(username, password)
-    userName = username
-    client = createClient(username, password)
-}
-
-export function getUserName(){
-    return userName
-}
+import React from "react";
 
 export function createClient(login: string, passcode: string) {
     console.log(login)
@@ -38,7 +27,7 @@ export function createClient(login: string, passcode: string) {
 
     client.onConnect = () => {
         console.log("connected to Stomp");
-        subscribe(client, 'admin', v4(), (obj: any) => {
+        subscribe(client, login, v4(), (obj: any) => {
             let payload = obj.payload;
             console.log(payload);
         });
@@ -47,7 +36,7 @@ export function createClient(login: string, passcode: string) {
     client.activate();
     return client;
 }
-
+export const ccc= React.createContext(null)
 export var client: Client
 
 export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
@@ -73,7 +62,7 @@ export function publishApi(client: Client, api: string, userId: string, uuid: st
         body: JSON.stringify({
             senderId: userId, locale: "ko-KR", payload,
         }),
-        headers: { "reply-to": `user-admin-${uuid}`, "content-type": "application/json", "correlation_id ": api }
+        headers: { "reply-to": "user-"+userId+"-"+uuid, "content-type": "application/json", "correlation_id ": api }
     });
 }
 
