@@ -36,8 +36,6 @@ export function createClient(login: string, passcode: string) {
     client.activate();
     return client;
 }
-export const ccc= React.createContext(null)
-export var client: Client
 
 export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
     let obj : any;
