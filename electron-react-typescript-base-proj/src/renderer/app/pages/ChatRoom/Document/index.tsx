@@ -6,10 +6,11 @@ import { Member } from '../../../../models/Member';
 import { Conversation } from '../../../../models/Conversation';
 import { Bot } from '@/renderer/models/Bot'
 import { BotIntent } from '@/renderer/models/BotIntent';
-import { client, subscribe, publishApi, publishChat } from '../../../../libs/stomp';
+import { subscribe, publishApi, publishChat } from '../../../../libs/stomp';
 import { v4 } from "uuid"
 import * as type from '@/renderer/libs/enum-type';
 import IntentList from '@/renderer/app/components/IntentList';
+import StompClient from '@/renderer/libs/stompClient';
 
 interface RoomProps {
     match: any,
@@ -21,14 +22,15 @@ interface RoomState {
     members: Member[];
     convo: Conversation;
     bot?: Bot,
-    botIntent?: BotIntent[]
+    botIntent?: BotIntent[],
+    client,
 }
 
 class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
     sendMsg(msg: Message) {
         console.log(msg);
         console.log('=============')
-        publishChat(client, 'chat.short.convo', this.state.uuid, msg);
+        publishChat(this.state.client, 'chat.short.convo', this.state.uuid, msg);
     }
 
     constructor(props: RoomProps, state: {}) {
@@ -52,12 +54,14 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                 latestMessageAt: 0, // 마지막 메시지 시간
                 createdAt: 0, // 대화 생성 일시
                 updatedAt: 0, // 대화 수정 일시}
-            }
+            },
+            client: {}
         })
 
     }
 
     componentDidMount() {
+        let client = StompClient.getConnection();
         client.onConnect = () => {
             subscribe(client, 'admin', this.state.uuid, (obj: any) => {
                 let payload = obj.payload;
@@ -117,6 +121,7 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
             // publishApi(this.state.client, 'api.user.info', 'admin', this.props.uuid, {});
             publishApi(client, 'api.conversation.view', 'admin', this.state.uuid, { 'convoId': this.state.convo.convoId });
         }
+        this.setState({client})
 
     }
 

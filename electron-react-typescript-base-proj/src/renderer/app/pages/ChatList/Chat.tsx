@@ -8,6 +8,7 @@ import {getDocType} from '@/renderer/libs/messengerLoader'
 import { Conversation } from '@/renderer/models/Conversation';
 import { sortConvos } from '@/renderer/libs/sort';
 import StompClient from '@/renderer/libs/stompClient';
+import * as Stomp from '@/renderer/libs/stompClient';
 
 const {remote, webContents} = require('electron')
 const {BrowserWindow} = remote
@@ -67,7 +68,6 @@ class Chat extends Component<ChatListProps, ChatListState> {
     }
 
     stompConnection = () => {
-        console.log("chchchchch")
         let client = StompClient.getConnection();
         let obj = {};
         client.onConnect = () => {
@@ -134,6 +134,8 @@ class Chat extends Component<ChatListProps, ChatListState> {
     
     render() {
         console.log(window.location.href)
+
+        
         let convos = this.state.convos
         if (convos != undefined) {
 
