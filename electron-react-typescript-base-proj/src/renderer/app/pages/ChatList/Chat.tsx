@@ -1,6 +1,6 @@
 import { Component, Fragment, useContext } from 'react';
 import React from 'react';
-import { subscribe, publishApi, createClient } from '@/renderer/libs/stomp';
+import { client, subscribe, publishApi, createClient } from '@/renderer/libs/stomp';
 import { v4 } from "uuid"
 import { getConvoDate } from '@/renderer/libs/timestamp-converter';
 import {getDocType} from '@/renderer/libs/messengerLoader'
@@ -18,7 +18,6 @@ interface ChatListState {
     convos: Conversation[],
     len: number,
     uuid: string,
-    client: Client;
 }
 
 interface ChatListProps {
@@ -70,8 +69,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
     }
 
     stompConnection = () => {
-        var client = createClient(store.get("username"), store.get("password") )
-        console.log(client)
+    
         let obj = {};
         client.onConnect = () => {
             subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
@@ -111,8 +109,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
         this.state = ({
             uuid: v4(),
             convos: [],
-            len: 0,
-            client: {}
+            len: 0
         })
 
     }
@@ -136,16 +133,17 @@ class Chat extends Component<ChatListProps, ChatListState> {
 
     
     render() {
-        let convos = this.state.convos
+        let convos = this.state.convos;
+        
         if (convos != undefined) {
-
+            console.log(convos)
             return (
                 <Fragment>
                     {convos.map((item: any) =>
                     <Fragment>
                         {/* <Link to = {"/document/"+item.convoId}> */}
                         {/* 검색 활성화 */}
-                        {this.props.search === null || item.name.toLowerCase().includes(this.props.search.toLowerCase())?
+                        { item || this.props.search === null || item.name.toLowerCase().includes(this.props.search.toLowerCase())?
                         <li onClick={this.getConvo(item.convoId, item.name)} className="ng-scope">
                         {/* /챗봇, 문서채팅방의 아이콘 표시/ */}
                         {item.convoType ===2? 
