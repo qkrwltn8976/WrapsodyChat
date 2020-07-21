@@ -47,7 +47,3 @@ export enum SearchType{
     ROOM = "room",
     USER = "user"
 }
-
-
-
-
