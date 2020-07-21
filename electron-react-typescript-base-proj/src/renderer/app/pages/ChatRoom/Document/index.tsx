@@ -6,10 +6,11 @@ import { Member } from '../../../../models/Member';
 import { Conversation } from '../../../../models/Conversation';
 import { Bot } from '@/renderer/models/Bot'
 import { BotIntent } from '@/renderer/models/BotIntent';
-import { client, subscribe, publishApi, publishChat } from '../../../../libs/stomp';
+import { subscribe, publishApi, publishChat } from '../../../../libs/stomp';
 import { v4 } from "uuid"
 import * as type from '@/renderer/libs/enum-type';
 import IntentList from '@/renderer/app/components/IntentList';
+import StompClient from '@/renderer/libs/stompClient';
 
 interface RoomProps {
     match: any,
@@ -60,6 +61,7 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
     }
 
     componentDidMount() {
+        let client = StompClient.getConnection();
         client.onConnect = () => {
             subscribe(client, 'admin', this.state.uuid, (obj: any) => {
                 let payload = obj.payload;
