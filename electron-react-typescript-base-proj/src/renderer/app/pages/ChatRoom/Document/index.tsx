@@ -6,11 +6,13 @@ import { Member } from '../../../../models/Member';
 import { Conversation } from '../../../../models/Conversation';
 import { Bot } from '@/renderer/models/Bot'
 import { BotIntent } from '@/renderer/models/BotIntent';
-import { subscribe, publishApi, publishChat } from '../../../../libs/stomp';
+import { subscribe, publishApi, publishChat, createClient } from '../../../../libs/stomp';
 import { v4 } from "uuid"
 import * as type from '@/renderer/libs/enum-type';
 import IntentList from '@/renderer/app/components/IntentList';
-import StompClient from '@/renderer/libs/stompClient';
+
+const Store = require('electron-store')
+const store = new Store()
 
 interface RoomProps {
     match: any,
@@ -61,7 +63,7 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
     }
 
     componentDidMount() {
-        let client = StompClient.getConnection();
+        let client = createClient(store.get("username"), store.get("password"))
         client.onConnect = () => {
             subscribe(client, 'admin', this.state.uuid, (obj: any) => {
                 let payload = obj.payload;

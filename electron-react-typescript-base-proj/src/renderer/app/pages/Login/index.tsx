@@ -1,8 +1,9 @@
 import React, { Fragment, useState, createContext, useContext } from 'react'
-import { createClient, ccc } from '@/renderer/libs/stomp'
-import { Client } from '@stomp/stompjs'
+import { createClient } from '@/renderer/libs/stomp'
 
 const remote = require('electron').remote
+
+//electron-store 라이브러리 사용하여 id / pw 저장
 const Store = require('electron-store')
 const store = new Store()
 
@@ -13,17 +14,10 @@ async function handleClick (userinfo: any){
     store.set("password", userinfo.password)
     
 
-    if(client){
+    if(client.connected){
         console.log("yess")
         var win  = remote.getCurrentWindow()
          win.loadURL(__dirname+"/index.html#/chatlist/")
-        return(
-            <Fragment>
-                <ccc.Provider value = {client}>
-                </ccc.Provider>
-            </Fragment>
-            
-        )
     }
 
     
