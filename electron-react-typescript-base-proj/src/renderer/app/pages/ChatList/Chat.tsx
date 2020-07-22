@@ -7,7 +7,7 @@ import {getDocType} from '@/renderer/libs/messengerLoader'
 import { Client } from '@stomp/stompjs';
 import { Conversation } from '@/renderer/models/Conversation';
 import { sortConvos } from '@/renderer/libs/sort';
-;
+import { sendNotification } from '@/renderer/libs/notification';
 
 const {remote, webContents} = require('electron')
 const Store = require('electron-store')
@@ -87,8 +87,20 @@ class Chat extends Component<ChatListProps, ChatListState> {
                         )
 
                     }
+                    else if(payload.type!=undefined){
+                        const index = this.state.convos.findIndex(convo => convo.convoId === payload.convoId)
+                        this.setState(state => {
+                            state.convos[index].notificationType = payload.type
+
+                            return{
+                                
+                            }
+                        })
+                    }
                 } else {
-                    if (obj.body) {
+                    if (obj.body || obj.messageId) {
+                        if(obj.sendUserId !==  store.get("username"))
+                            sendNotification('새로운 메세지가 도착했습니다',obj.sendUserId, obj.body||obj.messageId);
                         console.log(obj)
                         const index = this.state.convos.findIndex(convo => convo.convoId === obj.recvConvoId),
                             convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call
@@ -97,6 +109,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
                             convos[index].latestMessageAt = obj.updatedAt;
                             this.setState({ convos:sortConvos(convos) });
                     }
+                    
                 }
             });
             publishApi(client, 'api.conversation.list', store.get("username"), this.state.uuid, {});
@@ -131,19 +144,28 @@ class Chat extends Component<ChatListProps, ChatListState> {
         return false;
     }
 
+    getBellIcon(state: any){
+        if(state===0){
+            return "icon_bell_off";
+        }
+            
+        else {
+            return "";
+        } 
+    }
+
     
     render() {
         let convos = this.state.convos;
         
         if (convos != undefined) {
-            console.log(convos)
             return (
                 <Fragment>
                     {convos.map((item: any) =>
                     <Fragment>
                         {/* <Link to = {"/document/"+item.convoId}> */}
                         {/* 검색 활성화 */}
-                        { item && this.props.search === null || item.name.toLowerCase().includes(this.props.search.toLowerCase())?
+                        { item.name && (this.props.search === null || item.name.toLowerCase().includes(this.props.search.toLowerCase()))?
                         <li onClick={this.getConvo(item.convoId, item.name)} className="ng-scope">
                         {/* /챗봇, 문서채팅방의 아이콘 표시/ */}
                         {item.convoType ===2? 
@@ -157,7 +179,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
                         <div className="title_h5" id="title_5">
                             <span className="chatroom-name">{item.name}</span>
                             <span className="chatroom-user-cnt">{item.memberCount}</span>
-                            <i></i>
+                            <i className = {this.getBellIcon(item.notificationType)}></i>
                             <span className="chatroom-message-contents">{item.latestMessage}</span>
                         </div>
                         <div className="wrapmsgr_right">

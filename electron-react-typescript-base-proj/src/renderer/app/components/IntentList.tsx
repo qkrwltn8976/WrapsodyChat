@@ -7,7 +7,8 @@ interface IntentProps {
     bot: Bot,
     botIntent: BotIntent[],
     convoId: string,
-    notificationType: number
+    notificationType: number,
+    sendMsg: any
 }
 
 interface IntentState {
@@ -20,24 +21,10 @@ interface toggleState {
 }
 class IntentList extends React.Component<IntentProps, IntentState> {
 
-    toggleNotification = (e: BotIntent) => {
-
-        // this.addC
-        // $scope.current.convo.notificationType = Math.abs($scope.current.convo.notificationType - 1);
-        // $scope.sendApi("api.conversation.notification", {convoId: $scope.current.convo.convoId, type: $scope.current.convo.notificationType});
-
-
-        // publishApi(client, 'api.conversation.notification', 'admin', this.state.uuid, { convoId: this.props.convoId, notificationType: this.props.notificationType });
-    }
-
-
     constructor(props: IntentProps) {
         super(props);
 
     }
-
-
-
 
     render() {
         this.state = {
@@ -57,7 +44,7 @@ class IntentList extends React.Component<IntentProps, IntentState> {
 
                         {this.state.botIntent.map((intent: any) => {
                             return (
-                                <Intent intent={intent} convoId={this.props.convoId}/>
+                                <Intent intent={intent} convoId={this.props.convoId} sendMsg={this.props.sendMsg}/>
                             )
                         })}
 

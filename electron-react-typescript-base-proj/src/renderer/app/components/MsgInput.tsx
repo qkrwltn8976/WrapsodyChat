@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { createClient, publishChat, subscribe } from '../../libs/stomp';
-import { Client } from '@stomp/stompjs';
 import { Message } from '../../models/Message';
 const Store = require('electron-store')
 const store = new Store()
@@ -55,7 +53,7 @@ class MsgInput extends React.Component<MsgInputProps, MsgInputState> {
             messageType: 0,
             attachments: []
         }
-        this.props.sendMsg(msg);
+        this.props.sendMsg(msg, 'chat.short.convo');
     }
 
     constructor(props: MsgInputProps) {

@@ -4,12 +4,15 @@ import { Message } from '../../models/Message';
 import { Conversation } from '../../models/Conversation';
 import { getShortName } from '../../libs/messengerLoader';
 import { Attachment } from '@/renderer/models/Attachment';
+import { Action } from '@/renderer/models/Action';
 import * as etype from '@/renderer/libs/enum-type';
+const Store = require('electron-store')
+const store = new Store()
 
 interface MsgProps {
     msgs: Message[];
     convo: Conversation;
-    // uuid: string;
+    sendMsg: any
 }
 
 interface MsgListState {
@@ -19,7 +22,7 @@ interface MsgListState {
 }
 
 class MsgList extends React.Component<MsgProps, MsgListState> {
-    userId: string = "admin"
+    userId: string = store.get("username")
     private scrollTarget = React.createRef<HTMLDivElement>();
     private scrollView = React.createRef<HTMLDivElement>();
 
@@ -67,38 +70,73 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         msgspan = <span className="ng-binding">{body}<a href="" className="wrapmsgr_right"></a></span>;
 
         return (
-            <div className="wrapmsgr_msg_system ng-scope" ng-className="{revision: message.messageType == MESSAGE_TYPE_SYSTEM_REVISION}" ng-if="message.messageType >= MESSAGE_TYPE_SYSTEM">
+            <div className="wrapmsgr_msg_system ng-scope" ng-if="message.messageType >= MESSAGE_TYPE_SYSTEM">
                 {msgspan}
             </div>
         )
     }
 
+    sendBotCommand = (command: string) => {
+        let msg: Message = {
+            id: '',
+            sendUserId: store.get("username"),
+            recvConvoId: this.state.convo.convoId,
+            body: command,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            messageType: 1
+        }
+
+        this.props.sendMsg(msg, 'chat.short.command.convo');
+    }
+
+    onAttachmentButton = (button: Action) => (e: any) => {
+        switch (button.action) {
+            case 'link':
+                window.open(button.value, '_blank');
+                break;
+            case 'command':
+                this.sendBotCommand(button.value);
+                break;
+            case 'api':
+                break;
+        }
+    }
+
     getAttachments(attach: Attachment[]) {
-        console.log(attach)
         if (attach[0].attachmentType === etype.Attachment.ACTION) {
+            console.log('&&&&&&&&&&&&'+attach[0].attachmentType)
             return (
                 <React.Fragment>
                     <div className="wrapmsgr_msg_body ng-binding" ng-bind-html="message.body | linky:'_blank'">Wrapsody에서 사용되는 용어입니다. 상세 설명을 보려면 용어를 클릭하세요.</div>
                     <div className="wrapmsgr_msg_attachment ng-scope" ng-repeat="attachment in message.attachments">
                         <div className="wrapmsgr_msg_title ng-binding"></div>
-                        <span ng-if="attachment.attachmentType == 5" ng-repeat="action in attachment.payload" className="ng-scope">
-                            <button type="button" ng-attr-title="{{ action.text || action.value }}" ng-if="action.type == 'button'" ng-click="onAttachmentButton(action)" className="ng-scope" title="리비전"><div className="ng-binding">리비전</div></button>
-                        </span>
+                        {attach[0].payload.map((action: Action) => {
+                            return (<span ng-if="attachment.attachmentType == 5" ng-repeat="action in attachment.payload" className="ng-scope">
+                                <button type="button" data-attr-title={action.value} ng-if="action.type == 'button'" onClick={this.onAttachmentButton(action)} className="ng-scope" title={action.value} ><div className="ng-binding">{action.value}</div></button>
+                            </span>)
+                        })}
+
                     </div></React.Fragment>
             )
         }
-
-        return (
-            <React.Fragment>
-                <div className="wrapmsgr_msg_body ng-binding" ng-bind-html="message.body | linky:'_blank'"></div>
-
-                <div className="wrapmsgr_msg_attachment ng-scope" ng-repeat="attachment in message.attachments">
-                    <div className="wrapmsgr_msg_title ng-binding">{attach[0].title}</div>
-                    <img ng-attr-src="{{ 'http://ecm.dev.fasoo.com:9400' + attachment.uri }}" ng-if="attachment.attachmentType == 1" fullscreen-view="" img-load="onAttachmentLoaded()" className="ng-scope fullscreen-view-element" src={"http://ecm.dev.fasoo.com:9400" + attach[0].uri} />
-                </div>
-            </React.Fragment>
-        )
+        if (attach[0].attachmentType === etype.Attachment.IMAGE) {
+            console.log('&&&&&&&&&&&&'+attach[0].attachmentType)
+            console.log('============'+attach[0].uri+'==============')
+            return (
+                <React.Fragment>
+                    <div className="wrapmsgr_msg_body ng-binding" ng-bind-html="message.body | linky:'_blank'"></div>
+                    {/* {attach[0].title?attach[0].title : ''} */}
+    
+                    <div className="wrapmsgr_msg_attachment ng-scope" ng-repeat="attachment in message.attachments">
+                        <div className="wrapmsgr_msg_title ng-binding">{attach[0].title}</div>
+                        <img ng-attr-src="{{ 'http://ecm.dev.fasoo.com:9400' + attachment.uri }}" fullscreen-view="" img-load="onAttachmentLoaded()" className="ng-scope fullscreen-view-element" src={"http://ecm.dev.fasoo.com:9400" + attach[0].uri} />
+                    </div>
+                </React.Fragment>
+            )
+        }
     }
+
     getUserMsg(msg: Message, index: number) {
         let time;
         let profile;
@@ -170,7 +208,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         }
 
 
-        if (msg.sendUserId === "admin") { // 나중에 자신의 sendUserId로 수정
+        if (msg.sendUserId === store.get("username")) { // 나중에 자신의 sendUserId로 수정
             return (
                 <li id={msg.id} ng-repeat="message in current.messages" className="li-right ng-scope">
                     {msgbody}
@@ -232,7 +270,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         console.log('unreadexist' + unreadExists)
         this.state = ({ msgs: this.props.msgs, convo: this.props.convo, unreadExists: (this.props.convo.unread > 0) });
         return (
-            <div className="wrapmsgr_content" ng-className="{'no-header': current.convo.convoType == 2}">
+            <div className="wrapmsgr_content">
                 <div className="wrapmsgr_messages" in-view-container="" ref={this.scrollView}>
                     <ul>
                         {this.state.msgs.map((msg: Message, index: number) =>
