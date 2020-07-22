@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component, Fragment } from 'react';
-import {ChatList, DocumentChatRoom, CreateChatRoom} from './app/pages'
+import {ChatList, DocumentChatRoom, CreateOrInvite} from './app/pages'
 import "@public/wrapmsgr.css"
 import "@public/wrapmsgr-components.css"
 import "@public/wrapmsgr-icons.css"
@@ -14,10 +14,10 @@ export function App(){
             <HashRouter >
             <Switch>
                 <Route exact path="/document/:convo" component = {DocumentChatRoom} />
-                <Route path="/chatlist" component = {ChatList} />
+                <Route exact path="/chatlist" component = {ChatList} />
                 <Route exact path="/" component = {Login}/> 
-                <Route render={() => <Redirect to="/"/> }/>
-                <Route exact path="/invite/:convo" component = {CreateChatRoom} />
+                {/* <Route render={() => <Redirect to="/"/> }/> */}
+                <Route exact path="/invite/:convo" component = {CreateOrInvite} />
             </Switch>
             </HashRouter>            
         </Fragment>
