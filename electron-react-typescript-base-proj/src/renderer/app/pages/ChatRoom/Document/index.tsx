@@ -102,7 +102,8 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                 } else {
                     console.log(obj);
                     if (obj.body || obj.messageId) { // 받은 메세지 처리
-                        sendNotification('새로운 메세지가 도착했습니다', obj.sendUserId, obj.body||obj.messageId);
+                        if(obj.sendUserId !==  store.get("username"))
+                            sendNotification('새로운 메세지가 도착했습니다', obj.sendUserId, obj.body||obj.messageId);
                         this.setState({
                             msgs: this.state.msgs.concat(obj)
                         });

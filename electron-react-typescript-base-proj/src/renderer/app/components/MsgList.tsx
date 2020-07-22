@@ -70,7 +70,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         msgspan = <span className="ng-binding">{body}<a href="" className="wrapmsgr_right"></a></span>;
 
         return (
-            <div className="wrapmsgr_msg_system ng-scope" ng-className="{revision: message.messageType == MESSAGE_TYPE_SYSTEM_REVISION}" ng-if="message.messageType >= MESSAGE_TYPE_SYSTEM">
+            <div className="wrapmsgr_msg_system ng-scope" ng-if="message.messageType >= MESSAGE_TYPE_SYSTEM">
                 {msgspan}
             </div>
         )
@@ -270,7 +270,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         console.log('unreadexist' + unreadExists)
         this.state = ({ msgs: this.props.msgs, convo: this.props.convo, unreadExists: (this.props.convo.unread > 0) });
         return (
-            <div className="wrapmsgr_content" ng-className="{'no-header': current.convo.convoType == 2}">
+            <div className="wrapmsgr_content">
                 <div className="wrapmsgr_messages" in-view-container="" ref={this.scrollView}>
                     <ul>
                         {this.state.msgs.map((msg: Message, index: number) =>
