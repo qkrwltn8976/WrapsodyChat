@@ -123,3 +123,32 @@ export default MemberList;
 
 
  {/* <TreeMenu hasSearch = {false} data = {this.props.treeData}/> */}
+
+
+
+
+//  $scope.checkAllMembers = function() {
+//     if (!$scope.docInfo || !$scope.docInfo.organ) {
+//         return false;
+//     }
+    
+//     var result = $scope.docInfo.organ.every(function(node) {
+//         return $scope.isInviteMembers(node, false) >= 0;
+//     });
+    
+//     $scope.organTreeOptions.disabled = $scope.docInfo.organ.every(function(node) {
+//         return node.disabled;
+//     });
+    
+//     return result;
+// };
+
+// $scope.toggleAllMembers = function($event) {
+    
+//     if ($event.currentTarget.checked) {
+//         addChildrenToInviteMembers($scope.docInfo.organ);
+//     } else {
+//         $scope.removeAllInviteMembers();
+//     }
+    
+// };
