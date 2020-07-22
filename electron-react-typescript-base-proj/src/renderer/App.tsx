@@ -4,6 +4,7 @@ import {ChatList, DocumentChatRoom, Invite} from './app/pages'
 import "@public/wrapmsgr.css"
 import "@public/wrapmsgr-components.css"
 import "@public/wrapmsgr-icons.css"
+import "@public/login.css"
 import {Route, HashRouter, Switch, BrowserRouter, Redirect} from 'react-router-dom'
 import Login from './app/pages/Login';
 

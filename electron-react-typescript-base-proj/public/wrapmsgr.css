@@ -1,8 +1,5 @@
 @CHARSET "UTF-8";
 
-.login_btn{
-	
-}
 
 .group:before, .group:after{ content: ""; display: table;}
 .group:after{ clear: both;}
@@ -105,7 +102,7 @@ div.wrapmsgr_container * {
 
 .wrapmsgr_container .wrapmsgr_chat_list {
 	position: fixed;
-	width: 99%;
+	width: 100%;
 	height: calc(100%);
 	min-height: 180px;
 	max-height: 760px;
@@ -200,6 +197,7 @@ div.wrapmsgr_container * {
 	height: 50px;
     line-height: 52px;
 	border-bottom: 1px solid #edeff3;
+	-webkit-app-region: drag;
 }
 
 .wrapmsgr_container .wrapmsgr_header {
@@ -1155,6 +1153,7 @@ div.wrapmsgr_container * {
 	line-height: 50px;
 	border-radius: 5px 5px 0 0;
 	position: relative;
+	-webkit-app-region: drag;
 }
 .wrapmsgr_container .wrapmsgr_popup_header .title_h2 {
 	font-size: 16px;
