@@ -56,10 +56,11 @@ class Header extends React.Component<Props>{
                     <h2 className = "title_h2">
                         <span>{headerType}</span>
                     </h2>
-                    <a href ="">
-                        <i className = "icon_times" onClick={this.closeWindow}>
-                        </i>
-                    </a>
+                    <div className = "wrapmsgr-header-icon-wrap">
+                        <a href ="">
+                            <i className = "icon_times" title = "Close" onClick={this.closeWindow}></i>
+                        </a>
+                    </div>    
                 </div>
             );    
         }

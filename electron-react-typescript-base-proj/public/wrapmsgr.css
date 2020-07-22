@@ -222,10 +222,18 @@ div.wrapmsgr_container * {
 	top: 0px;
 	-webkit-app-region: no-drag;
 }
+.wrapmsgr_container .wrapmsgr_popup_header .wrapmsgr-header-icon-wrap{
+	position: absolute;
+	right: 24px;
+	top: 0px;
+	-webkit-app-region: no-drag;
+}
 
 .wrapmsgr_container .wrapmsgr_header .wrapmsgr-header-icon-wrap>a{margin-left: 10px;}
 
 .wrapmsgr_container .wrapmsgr_title_header .wrapmsgr-header-icon-wrap>a{margin-left: 10px;}
+
+.wrapmsgr_container .wrapmsgr_popup_header .wrapmsgr-header-icon-wrap>a{margin-left: 10px;}
 
 .wrapmsgr_container .wrapmsgr_titlebar_button {
 	width: 24px;
@@ -1170,11 +1178,11 @@ div.wrapmsgr_container * {
 	vertical-align: top;
 }
 
-.wrapmsgr_container .wrapmsgr_popup_header .icon_times {
+/* .wrapmsgr_container .wrapmsgr_popup_header .icon_times {
 	position: absolute;
 	top: 20px;
 	right: 22px;
-}
+} */
 
 .wrapmsgr_container .wrapmsgr_popup.manage_doc_room>form {
 	height: calc(100% - 50px);
