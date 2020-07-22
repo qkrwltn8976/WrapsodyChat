@@ -77,8 +77,8 @@ class Intent extends React.Component<IntentProps, IntentState>{
 
 
     render() {
-        return (<li className="ng-scope" onClick={(e) => this.toggleIntentGroup(this.props.intent)}>
-            <div className="ng-binding">
+        return (<li className="ng-scope">
+            <div className="ng-binding"  onClick={(e) => this.toggleIntentGroup(this.props.intent)}>
                 {this.props.intent.name}
                 <i className={this.state.active ? 'icon_triangle wrapmsgr_expand' : 'icon_triangle wrapmsgr_collapse'}></i>
             </div><ul className={this.state.active ? 'question-sub-list ' : 'question-sub-list hidden'}>
