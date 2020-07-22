@@ -2,6 +2,8 @@ import * as React from 'react';
 import { createClient, publishChat, subscribe } from '../../libs/stomp';
 import { Client } from '@stomp/stompjs';
 import { Message } from '../../models/Message';
+const Store = require('electron-store')
+const store = new Store()
 
 interface MsgInputState {
     message: string;
@@ -45,12 +47,13 @@ class MsgInput extends React.Component<MsgInputProps, MsgInputState> {
         console.log(this.state.message)
         let msg : Message = {
             id:'',
-            sendUserId: 'admin',
+            sendUserId: store.get("username"),
             recvConvoId: this.convoId,
             body: this.state.message,
             createdAt: Date.now(),
             updatedAt: Date.now(),
-            messageType: 0
+            messageType: 0,
+            attachments: []
         }
         this.props.sendMsg(msg);
     }
