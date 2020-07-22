@@ -103,7 +103,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
             </div>;
         }
 
-        if (msg.attachments.length != 0) {
+        if (msg.attachments && msg.attachments.length != 0) {
             msgbubble = this.getAttachments(msg.attachments);
         } else {
             msgbubble =

@@ -4,10 +4,10 @@ import { client, subscribe, publishApi, createClient } from '@/renderer/libs/sto
 import { v4 } from "uuid"
 import { getConvoDate } from '@/renderer/libs/timestamp-converter';
 import {getDocType} from '@/renderer/libs/messengerLoader'
-// import { Client } from '@stomp/stompjs';
+import { Client } from '@stomp/stompjs';
 import { Conversation } from '@/renderer/models/Conversation';
 import { sortConvos } from '@/renderer/libs/sort';
-import { Client } from '@stomp/stompjs';
+;
 
 const {remote, webContents} = require('electron')
 const Store = require('electron-store')
