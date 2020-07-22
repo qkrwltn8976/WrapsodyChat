@@ -25,6 +25,7 @@ interface RoomState {
     convo: Conversation;
     bot?: Bot,
     botIntent?: BotIntent[],
+    search:string;
 }
 
 class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
@@ -55,14 +56,15 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                 latestMessageAt: 0, // 마지막 메시지 시간
                 createdAt: 0, // 대화 생성 일시
                 updatedAt: 0, // 대화 수정 일시}
-            }
+            },
+            search: ""
         })
 
     }
 
     componentDidMount() {
         client.onConnect = () => {
-            subscribe(client, 'admin', this.state.uuid, (obj: any) => {
+            subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
                 let payload = obj.payload;
                 if (payload) {
                     console.log(payload)
@@ -124,6 +126,10 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
 
     }
 
+    setSearch = (search:string) => {
+        this.setState({search: search})
+    }
+
     render() {
         let sendMsg = this.sendMsg;
         let aside, viewModeClass;
@@ -138,7 +144,7 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
             aside = <React.Fragment>
                 <InfoHeader convoType={this.state.convo.convoType} docName={this.state.convo.name} memberCount={this.state.convo.memberCount} />
                 <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
-                    <SearchBar /><MemberList convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} members={this.state.members} />
+                    <SearchBar search = {this.state.search} setSearch = {this.setSearch}/><MemberList search = {this.state.search}convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} members={this.state.members} />
                 </div></React.Fragment>
         }
 

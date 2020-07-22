@@ -57,7 +57,7 @@ class IntentList extends React.Component<IntentProps, IntentState> {
 
                         {this.state.botIntent.map((intent: any) => {
                             return (
-                                <Intent intent={intent} />
+                                <Intent intent={intent} convoId={this.props.convoId}/>
                             )
                         })}
 

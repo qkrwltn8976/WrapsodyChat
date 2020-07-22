@@ -1,69 +1,88 @@
 import * as React from 'react';
 import { BotIntent } from '@/renderer/models/BotIntent';
-import { publishApi, client, subscribe} from '@/renderer/libs/stomp';
+import { publishApi, publishChat, client, subscribe } from '@/renderer/libs/stomp';
 import { v4 } from 'uuid';
+import { BotCommand } from '@/renderer/models/BotCommand';
+import { Message } from '@/renderer/models/Message';
+
 const Store = require('electron-store')
 const store = new Store()
 
 interface IntentProps {
-    intent: BotIntent
+    intent: BotIntent,
+    convoId: string
 }
 
 interface IntentState {
     active: boolean,
-    uuid: string
+    uuid: string,
+    commands: BotCommand[]
 }
 
 class Intent extends React.Component<IntentProps, IntentState>{
-    getQuestion = () => {
-        console.log('asdf')
-        return(<ul className={"question-sub-list "}>
-           <li ng-repeat="command in intentGroup.commands" ng-click="sendBotCommand(command.command)" ng-mouseenter="active = true" ng-mouseleave="active = false" ng-className="{active: active}" className="ng-binding ng-scope" >다른 사용자가 관리 중인 문서의 내용을 복사해서 내 문서로 만들고 싶어요.</li><li ng-repeat="command in intentGroup.commands" ng-click="sendBotCommand(command.command)" ng-mouseenter="active = true" ng-mouseleave="active = false" ng-className="{active: active}" className="ng-binding ng-scope">열람 권한은 어떻게 요청할 수 있나요?</li><li ng-repeat="command in intentGroup.commands" ng-click="sendBotCommand(command.command)" ng-mouseenter="active = true" ng-mouseleave="active = false" ng-className="{active: active}" className="ng-binding ng-scope">Wrapsody 문서는 어떻게 공유할 수 있나요?</li><li ng-repeat="command in intentGroup.commands" ng-click="sendBotCommand(command.command)" ng-mouseenter="active = true" ng-mouseleave="active = false" ng-className="{active: active}" className="ng-binding ng-scope">문서에 의견을 남기고 싶어요.</li><li ng-repeat="command in intentGroup.commands" ng-click="sendBotCommand(command.command)" ng-mouseenter="active = true" ng-mouseleave="active = false" ng-className="{active: active}" className="ng-binding ng-scope">누가 내 문서를 사용했는지 알고 싶어요.</li>
-         </ul>)
+    sendBotCommand = (command: string) => (e: any) => {
+        let msg : Message = {
+            id:'',
+            sendUserId: store.get("username"),
+            recvConvoId: this.props.convoId,
+            body: command,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            messageType: 1
+        }
+        publishChat(client, 'chat.short.command.convo', this.state.uuid, msg)
+    }
+
+    getCommand = (command: BotCommand) => {
+        return (
+            <li ng-repeat="command in intentGroup.commands" onClick={this.sendBotCommand(command.command)} ng-mouseenter="active = true" ng-mouseleave="active = false" ng-className="{active: active}" className="ng-binding ng-scope">{command.command}</li>
+        )
     }
 
     toggleIntentGroup = (e: BotIntent) => {
-        if(this.state.active) {
-            this.setState({active:false})
+        if (this.state.active) {
+            this.setState({ active: false })
         } else {
-            this.setState({active:true});
+            this.setState({ active: true });
             publishApi(client, 'api.bot.command.list', store.get("username"), this.state.uuid, { 'botUserId': e.botUserId, 'groupId': e.groupId });
         }
     }
 
-    constructor(props: IntentProps){
+    constructor(props: IntentProps) {
         super(props);
         this.state = {
             active: false,
-            uuid: v4()
+            uuid: v4(),
+            commands: []
         }
     }
 
 
     componentDidMount() {
-        client.onConnect = () => {
-                subscribe(client, store.get("username"), this.state.uuid, (obj:any) => {
-                console.log(obj)
-                let payload = obj.payload;
-                if (payload) {
-                    console.log(payload)
+        subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
+            let payload = obj.payload;
+            console.log(obj)
+            if (payload) {
+                if (payload.BotCommands) {
+                    this.setState({
+                        commands: payload.BotCommands 
+                    })
                 }
-            });
-
-            // publishApi(client, 'api.bot.command.list', 'admin', this.state.uuid, { 'botUserId': "@BOT@wrapsody", 'groupId': 1 });
-        }
+            }
+        });
     }
 
 
     render() {
-        console.log(this.state.active)
-        return(<li className="ng-scope" onClick={(e) => this.toggleIntentGroup(this.props.intent)}>
-        <div className="ng-binding">
-            {this.props.intent.name}
-            <i className={this.state.active ? 'icon_triangle wrapmsgr_expand' : 'icon_triangle wrapmsgr_collapse'}></i>
-        </div><ul className={this.state.active ? 'question-sub-list ' : 'question-sub-list hidden'}>
-           <li ng-repeat="command in intentGroup.commands" ng-click="sendBotCommand(command.command)" ng-mouseenter="active = true" ng-mouseleave="active = false" ng-className="{active: active}" className="ng-binding ng-scope" >다른 사용자가 관리 중인 문서의 내용을 복사해서 내 문서로 만들고 싶어요.</li><li ng-repeat="command in intentGroup.commands" ng-click="sendBotCommand(command.command)" ng-mouseenter="active = true" ng-mouseleave="active = false" ng-className="{active: active}" className="ng-binding ng-scope">열람 권한은 어떻게 요청할 수 있나요?</li><li ng-repeat="command in intentGroup.commands" ng-click="sendBotCommand(command.command)" ng-mouseenter="active = true" ng-mouseleave="active = false" ng-className="{active: active}" className="ng-binding ng-scope">Wrapsody 문서는 어떻게 공유할 수 있나요?</li><li ng-repeat="command in intentGroup.commands" ng-click="sendBotCommand(command.command)" ng-mouseenter="active = true" ng-mouseleave="active = false" ng-className="{active: active}" className="ng-binding ng-scope">문서에 의견을 남기고 싶어요.</li><li ng-repeat="command in intentGroup.commands" ng-click="sendBotCommand(command.command)" ng-mouseenter="active = true" ng-mouseleave="active = false" ng-className="{active: active}" className="ng-binding ng-scope">누가 내 문서를 사용했는지 알고 싶어요.</li>
-         </ul></li>)
+        return (<li className="ng-scope" onClick={(e) => this.toggleIntentGroup(this.props.intent)}>
+            <div className="ng-binding">
+                {this.props.intent.name}
+                <i className={this.state.active ? 'icon_triangle wrapmsgr_expand' : 'icon_triangle wrapmsgr_collapse'}></i>
+            </div><ul className={this.state.active ? 'question-sub-list ' : 'question-sub-list hidden'}>
+                {this.state.commands.map((command: BotCommand) => {
+                    return (this.getCommand(command))
+                })}
+            </ul></li>)
     }
 }
 
