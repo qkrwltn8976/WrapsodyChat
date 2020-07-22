@@ -25,13 +25,13 @@ class MemberList extends React.Component<Props>{
     }
     render() {
         const { memberListType, convoId } = this.props;
-        if (memberListType == 'chat') {
+        if (memberListType == 'chat' || this.props.members) {
             return (
                 <ul id="forMemberList">
                     {this.props.members.map(member => 
                     
                     {
-                        if(member.userName&& this.props.search === null || member.userName.toLowerCase().includes(this.props.search.toLowerCase()) || member.userId.toLowerCase().includes(this.props.search.toLowerCase())) {
+                        if(member.userName && (this.props.search === null || member.userName.toLowerCase().includes(this.props.search.toLowerCase()) || member.userId.toLowerCase().includes(this.props.search.toLowerCase()))) {
                         return(<li ng-repeat="member in current.members | memberFilter:search.user:users | orderBy:'userName'" ng-class="{'has-grn-dot': false, 'has-red-dot': false}" wrapmsgr-user-profile="users[member.userId]" className="ng-scope ng-isolate-scope">
                             <span className="user-photo ng-binding ng-isolate-scope no-photo green">{getShortName(member.userName)}</span>
                             <div className="ng-binding">{member.userName} ({member.userId})</div>

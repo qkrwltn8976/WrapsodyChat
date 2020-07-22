@@ -54,7 +54,7 @@ class Invite extends React.Component<inviteProps>{
                                         <InfoHeader convoType= {ConvoType.IC} memberCount = {5} docName = {"dfawe rawerew.txt"}/>
                                         <div className="group">
                                             <div className="wrapmsgr_organ_tree ng-scope angular-ui-tree" ui-tree="organTreeOptions" data-clone-enabled="true" data-nodrop-enabled="true" data-drag-delay="100">
-                                                <MemberList memberListType = {MemberListType.SELECT} treeData = {treeData}/>
+                                                {/* <MemberList memberListType = {MemberListType.SELECT} treeData = {treeData}/> */}
                                             </div>    
                                             <div className="wrapmsgr_organ_tree right-list-col ng-scope angular-ui-tree" ui-tree="inviteTreeOptions">
                                                 {/* <MemberList memberListType = {MemberListType.SELECTED} members = {members} groups = {groups}/> */}
