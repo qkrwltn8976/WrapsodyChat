@@ -27,12 +27,8 @@ class Intent extends React.Component<IntentProps, IntentState>{
             this.setState({active:false})
         } else {
             this.setState({active:true});
-            publishApi(client, 'api.bot.command.list', 'admin', this.state.uuid, { 'botUserId': e.botUserId, 'groupId': e.groupId });
+            publishApi(client, 'api.bot.command.list', store.get("username"), this.state.uuid, { 'botUserId': e.botUserId, 'groupId': e.groupId });
         }
-        
-        console.log({botUserId: e.botUserId, groupId: e.groupId})
-        
-        console.log(this.state.active)
     }
 
     constructor(props: IntentProps){

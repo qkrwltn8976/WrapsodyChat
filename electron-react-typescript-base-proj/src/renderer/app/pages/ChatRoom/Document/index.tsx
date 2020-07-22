@@ -6,7 +6,7 @@ import { Member } from '../../../../models/Member';
 import { Conversation } from '../../../../models/Conversation';
 import { Bot } from '@/renderer/models/Bot'
 import { BotIntent } from '@/renderer/models/BotIntent';
-import { subscribe, publishApi, publishChat, createClient } from '../../../../libs/stomp';
+import { subscribe, publishApi, publishChat, client } from '../../../../libs/stomp';
 import { v4 } from "uuid"
 import * as type from '@/renderer/libs/enum-type';
 import IntentList from '@/renderer/app/components/IntentList';
@@ -25,14 +25,13 @@ interface RoomState {
     convo: Conversation;
     bot?: Bot,
     botIntent?: BotIntent[],
-    client,
 }
 
 class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
     sendMsg(msg: Message) {
         console.log(msg);
         console.log('=============')
-        publishChat(this.state.client, 'chat.short.convo', this.state.uuid, msg);
+        publishChat(client, 'chat.short.convo', this.state.uuid, msg);
     }
 
     constructor(props: RoomProps, state: {}) {
@@ -56,14 +55,12 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                 latestMessageAt: 0, // 마지막 메시지 시간
                 createdAt: 0, // 대화 생성 일시
                 updatedAt: 0, // 대화 수정 일시}
-            },
-            client: {}
+            }
         })
 
     }
 
     componentDidMount() {
-        let client = createClient(store.get("username"), store.get("password"))
         client.onConnect = () => {
             subscribe(client, 'admin', this.state.uuid, (obj: any) => {
                 let payload = obj.payload;
@@ -121,9 +118,9 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
             });
             console.log(this.props)
             // publishApi(this.state.client, 'api.user.info', 'admin', this.props.uuid, {});
-            publishApi(client, 'api.conversation.view', 'admin', this.state.uuid, { 'convoId': this.state.convo.convoId });
+            publishApi(client, 'api.conversation.view', store.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
         }
-        this.setState({client})
+        // this.setState({client})
 
     }
 
