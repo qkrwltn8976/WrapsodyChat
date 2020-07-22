@@ -87,6 +87,16 @@ class Chat extends Component<ChatListProps, ChatListState> {
                         )
 
                     }
+                    else if(payload.type!=undefined){
+                        const index = this.state.convos.findIndex(convo => convo.convoId === payload.convoId)
+                        this.setState(state => {
+                            state.convos[index].notificationType = payload.type
+
+                            return{
+                                
+                            }
+                        })
+                    }
                 } else {
                     if (obj.body || obj.messageId) {
                         if(obj.sendUserId !==  store.get("username"))
@@ -99,6 +109,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
                             convos[index].latestMessageAt = obj.updatedAt;
                             this.setState({ convos:sortConvos(convos) });
                     }
+                    
                 }
             });
             publishApi(client, 'api.conversation.list', store.get("username"), this.state.uuid, {});
@@ -133,12 +144,21 @@ class Chat extends Component<ChatListProps, ChatListState> {
         return false;
     }
 
+    getBellIcon(state: any){
+        if(state===0){
+            return "icon_bell_off";
+        }
+            
+        else {
+            return "";
+        } 
+    }
+
     
     render() {
         let convos = this.state.convos;
         
         if (convos != undefined) {
-            console.log(convos)
             return (
                 <Fragment>
                     {convos.map((item: any) =>
@@ -159,7 +179,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
                         <div className="title_h5" id="title_5">
                             <span className="chatroom-name">{item.name}</span>
                             <span className="chatroom-user-cnt">{item.memberCount}</span>
-                            <i></i>
+                            <i className = {this.getBellIcon(item.notificationType)}></i>
                             <span className="chatroom-message-contents">{item.latestMessage}</span>
                         </div>
                         <div className="wrapmsgr_right">
