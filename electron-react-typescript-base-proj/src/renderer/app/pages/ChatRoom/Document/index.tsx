@@ -81,8 +81,9 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                     }
 
                     if (payload.Conversation) {
+                        console.log(payload.Conversation)
                         this.setState({
-                            convo: payload.Conversation
+                            convo: payload.Conversation,
                         })
                     }
 
@@ -118,7 +119,6 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                     // }
                 }
             });
-            console.log(this.props)
             // publishApi(this.state.client, 'api.user.info', 'admin', this.props.uuid, {});
             publishApi(client, 'api.conversation.view', store.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
         }
@@ -142,7 +142,7 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
         else {
             viewModeClass = 'doc-chatroom'
             aside = <React.Fragment>
-                <InfoHeader convoType={this.state.convo.convoType} docName={this.state.convo.name} memberCount={this.state.convo.memberCount} />
+                <InfoHeader convoType={this.state.convo.convoType} convoId = {this.state.convo.convoId} docName={this.state.convo.name} memberCount={this.state.convo.memberCount} notificationType = {this.state.convo.notificationType}/>
                 <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
                     <SearchBar search = {this.state.search} setSearch = {this.setSearch}/><MemberList search = {this.state.search}convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} members={this.state.members} />
                 </div></React.Fragment>
