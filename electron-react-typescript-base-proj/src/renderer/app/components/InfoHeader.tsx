@@ -78,11 +78,11 @@ class InfoHeader extends React.Component<Props, ShowState>{
         e.preventDefault();
         var currentWindow = remote.getCurrentWindow()
         var size = currentWindow.getSize()
-        var width = size[0] * 0.9;
-        var height = size[1] * 0.9;
+        // var width = size[0] * 0.9;
+        // var height = size[1] * 0.9;
         let inviteWindow = new BrowserWindow({
-            width: width,
-            height: height,
+            width: 700,
+            height: 585,
             minWidth: 370,
             minHeight: 370,
             maxWidth: 700,

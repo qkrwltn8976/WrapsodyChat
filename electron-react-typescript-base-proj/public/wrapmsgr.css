@@ -1149,8 +1149,8 @@ div.wrapmsgr_container * {
 	height: 100%;
 	min-width: 370px;
 	min-height: 370px;
-    /* max-width: 700px;
-    max-height: 585px; */
+    max-width: 700px;
+    max-height: 585px;
 }
 
 .wrapmsgr_container .wrapmsgr_popup_header {    
@@ -1258,8 +1258,7 @@ div.wrapmsgr_container * {
 }
 
 .wrapmsgr_container .wrapmsgr_organ_tree {
-	float: left;
-	width: calc(100% - 300px);
+	/* float: left;  */
 	height: 100%;
 	white-space: nowrap;
 	position: relative;
