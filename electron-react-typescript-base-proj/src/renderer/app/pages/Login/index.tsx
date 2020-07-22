@@ -1,6 +1,5 @@
 import React, { Fragment, useState, createContext, useContext } from 'react'
-import { createClient } from '@/renderer/libs/stomp'
-
+import { client } from '@/renderer/libs/stomp';
 const remote = require('electron').remote
 
 //electron-store 라이브러리 사용하여 id / pw 저장
@@ -8,16 +7,14 @@ const Store = require('electron-store')
 const store = new Store()
 
 async function handleClick (userinfo: any){
-
-    const client = createClient(userinfo.username, userinfo.password)
     store.set("username", userinfo.username)
     store.set("password", userinfo.password)
     
-
+    console.log(client.connected)
     if(client.connected){
         console.log("yess")
         var win  = remote.getCurrentWindow()
-         win.loadURL(__dirname+"/index.html#/chatlist/")
+        win.loadURL(__dirname+"/index.html#/chatlist/")
     }
 
     
