@@ -4,7 +4,8 @@ export type Attachment = {
     attachmentType : number
     createdAt : number,
     messageId : number,
-    title : string,
+    title? : string,
     updatedAt : number,
-    uri : string,
+    uri? : string,
+    payload?: any
 }
