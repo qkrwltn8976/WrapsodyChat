@@ -41,12 +41,13 @@ class Invite extends React.Component<inviteProps>{
 
     render(){
         const { convoId } = this.props.match.params.convo;
+        let aside, viewModeClass;
         return(
-            <React.Fragment>
+            aside = <React.Fragment>
                 <div id="wrapmsgr" className="ng-scope">
                     <div id="wrapmsgr_body" ng-controller="WrapMsgrController" className="wrapmsgr_container ng-scope" data-ws="ws://ecm.dev.fasoo.com:9500/ws" data-vhost="/wrapsody-oracle" data-fpns-enabled="true" data-weboffice-enabled="true">
-                        <div className="wrapmsgr_popup_container active" ng-class="{active: activePopup}">
-                            <div className="wrapmsgr_popup manage_doc_room" ng-class="{disabled: !loggedIn}" ng-show="activePopup == 'manage_doc_room'">
+                        {/* <div className="wrapmsgr_popup_container active" ng-class="{active: activePopup}"> */}
+                            <div className="wrapmsgr_popup manage_doc_room" ng-class="{disabled: !loggedIn}" ng-show="activePopup == 'manage_doc_room'"> 
                                 <Header docName = "" headerType={HeaderType.INVITE}/>
                                 <form name="manageDocRoomForm" ng-submit="submitDocRoom()" className="ng-pristine ng-valid">
                                     <div className="wrapmsgr_popup_body">
@@ -63,7 +64,7 @@ class Invite extends React.Component<inviteProps>{
                                     <Footer />
                                 </form>
                             </div>
-                        </div>
+                        {/* </div> */}
                     </div>
                 </div>
             </React.Fragment>
