@@ -11,7 +11,7 @@ interface Group {
 interface Props {
     memberListType: string;
     convoId?: string;
-    search:string;
+    search?:string;
     members?: Member[];
     treeData?: any;
 }
