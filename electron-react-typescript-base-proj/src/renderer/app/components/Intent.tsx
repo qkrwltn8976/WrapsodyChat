@@ -30,7 +30,7 @@ class Intent extends React.Component<IntentProps, IntentState>{
             updatedAt: Date.now(),
             messageType: 1
         }
-        publishChat(client, 'chat.short.command.convo', this.state.uuid, {})
+        publishChat(client, 'chat.short.command.convo', this.state.uuid, msg)
     }
 
     getCommand = (command: BotCommand) => {

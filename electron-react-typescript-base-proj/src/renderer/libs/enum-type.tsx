@@ -53,3 +53,12 @@ export enum CIType{
     CREATE = 3,
     INVITE = 4,
 }
+
+export enum Attachment {
+    FILE = 0,
+    IMAGE = 1,
+    VIDEO = 2,
+    SOUND = 3,
+    SCRAP = 4,
+    ACTION = 5,
+}

@@ -4,6 +4,7 @@ import { Message } from '../../models/Message';
 import { Conversation } from '../../models/Conversation';
 import { getShortName } from '../../libs/messengerLoader';
 import { Attachment } from '@/renderer/models/Attachment';
+import * as etype from '@/renderer/libs/enum-type';
 
 interface MsgProps {
     msgs: Message[];
@@ -74,6 +75,19 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
     getAttachments(attach: Attachment[]) {
         console.log(attach)
+        if (attach[0].attachmentType === etype.Attachment.ACTION) {
+            return (
+                <React.Fragment>
+                    <div className="wrapmsgr_msg_body ng-binding" ng-bind-html="message.body | linky:'_blank'">Wrapsody에서 사용되는 용어입니다. 상세 설명을 보려면 용어를 클릭하세요.</div>
+                    <div className="wrapmsgr_msg_attachment ng-scope" ng-repeat="attachment in message.attachments">
+                        <div className="wrapmsgr_msg_title ng-binding"></div>
+                        <span ng-if="attachment.attachmentType == 5" ng-repeat="action in attachment.payload" className="ng-scope">
+                            <button type="button" ng-attr-title="{{ action.text || action.value }}" ng-if="action.type == 'button'" ng-click="onAttachmentButton(action)" className="ng-scope" title="리비전"><div className="ng-binding">리비전</div></button>
+                        </span>
+                    </div></React.Fragment>
+            )
+        }
+
         return (
             <React.Fragment>
                 <div className="wrapmsgr_msg_body ng-binding" ng-bind-html="message.body | linky:'_blank'"></div>
@@ -218,7 +232,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         console.log('unreadexist' + unreadExists)
         this.state = ({ msgs: this.props.msgs, convo: this.props.convo, unreadExists: (this.props.convo.unread > 0) });
         return (
-            <div className="wrapmsgr_content" ng-class="{'no-header': current.convo.convoType == 2}">
+            <div className="wrapmsgr_content" ng-className="{'no-header': current.convo.convoType == 2}">
                 <div className="wrapmsgr_messages" in-view-container="" ref={this.scrollView}>
                     <ul>
                         {this.state.msgs.map((msg: Message, index: number) =>
