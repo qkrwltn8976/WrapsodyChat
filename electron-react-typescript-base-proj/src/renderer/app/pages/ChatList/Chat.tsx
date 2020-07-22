@@ -7,7 +7,7 @@ import {getDocType} from '@/renderer/libs/messengerLoader'
 import { Client } from '@stomp/stompjs';
 import { Conversation } from '@/renderer/models/Conversation';
 import { sortConvos } from '@/renderer/libs/sort';
-;
+import { sendNotification } from '@/renderer/libs/notification';
 
 const {remote, webContents} = require('electron')
 const Store = require('electron-store')
@@ -88,7 +88,8 @@ class Chat extends Component<ChatListProps, ChatListState> {
 
                     }
                 } else {
-                    if (obj.body) {
+                    if (obj.body || obj.messageId) {
+                        sendNotification('새로운 메세지가 도착했습니다',obj.sendUserId, obj.body||obj.messageId);
                         console.log(obj)
                         const index = this.state.convos.findIndex(convo => convo.convoId === obj.recvConvoId),
                             convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call
