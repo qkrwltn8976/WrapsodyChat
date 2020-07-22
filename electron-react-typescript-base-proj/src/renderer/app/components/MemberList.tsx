@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Member } from '../../models/Member';
 import { getShortName } from '../../libs/messengerLoader';
+import TreeMenu from 'react-simple-tree-menu';
 
 interface Group {
     longName: string;
@@ -10,8 +11,9 @@ interface Group {
 interface Props {
     memberListType: string;
     convoId?: string;
-    members: Member[];
     search:string;
+    members?: Member[];
+    treeData?: any;
 }
 
 
@@ -41,8 +43,8 @@ class MemberList extends React.Component<Props>{
             );
         } else if (memberListType == 'select') {
             return (
-                <ol ui-tree-nodes="" ng-model="docInfo.organ" ng-show="docInfo.organ.length > 0" className="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-not-empty">
-                    {
+                // <ol ui-tree-nodes="" ng-model="docInfo.organ" ng-show="docInfo.organ.length > 0" className="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-not-empty">
+                //     {
                         // members.map( member => 
                         //     <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className="ng-scope angular-ui-tree-node" expand-on-hover="false">
                         //         <div className="organ_wrapper ng-scope">
@@ -62,8 +64,8 @@ class MemberList extends React.Component<Props>{
                         //         </div>
                         //     </li>
                         // )
-                    }
-                    {
+                    // }
+                    // {
                         // groups.map( group =>
                         //     <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className="ng-scope angular-ui-tree-node" expand-on-hover="false">
                         //         <div className="organ_wrapper ng-scope">
@@ -86,8 +88,9 @@ class MemberList extends React.Component<Props>{
                         //         </div>
                         //     </li>
                         // )
-                    }
-                </ol>
+                //     }
+                // </ol>
+                <TreeMenu hasSearch = {false} data = {this.props.treeData}/>
             );
         } else if (memberListType == 'selected') {
             return (

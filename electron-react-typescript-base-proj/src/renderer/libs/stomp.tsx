@@ -63,16 +63,22 @@ export function publishApi(client: Client, api: string, userId: string, uuid: st
         }),
         headers: { "reply-to": "user-"+userId+"-"+uuid, "content-type": "application/json", "correlation_id ": api }
     });
+    console.log(JSON.stringify({
+        senderId: userId, locale: "ko-KR", payload,
+    }))
 }
 
 export function publishChat(client: Client, api: string, uuid: string, payload: any) {
     client.publish({
         destination: `/exchange/request/${api}.${uuid}`,
         body: JSON.stringify({
-            sendUserId: payload.sendUserId, recvConvoId: payload.recvConvoId, body: payload.body, messageType: 0
+            sendUserId: payload.sendUserId, recvConvoId: payload.recvConvoId, body: payload.body, messageType: payload.messageType
         }),
         headers: { __TypeId__: `com.wrapsody.messaging.model.Message`,"content-type": "application/json"}
     });
+    console.log(JSON.stringify({
+        sendUserId: payload.sendUserId, recvConvoId: payload.recvConvoId, body: payload.body, messageType: payload.messageType
+    }))
 }
 
 // {"senderId":"admin","locale":"ko-KR","payload":{"convoId":"91fc0628c5fe4af4a14564f46f8ed17f"}}

@@ -8,8 +8,7 @@ export enum ConvoType {
     BOT = 2,
     DEP = 2,
     DOC = 1,
-    CREATE = 3,
-    INVITE = 4,
+    IC = 3,
 }
 
 export enum RoomType {

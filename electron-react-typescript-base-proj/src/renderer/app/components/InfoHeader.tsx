@@ -89,7 +89,8 @@ class InfoHeader extends React.Component<Props, ShowState>{
             maxHeight: 585,
             parent: currentWindow,
             modal: true,
-            show: false
+            show: false,
+            frame: false,
         })
         inviteWindow.loadURL(
             __dirname + "/index.html#/invite/"+this.convoId
@@ -127,8 +128,8 @@ class InfoHeader extends React.Component<Props, ShowState>{
                         <div className="ng-isolate-scope">
                             <a href=""><i className="icon_ellipsis_h" title="더 보기" onClick = {this.showClick}></i></a>
                              <div className={this.state.wrapmsgr_dropdown_menu} style={{position: "absolute"}}>
-                                <div title="대화 상대 초대" className={this.state.ngScope} >
-                                    <i className={this.state.iconPlus} onClick = {this.showInvite}></i>{this.state.invite} 
+                                <div title="대화 상대 초대" className={this.state.ngScope} onClick = {this.showInvite}>
+                                    <i className={this.state.iconPlus}></i>{this.state.invite} 
                                 </div>
                                 <div title="나가기" className={this.state.leaveClass}>
                                     <i className={this.state.iconLogOut}></i>{this.state.leave}
@@ -187,7 +188,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
         //         </div>
         //     )
         // }
-        if(convoType == ConvoType.CREATE || ConvoType.INVITE){
+        if(convoType == ConvoType.IC){
             return (
                 <div className="doc-chatroom-info_div">
                     <document-icon name="docInfo.detail.contentName" class="ng-isolate-scope"><i className="icon_txt">          <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i></document-icon>
