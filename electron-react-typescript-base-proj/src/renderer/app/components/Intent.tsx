@@ -65,7 +65,7 @@ class Intent extends React.Component<IntentProps, IntentState>{
             if (payload) {
                 if (payload.BotCommands) {
                     this.setState({
-                        commands: payload.BotCommands
+                        commands: payload.BotCommands 
                     })
                 }
             }
