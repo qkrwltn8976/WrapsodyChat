@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import { ConvoType, InfoHeaderType} from "../../libs/enum-type"
 import { getDocType } from '../../libs/messengerLoader'
 
+const { remote }  = require('electron')
+const { BrowserWindow } = remote
 
 interface Props{ 
     convoType: number,
@@ -20,6 +22,8 @@ interface ShowState{
     iconLogOut: string;
     invite: string;
     leave: string;
+    //Inivite and Create
+    participants: number;
 }
 
 class InfoHeader extends React.Component<Props, ShowState>{
@@ -37,6 +41,8 @@ class InfoHeader extends React.Component<Props, ShowState>{
             iconLogOut: "",
             invite: "",
             leave: "",
+            participants: props.memberCount // 처음엔 참가자수 멤버수 동일
+
         };
     }
     
@@ -66,6 +72,30 @@ class InfoHeader extends React.Component<Props, ShowState>{
                 invite: "",
           })
         }
+    }
+
+    showInvite = (e) => {
+        e.preventDefault();
+        var currentWindow = remote.getCurrentWindow()
+        var size = currentWindow.getSize()
+        var width = size[0] * 0.9;
+        var height = size[1] * 0.9;
+        let inviteWindow = new BrowserWindow({
+            width: width,
+            height: height,
+            minWidth: 370,
+            minHeight: 370,
+            maxWidth: 700,
+            maxHeight: 585,
+            parent: currentWindow,
+            modal: true,
+            show: false,
+            frame: false,
+        })
+        inviteWindow.loadURL(
+            __dirname + "/index.html#/invite/"+this.convoId
+        );
+        inviteWindow.show();
     }
    
     render(){
@@ -98,7 +128,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
                         <div className="ng-isolate-scope">
                             <a href=""><i className="icon_ellipsis_h" title="더 보기" onClick = {this.showClick}></i></a>
                              <div className={this.state.wrapmsgr_dropdown_menu} style={{position: "absolute"}}>
-                                <div title="대화 상대 초대" className={this.state.ngScope} >
+                                <div title="대화 상대 초대" className={this.state.ngScope} onClick = {this.showInvite}>
                                     <i className={this.state.iconPlus}></i>{this.state.invite} 
                                 </div>
                                 <div title="나가기" className={this.state.leaveClass}>
@@ -158,6 +188,17 @@ class InfoHeader extends React.Component<Props, ShowState>{
         //         </div>
         //     )
         // }
+        if(convoType == ConvoType.IC){
+            return (
+                <div className="doc-chatroom-info_div">
+                    <document-icon name="docInfo.detail.contentName" class="ng-isolate-scope"><i className="icon_txt">          <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i></document-icon>
+                    <div className="doc-name ng-binding">{this.props.docName}</div>
+                    <div>
+                        <span className="ng-binding">문서 권한 보유자 {this.props.memberCount} 명 / 대화 상대 {this.state.participants} 명</span>                       
+                    </div>
+                </div>
+            )
+        }
         return (
             <div></div>
         );

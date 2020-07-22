@@ -4,10 +4,10 @@ import { client, subscribe, publishApi, createClient } from '@/renderer/libs/sto
 import { v4 } from "uuid"
 import { getConvoDate } from '@/renderer/libs/timestamp-converter';
 import {getDocType} from '@/renderer/libs/messengerLoader'
-// import { Client } from '@stomp/stompjs';
+import { Client } from '@stomp/stompjs';
 import { Conversation } from '@/renderer/models/Conversation';
 import { sortConvos } from '@/renderer/libs/sort';
-import { Client } from '@stomp/stompjs';
+;
 
 const {remote, webContents} = require('electron')
 const Store = require('electron-store')
@@ -143,7 +143,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
                     <Fragment>
                         {/* <Link to = {"/document/"+item.convoId}> */}
                         {/* 검색 활성화 */}
-                        { item || this.props.search === null || item.name.toLowerCase().includes(this.props.search.toLowerCase())?
+                        { item && this.props.search === null || item.name.toLowerCase().includes(this.props.search.toLowerCase())?
                         <li onClick={this.getConvo(item.convoId, item.name)} className="ng-scope">
                         {/* /챗봇, 문서채팅방의 아이콘 표시/ */}
                         {item.convoType ===2? 
