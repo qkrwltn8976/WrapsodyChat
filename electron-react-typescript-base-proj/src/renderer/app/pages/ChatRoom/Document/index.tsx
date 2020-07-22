@@ -10,6 +10,7 @@ import { subscribe, publishApi, publishChat, client } from '../../../../libs/sto
 import { v4 } from "uuid"
 import * as type from '@/renderer/libs/enum-type';
 import IntentList from '@/renderer/app/components/IntentList';
+import { sendNotification } from '@/renderer/libs/notification';
 
 const Store = require('electron-store')
 const store = new Store()
@@ -25,14 +26,12 @@ interface RoomState {
     convo: Conversation;
     bot?: Bot,
     botIntent?: BotIntent[],
-    search:string;
+    search: string;
 }
 
 class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
-    sendMsg(msg: Message) {
-        console.log(msg);
-        console.log('=============')
-        publishChat(client, 'chat.short.convo', this.state.uuid, msg);
+    sendMsg = (msg: Message, api: string) => {
+        publishChat(client, api, this.state.uuid, msg);  
     }
 
     constructor(props: RoomProps, state: {}) {
@@ -103,7 +102,8 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
 
                 } else {
                     console.log(obj);
-                    if (obj.body) { // 받은 메세지 처리
+                    if (obj.body || obj.messageId) { // 받은 메세지 처리
+                        sendNotification('새로운 메세지가 도착했습니다', obj.sendUserId, obj.body||obj.messageId);
                         this.setState({
                             msgs: this.state.msgs.concat(obj)
                         });
@@ -122,12 +122,10 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
             // publishApi(this.state.client, 'api.user.info', 'admin', this.props.uuid, {});
             publishApi(client, 'api.conversation.view', store.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
         }
-        // this.setState({client})
-
     }
 
-    setSearch = (search:string) => {
-        this.setState({search: search})
+    setSearch = (search: string) => {
+        this.setState({ search: search })
     }
 
     render() {
@@ -136,7 +134,7 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
         if (this.state.convo.convoType === type.ConvoType.BOT) {
             viewModeClass = 'wrapmsgr_chatbot'
             aside = <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
-                <IntentList bot={this.state.bot} botIntent={this.state.botIntent} convoId={this.state.convo.convoId} notificationType={this.state.convo.notificationType}/>
+                <IntentList bot={this.state.bot} botIntent={this.state.botIntent} convoId={this.state.convo.convoId} notificationType={this.state.convo.notificationType} sendMsg={this.sendMsg} />
             </div>
         }
         else {
@@ -144,7 +142,7 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
             aside = <React.Fragment>
                 <InfoHeader convoType={this.state.convo.convoType} convoId = {this.state.convo.convoId} docName={this.state.convo.name} memberCount={this.state.convo.memberCount} notificationType = {this.state.convo.notificationType}/>
                 <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
-                    <SearchBar search = {this.state.search} setSearch = {this.setSearch}/><MemberList search = {this.state.search}convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} members={this.state.members} />
+                    <SearchBar search={this.state.search} setSearch={this.setSearch} /><MemberList search={this.state.search} convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} members={this.state.members} />
                 </div></React.Fragment>
         }
 
@@ -157,7 +155,7 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                             <div className={"wrapmsgr_content  wrapmsgr_viewmode_full " + viewModeClass}>
                                 {aside}
                                 <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass" id="DocumentChat">
-                                    <MsgList msgs={this.state.msgs} convo={this.state.convo} />
+                                    <MsgList msgs={this.state.msgs} convo={this.state.convo} sendMsg={this.sendMsg} />
                                     <MsgInput convoId={this.state.convo.convoId} uuid={this.state.uuid} sendMsg={sendMsg.bind(this)} />
                                 </div>
                             </div>

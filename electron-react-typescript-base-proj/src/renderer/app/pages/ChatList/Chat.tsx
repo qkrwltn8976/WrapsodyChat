@@ -7,7 +7,7 @@ import {getDocType} from '@/renderer/libs/messengerLoader'
 import { Client } from '@stomp/stompjs';
 import { Conversation } from '@/renderer/models/Conversation';
 import { sortConvos } from '@/renderer/libs/sort';
-;
+import { sendNotification } from '@/renderer/libs/notification';
 
 const {remote, webContents} = require('electron')
 const Store = require('electron-store')
@@ -98,7 +98,8 @@ class Chat extends Component<ChatListProps, ChatListState> {
                         })
                     }
                 } else {
-                    if (obj.body) {
+                    if (obj.body || obj.messageId) {
+                        sendNotification('새로운 메세지가 도착했습니다',obj.sendUserId, obj.body||obj.messageId);
                         console.log(obj)
                         const index = this.state.convos.findIndex(convo => convo.convoId === obj.recvConvoId),
                             convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call
@@ -163,7 +164,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
                     <Fragment>
                         {/* <Link to = {"/document/"+item.convoId}> */}
                         {/* 검색 활성화 */}
-                        { item && this.props.search === null || item.name.toLowerCase().includes(this.props.search.toLowerCase())?
+                        { item.name && (this.props.search === null || item.name.toLowerCase().includes(this.props.search.toLowerCase()))?
                         <li onClick={this.getConvo(item.convoId, item.name)} className="ng-scope">
                         {/* /챗봇, 문서채팅방의 아이콘 표시/ */}
                         {item.convoType ===2? 

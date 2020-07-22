@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { BotIntent } from '@/renderer/models/BotIntent';
-import { publishApi, publishChat, client, subscribe } from '@/renderer/libs/stomp';
+import { publishApi, publishChat, subscribe, client } from '@/renderer/libs/stomp';
 import { v4 } from 'uuid';
 import { BotCommand } from '@/renderer/models/BotCommand';
 import { Message } from '@/renderer/models/Message';
@@ -10,7 +10,8 @@ const store = new Store()
 
 interface IntentProps {
     intent: BotIntent,
-    convoId: string
+    convoId: string,
+    sendMsg: any
 }
 
 interface IntentState {
@@ -30,7 +31,9 @@ class Intent extends React.Component<IntentProps, IntentState>{
             updatedAt: Date.now(),
             messageType: 1
         }
-        publishChat(client, 'chat.short.command.convo', this.state.uuid, msg)
+
+        this.props.sendMsg(msg, 'chat.short.command.convo');
+        // publishChat(client, , this.state.uuid, msg);
     }
 
     getCommand = (command: BotCommand) => {
@@ -74,8 +77,8 @@ class Intent extends React.Component<IntentProps, IntentState>{
 
 
     render() {
-        return (<li className="ng-scope" onClick={(e) => this.toggleIntentGroup(this.props.intent)}>
-            <div className="ng-binding">
+        return (<li className="ng-scope">
+            <div className="ng-binding"  onClick={(e) => this.toggleIntentGroup(this.props.intent)}>
                 {this.props.intent.name}
                 <i className={this.state.active ? 'icon_triangle wrapmsgr_expand' : 'icon_triangle wrapmsgr_collapse'}></i>
             </div><ul className={this.state.active ? 'question-sub-list ' : 'question-sub-list hidden'}>
