@@ -143,7 +143,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
                     <Fragment>
                         {/* <Link to = {"/document/"+item.convoId}> */}
                         {/* 검색 활성화 */}
-                        { item && this.props.search === null || item.name.toLowerCase().includes(this.props.search.toLowerCase())?
+                        { item.name && (this.props.search === null || item.name.toLowerCase().includes(this.props.search.toLowerCase()))?
                         <li onClick={this.getConvo(item.convoId, item.name)} className="ng-scope">
                         {/* /챗봇, 문서채팅방의 아이콘 표시/ */}
                         {item.convoType ===2? 
