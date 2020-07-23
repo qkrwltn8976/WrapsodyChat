@@ -24,6 +24,7 @@ class Header extends React.Component<Props>{
     }
 
     minimizeWindow = (event:any)=>{
+        event.preventDefault()
         var win = remote.getCurrentWindow()
         win.minimize()
     }
