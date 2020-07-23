@@ -1,7 +1,18 @@
-body {
-    background: #12923d;
-    margin:0px;
-  }
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.login-body{
+  background: #12923d;
+  /* border-radius: 5px; */
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: 10;
+}
   
 
 .form-group {
@@ -9,9 +20,11 @@ body {
   }
 
 .header{
+    height:50px;
     -webkit-app-region: drag;
+    /* border-radius: 5px; */
 }
-.header .close{
+.header .min{
     color: white;
     margin-top: 5px;
     margin-right:10px;
@@ -21,6 +34,17 @@ body {
     font-family: 'Open Sans', sans-serif;
     -webkit-app-region: no-drag;
     cursor:pointer;
+}
+.header .close{
+  color: white;
+  margin-top: 5px;
+  margin-right:10px;
+  text-decoration: none;
+  font-weight: 100;
+  float:right;
+  font-family: 'Open Sans', sans-serif;
+  -webkit-app-region: no-drag;
+  cursor:pointer;
 }
 
 .login-form {
@@ -39,7 +63,7 @@ body {
   .login-form .login-submit {
 
     height: 45px;
-    border-radius: 4px;
+    border-radius: 5px;
     border: none;
     width: 301px;
     display: block;
@@ -50,7 +74,7 @@ body {
   .login-form .login-username, .login-form .login-password {
     padding: 0 20px 0 20px;
     width: 100%;
-    border-radius: 4px 0 0 4px;
+    border-radius: 5px 0 0 5px;
     box-sizing: border-box;
   }
   
