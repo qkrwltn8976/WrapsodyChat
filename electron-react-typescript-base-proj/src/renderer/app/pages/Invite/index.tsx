@@ -59,7 +59,6 @@ class Invite extends React.Component<inviteProps, inviteState>{
             //subscribe
             subscribe(client, store.get("username"), this.state.uuid, (obj:any) => {
                 let payload = obj.payload;
-              
                 if(payload){
                     console.log("pppppppppppppppppppppppppp")
                     console.log(payload)
@@ -92,7 +91,6 @@ class Invite extends React.Component<inviteProps, inviteState>{
                 }else{
                    
                 }// payload없으면...
-
             });
             publishApi(client, 'api.conversation.view', store.get("username"), this.state.uuid, { 'convoId': this.state.convoId });
         }
@@ -140,12 +138,11 @@ class Invite extends React.Component<inviteProps, inviteState>{
                 isDeptChecked : !this.state.isDeptChecked
             })
         }// dept코드 받아서 dept숫자 더해야할듯 나중에..
-        console.log("눌리긴 했네...")
-        console.log(checkBoxType)
     }
 
     render(){
         let aside, viewModeClass;
+        var organ_tree_calc_width = { width: 'calc(100% - 300px)' };
         return(
             aside = <React.Fragment>
                 <div id="wrapmsgr" className="ng-scope">
@@ -157,11 +154,11 @@ class Invite extends React.Component<inviteProps, inviteState>{
                                     <div className="wrapmsgr_popup_body">
                                         <InfoHeader convoType= {ConvoType.IC} memberCount = {this.state.members.length} participants = {this.state.participants} docName = {this.state.docName}/>
                                         <div className="group">
-                                            <div className="wrapmsgr_organ_tree ng-scope angular-ui-tree" ui-tree="organTreeOptions" data-clone-enabled="true" data-nodrop-enabled="true" data-drag-delay="100">
+                                            <div className="wrapmsgr_organ_tree ng-scope angular-ui-tree" ui-tree="organTreeOptions" data-clone-enabled="true" data-nodrop-enabled="true" data-drag-delay="100" style = {organ_tree_calc_width}>
                                                 <MemberList memberListType = {MemberListType.SELECT} clickCheckBox = {this.clickCheckBox}/>
                                             </div>    
                                             <div className="wrapmsgr_organ_tree right-list-col ng-scope angular-ui-tree" ui-tree="inviteTreeOptions">
-                                                {/* <MemberList memberListType = {MemberListType.SELECTED} members = {members} groups = {groups}/> */}
+                                                <MemberList memberListType = {MemberListType.SELECTED}/>
                                             </div>
                                         </div>
                                     </div>

@@ -1279,7 +1279,7 @@ div.wrapmsgr_container * {
 }
 
 .wrapmsgr_container .wrapmsgr_organ_tree {
-	/* float: left;  */
+	float: left; 
 	height: 100%;
 	white-space: nowrap;
 	position: relative;

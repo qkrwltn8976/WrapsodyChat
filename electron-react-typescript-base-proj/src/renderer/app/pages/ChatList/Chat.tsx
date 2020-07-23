@@ -222,8 +222,6 @@ class Chat extends Component<ChatListProps, ChatListState> {
                                     <span className="wrapmsgr_unread">{item.unread}</span>
                                 </span>
                             }
-                            
-
                         </div>
                     </li>
                     :
