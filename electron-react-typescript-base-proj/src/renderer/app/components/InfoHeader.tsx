@@ -36,7 +36,7 @@ interface ShowState{
 class InfoHeader extends React.Component<Props, ShowState>{
     client: any;
     payload: any;
-    convoId: string = "98f7e404-f6b7-4513-84b4-31aa1647bc6d";
+    convoId: string;
     constructor(props: Props){
         super(props);     
 
@@ -86,11 +86,11 @@ class InfoHeader extends React.Component<Props, ShowState>{
         e.preventDefault();
         var currentWindow = remote.getCurrentWindow()
         var size = currentWindow.getSize()
-        var width = size[0] * 0.9;
-        var height = size[1] * 0.9;
+        // var width = size[0] * 0.9;
+        // var height = size[1] * 0.9;
         let inviteWindow = new BrowserWindow({
-            width: width,
-            height: height,
+            width: 700,
+            height: 585,
             minWidth: 370,
             minHeight: 370,
             maxWidth: 700,
@@ -101,8 +101,10 @@ class InfoHeader extends React.Component<Props, ShowState>{
             frame: false,
         })
         inviteWindow.loadURL(
-            __dirname + "/index.html#/invite/"+this.convoId
+            __dirname + "/index.html#/invite/"+this.props.convoId
         );
+        console.log("convoID!!!!!!!!!!!!!!!!!!!!1")
+        console.log(this.props.convoId)
         inviteWindow.show();
     }
 
