@@ -56,7 +56,10 @@ class Chat extends Component<ChatListProps, ChatListState> {
                 height:700,
                 minHeight: 200,
                 minWidth: 400,
-                hasShadow:true
+                maxHeight:700,
+                maxWidth:800,
+                hasShadow:true,
+                icon: __dirname + './public/icon_bot_wrapsody.png'
             }
         )
         // // and load the index.html of the app.

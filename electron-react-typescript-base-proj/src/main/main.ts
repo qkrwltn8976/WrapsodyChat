@@ -2,6 +2,7 @@
  * Entry point of the Election app.
  */
 import { app, BrowserWindow } from 'electron';
+import '@public/icon_bot_wrapsody.png'
 import * as path from 'path';
 import * as url from 'url';
 
@@ -17,7 +18,8 @@ function createMainWindow(): void {
         minHeight:180,
         minWidth: 360,
         titleBarStyle:'hidden',
-        hasShadow:true
+        hasShadow:true,
+        icon: __dirname + './public/icon_bot_wrapsody.png'
     });
 
     // and load the index.html of the app.
@@ -28,6 +30,8 @@ function createMainWindow(): void {
             slashes: true
         })
     );
+
+    mainWindow.setTitle("Wrapsody Chat")
 
     mainWindow.show()
 

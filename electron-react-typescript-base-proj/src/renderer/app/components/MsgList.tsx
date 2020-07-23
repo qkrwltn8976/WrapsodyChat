@@ -108,12 +108,13 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
             console.log('&&&&&&&&&&&&'+attach[0].attachmentType)
             return (
                 <React.Fragment>
-                    <div className="wrapmsgr_msg_body ng-binding" ng-bind-html="message.body | linky:'_blank'">Wrapsody에서 사용되는 용어입니다. 상세 설명을 보려면 용어를 클릭하세요.</div>
-                    <div className="wrapmsgr_msg_attachment ng-scope" ng-repeat="attachment in message.attachments">
-                        <div className="wrapmsgr_msg_title ng-binding"></div>
+                    <div className="wrapmsgr_msg_body">Wrapsody에서 사용되는 용어입니다. 상세 설명을 보려면 용어를 클릭하세요.</div>
+                    <div className="wrapmsgr_msg_attachment" >
+                        <div className="wrapmsgr_msg_title"></div>
                         {attach[0].payload.map((action: Action) => {
-                            return (<span ng-if="attachment.attachmentType == 5" ng-repeat="action in attachment.payload" className="ng-scope">
-                                <button type="button" data-attr-title={action.value} ng-if="action.type == 'button'" onClick={this.onAttachmentButton(action)} className="ng-scope" title={action.value} ><div className="ng-binding">{action.value}</div></button>
+                            return (
+                            <span className="ng-scope">
+                                <button type="button" data-attr-title={action.value} onClick={this.onAttachmentButton(action)} className="ng-scope" title={action.value} ><div className="ng-binding">{action.value}</div></button>
                             </span>)
                         })}
 
@@ -150,7 +151,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         }
         if (!this.isContinuous(msg, this.state.msgs[index + 1])) {
             time = <div className="wrapmsgr_msg_time">
-                <span className="wrapmsgr_msg_unread ng-binding">1</span>
+                {/* <span className="wrapmsgr_msg_unread ng-binding">1</span> */}
                 <span className="ng-binding">{getTime(msg.createdAt)}</span>
             </div>;
         }
