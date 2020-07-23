@@ -10,7 +10,6 @@ import { subscribe, publishApi, publishChat, client } from '../../../../libs/sto
 import { v4 } from "uuid"
 import * as type from '@/renderer/libs/enum-type';
 import IntentList from '@/renderer/app/components/IntentList';
-import { sendNotification } from '@/renderer/libs/notification';
 
 const Store = require('electron-store')
 const store = new Store()
@@ -27,6 +26,7 @@ interface RoomState {
     bot?: Bot,
     botIntent?: BotIntent[],
     search: string;
+    isOpened?: boolean;
 }
 
 class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
@@ -43,27 +43,26 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
             msgs: [],
             members: [],
             convo: {
-                convoId: this.props.match.params.convo, // 대화방 ID
-                convoType: 0, // 대화 유형
-                roomType: 0, // 대화방 유형
-                name: '', // 대화방 이름
-                readAt: 0, // 마지막으로 읽은 시간
-                unread: 0, // 읽지 않은 메시지 수
-                memberCount: 0, // 대화에 참여중인 유저 수
-                notificationType: 0, // 대화 알람 유형
-                latestMessage: '', // 마지막 메시지 유형
-                latestMessageAt: 0, // 마지막 메시지 시간
-                createdAt: 0, // 대화 생성 일시
-                updatedAt: 0, // 대화 수정 일시}
+                convoId: this.props.match.params.convo, 
+                convoType: 0, 
+                roomType: 0,
+                name: '',
+                readAt: 0, 
+                unread: 0, 
+                memberCount: 0, 
+                notificationType: 0, 
+                latestMessage: '',
+                latestMessageAt: 0, 
+                createdAt: 0, 
+                updatedAt: 0, 
             },
-            search: ""
+            search: "",
         })
 
     }
 
     componentDidMount() {
         client.onConnect = () => {
-            console.log("djkfjkjlekrj lajwelkr jlejljrle ");
             console.log(client);
             console.log(this.state.convo.convoId);
             subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
@@ -89,8 +88,6 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                         })
                     }
 
-                    // console.log(payload.Bot)
-                    // console.log(payload.BotIntentGroup)
                     if (payload.Bot) {
                         this.setState({
                             bot: payload.Bot
@@ -106,10 +103,6 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                 } else {
                     console.log(obj);
                     if ((obj.body || obj.messageId) && obj.recvConvoId === this.state.convo.convoId) { // 받은 메세지 처리
-                        console.log('noti11111111111111111111 '+this.state.convo.notificationType)
-                        if((obj.sendUserId !==  store.get("username")) && (this.state.convo.notificationType === 1)) {
-                            sendNotification('새로운 메세지가 도착했습니다', obj.sendUserId, obj.body||obj.messageId);                 
-                        }
                         this.setState({
                             msgs: this.state.msgs.concat(obj)
                         });
@@ -118,6 +111,7 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                             console.log('읽어')
                             // publishApi(client, 'api.conversation.read', 'admin', this.state.uuid, { 'convoId': this.state.convoId });
                         }
+                        
                     }
 
                     // if(obj.readAt) { // 읽음 처리
@@ -125,7 +119,7 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                     // }
                 }
             });
-            // publishApi(this.state.client, 'api.user.info', 'admin', this.props.uuid, {});
+
             publishApi(client, 'api.conversation.view', store.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
         }
     }
