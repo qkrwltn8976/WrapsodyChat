@@ -51,58 +51,42 @@ class Invite extends React.Component<inviteProps, inviteState>{
             //subscribe
             subscribe(client, store.get("username"), this.state.uuid, (obj:any) => {
                 let payload = obj.payload;
-                console.log("???????????????????????????????");
-                console.log(obj);
-                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!11");
-                console.log(payload);
-                console.log(this.state.convoId);
               
                 if(payload){
+                    console.log("pppppppppppppppppppppppppp")
+                    console.log(payload)
                     if(payload.Room){
                         this.setState({
                             docName: payload.Room.name
                         })
-                        console.log("docNAMEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
                         console.log(this.state.docName);
                     }
-                    if(payload.SyncInfo.master){
+                    if(payload.SyncInfo){
                         this.setState({
-                            master : payload.syncInfo.master
+                            master : payload.SyncInfo.master,
+                            checkoutAuthList : payload.SyncInfo.checkoutAuthList,
+                            checkoutDeptAuthList : payload.SyncInfo.checkoutDeptAuthList,
+                            viewAuthList : payload.SyncInfo.viewAuthList,
+                            viewDeptAuthList : payload.SyncInfo.viewDeptAuthList,
                         })
-                    }// master
-                    if(payload.SyncInfo.checkoutAuthList){
-                        this.setState({
-                            checkoutAuthList : payload.syncInfo.chekoutAuthList
-                        })
-                    }// 리비전 권한 멤버
-                    if(payload.SyncInfo.checkoutDeptAuthList){
-                        this.setState({
-                            checkoutDeptAuthList : payload.syncInfo.checkoutDeptAuthList
-                        })
-                    }// 리비전 권한 부서
-                    if(payload.SyncInfo.viewAuthList){
-                        this.setState({
-                            viewAuthList : payload.syncInfo.viewAuthList
-                        })
-                    }//열람 권한 멤버
-                    if(payload.SyncInfo.viewDeptAuthList){
-                        this.setState({
-                            viewDeptAuthList : payload.syncInfo.viewDeptAuthList
-                        })
-                    }// 열람 권한 부서
+                        console.log("SyncInfo!!!!!!!!!!!!!!!!!11")
+                        console.log(this.state.checkoutAuthList)
+                        console.log(this.state.checkoutDeptAuthList)
+                        console.log(this.state.viewAuthList)
+                        console.log(this.state.viewDeptAuthList)
+                    }
                     if(payload.Members){
                         this.setState({
                             members : payload.Members
                         })
+                        console.log("member!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                        console.log(this.state.members)
                     }// 채팅방 참여자
-                   
                 }else{
-                    console.log("ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ");
+                   
                 }// payload없으면...
 
             });
-            //publish
-            //publishApi(client, 'api.conversation.view', store.get("username"), this.state.uuid, { 'convoId': this.state.convoId});
             publishApi(client, 'api.conversation.view', store.get("username"), this.state.uuid, { 'convoId': this.state.convoId });
         }
     }

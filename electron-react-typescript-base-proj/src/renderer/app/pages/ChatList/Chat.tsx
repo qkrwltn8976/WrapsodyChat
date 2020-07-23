@@ -98,8 +98,8 @@ class Chat extends Component<ChatListProps, ChatListState> {
                     }
                 } else {
                     if (obj.body || obj.messageId) {
-                        if(obj.sendUserId !==  store.get("username"))
-                            sendNotification('새로운 메세지가 도착했습니다',obj.sendUserId, obj.body||obj.messageId);
+                        // if(obj.sendUserId !==  store.get("username"))
+                        //     sendNotification('새로운 메세지가 도착했습니다',obj.sendUserId, obj.body||obj.messageId);
                         console.log(obj)
                         const index = this.state.convos.findIndex(convo => convo.convoId === obj.recvConvoId),
                             convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call

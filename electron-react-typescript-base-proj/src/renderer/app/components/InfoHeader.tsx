@@ -10,11 +10,11 @@ const { remote }  = require('electron')
 const { BrowserWindow } = remote
 
 interface Props{ 
-    convoType: number,
-    convoId?:string,
+    convoType: number;
+    convoId?:string;
     // infoheaderType: string;
     memberCount: number;
-    docName: string,
+    docName: string;
     notificationType?: number;
     setNotification?:any
 }
