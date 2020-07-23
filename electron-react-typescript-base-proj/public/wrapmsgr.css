@@ -1,5 +1,15 @@
 @CHARSET "UTF-8";
 
+::-webkit-scrollbar {     
+        background-color: #fff;
+        width: 10px;
+}
+
+::-webkit-scrollbar-thumb:window-inactive,
+::-webkit-scrollbar-thumb {
+	background:  #acacac83;
+	border-radius: 3px;
+}
 
 .group:before, .group:after{ content: ""; display: table;}
 .group:after{ clear: both;}
@@ -105,8 +115,8 @@ div.wrapmsgr_container * {
 	width: 100%;
 	height: calc(100%);
 	min-height: 180px;
-	max-height: 760px;
-	border-radius: 5px;
+	max-height: 1000px;
+	/* border-radius: 5px; */
 	border-right: solid 1px #d7d8db;
 	box-shadow: 5px 5px 20px 0 rgba(62, 63, 66, 0.12), 5px 5px 20px 0 rgba(62, 63, 66, 0.12);
 	overflow: hidden;
@@ -117,7 +127,7 @@ div.wrapmsgr_container * {
 .wrapmsgr_container .wrapmsgr_chat {
 	position: fixed;
 	border: solid 1px #d7d8db;
-	border-radius: 5px;
+	/* border-radius: 5px; */
     box-shadow: 5px 5px 20px 0 rgba(62, 63, 66, 0.12);
 	overflow: hidden;
 	background-color: #ffffff;
@@ -165,10 +175,9 @@ div.wrapmsgr_container * {
 
 .wrapmsgr_container .wrapmsgr_unread_outer {
 	display: inline-block;
-	padding: 2px;
 	background-color: #fff;
 	border-radius: 20px;
-	height: 22px;
+	height: 19px;
 	line-height: 14px;
 }
 .wrapmsgr_container .wrapmsgr_unread {
@@ -188,6 +197,10 @@ div.wrapmsgr_container * {
 
 .wrapmsgr_container .wrapmsgr_right {
 	float: right;
+}
+
+.wrapmsgr_container .wrapmsgr_right a{
+	text-decoration:none
 }
 
 .wrapmsgr_container .wrapmsgr_title_header {
@@ -229,11 +242,14 @@ div.wrapmsgr_container * {
 	-webkit-app-region: no-drag;
 }
 
-.wrapmsgr_container .wrapmsgr_header .wrapmsgr-header-icon-wrap>a{margin-left: 10px;}
+.wrapmsgr_container .wrapmsgr_header .wrapmsgr-header-icon-wrap>a{
+	margin-left: 10px; 
+	text-decoration:none;
+}
 
-.wrapmsgr_container .wrapmsgr_title_header .wrapmsgr-header-icon-wrap>a{margin-left: 10px;}
+.wrapmsgr_container .wrapmsgr_title_header .wrapmsgr-header-icon-wrap>a{margin-left: 10px; text-decoration:none}
 
-.wrapmsgr_container .wrapmsgr_popup_header .wrapmsgr-header-icon-wrap>a{margin-left: 10px;}
+.wrapmsgr_container .wrapmsgr_popup_header .wrapmsgr-header-icon-wrap>a{margin-left: 10px; text-decoration:none}
 
 .wrapmsgr_container .wrapmsgr_titlebar_button {
 	width: 24px;
@@ -529,9 +545,11 @@ div.wrapmsgr_container * {
 	position: absolute;
 	bottom: 10px;
 	right: 24px;
+	text-decoration:none;
 }
 .wrapmsgr_content.wrapmsgr_chatbot .wrapmsgr_aside .wrapmsgr_chatbot-info_div a i{
 	font-size: 18px;
+	text-decoration:none;
 }
 .wrapmsgr_content.wrapmsgr_chatbot .wrapmsgr_aside .wrapmsgr_chatbot-info_div>p{
     color: #28292b;
@@ -939,11 +957,14 @@ div.wrapmsgr_container * {
     font-size: 13px;
     text-align: center;
     padding: 8px 15px;
-    margin-top: 2px;
+	margin-top: 2px;
+	margin-right:3px;
     color: #28292b;
 	border-radius: 5px;
 	background-color: #f0f2f5;
-    cursor: pointer;
+	cursor: pointer;
+	border: 0px;
+ 	box-shadow: none;
 }
 .wrapmsgr_container .wrapmsgr_msg_attachment button div {
 	max-width: 248px;
@@ -1349,6 +1370,7 @@ div.wrapmsgr_container * {
 .wrapmsgr_container .wrapmsgr_organ_tree .wrapmsgr_member a {
 	position: absolute;
 	right: 25px;
+	text-decoration:none;
 }
 .wrapmsgr_container .wrapmsgr_organ_tree .wrapmsgr_master {
 	position: absolute;

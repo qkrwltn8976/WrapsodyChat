@@ -23,6 +23,12 @@ class Header extends React.Component<Props>{
         win.close()
     }
 
+    minimizeWindow = (event:any)=>{
+        event.preventDefault()
+        var win = remote.getCurrentWindow()
+        win.minimize()
+    }
+
     render() {
         const {docName, headerType} = this.props;
         
@@ -35,6 +41,9 @@ class Header extends React.Component<Props>{
                     </h1>
                     <div className = "wrapmsgr-header-icon-wrap">
                         <a href = "">
+                            <i style = {{fontSize:30}} onClick = {this.minimizeWindow}>-</i>
+                        </a>
+                        <a href = "">
                             <i className = "icon_times" title = "Close" onClick={this.closeWindow}></i>
                         </a>
                     </div>
@@ -46,6 +55,9 @@ class Header extends React.Component<Props>{
                     <h2 className="title_h2">
                         <span ng-if="manageMethod == 'create'" className="ng-scope">{headerType}</span>
                     </h2>
+                        <a href = "">
+                            <i style = {{fontSize:30}} onClick = {this.minimizeWindow}>-</i>
+                        </a>
                     <a href=""><i className="icon_times" onClick={this.closeWindow}></i></a>
                 </div>
             );    
@@ -57,6 +69,9 @@ class Header extends React.Component<Props>{
                         <span>{headerType}</span>
                     </h2>
                     <div className = "wrapmsgr-header-icon-wrap">
+                        <a href = "">
+                            <i style = {{fontSize:30}} onClick = {this.minimizeWindow}>-</i>
+                        </a>
                         <a href ="">
                             <i className = "icon_times" title = "Close" onClick={this.closeWindow}></i>
                         </a>
@@ -69,6 +84,9 @@ class Header extends React.Component<Props>{
                 <div className="wrapmsgr_title_header">
 				    <h1 className="wrapmsgr_title">Wrapsody Chat</h1>
 				        <div className="wrapmsgr-header-icon-wrap">
+                        <a href = "">
+                            <i style = {{fontSize:30}} onClick = {this.minimizeWindow}>-</i>
+                        </a>
 			 		        <a href=""><i className="icon_times" title="닫기" onClick={this.closeWindow}></i></a>
 			 	    </div>
 			</div>
@@ -79,6 +97,9 @@ class Header extends React.Component<Props>{
                 <div className = "wrapmsgr_title_header">
                     <h1 className = "wrapmsgr_title">{headerType}</h1>
                     <div className = "wrapmsgr-header-icon-wrap">
+                        <a href = "">
+                            <i style = {{fontSize:30}} onClick = {this.minimizeWindow}>-</i>
+                        </a>
                         <a href = ""><i className = "icon_times" title = "Close" onClick={this.closeWindow}></i></a>
                     </div>
                 </div>
