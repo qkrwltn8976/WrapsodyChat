@@ -11,5 +11,8 @@ export type Conversation = {
     latestMessageAt: number // 마지막 메시지 시간
     createdAt: number; // 대화 생성 일시
     updatedAt: number; // 대화 수정 일시
+
+    browserId?: number; // 브라우저 id
+    isOpened?: boolean; // 브라우저 열림 여부
 };
 

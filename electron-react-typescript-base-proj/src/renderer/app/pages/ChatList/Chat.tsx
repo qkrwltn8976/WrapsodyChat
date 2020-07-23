@@ -43,10 +43,6 @@ class Chat extends Component<ChatListProps, ChatListState> {
 
     getConvo = (convoId: string, name:string) => (event: any) => {
 
-        const index = this.state.convos.findIndex(convo => convo.convoId === convoId),
-        convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call
-        convos[index].unread = 0;
-        this.setState({ convos });
         
         const chatWindow = new BrowserWindow(
             {
@@ -64,8 +60,25 @@ class Chat extends Component<ChatListProps, ChatListState> {
         );
 
         chatWindow.setTitle(name)
-        chatWindow.show()
+        chatWindow.show();
+
+        const index = this.state.convos.findIndex(convo => convo.convoId === convoId),
+        convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call
+        convos[index].unread = 0;
+        convos[index].browserId = chatWindow.id;
+        convos[index].isOpened = true;
+        this.setState({ convos });
+        // console.log(chatWindow.isDestroyed())
         
+    }
+
+    isBrowserOpened = (id: number) => {
+        if(id) {
+            let window = BrowserWindow.fromId(id);
+            if(window && !window.isDestroyed())
+                return true;
+        }
+        return false;
     }
 
     stompConnection = () => {
@@ -98,15 +111,31 @@ class Chat extends Component<ChatListProps, ChatListState> {
                     }
                 } else {
                     if (obj.body || obj.messageId) {
+                        console.log(obj.sendUserId + ' ' + obj.notificationType)
                         // if(obj.sendUserId !==  store.get("username"))
                         //     sendNotification('새로운 메세지가 도착했습니다',obj.sendUserId, obj.body||obj.messageId);
-                        console.log(obj)
+                        // if((obj.sendUserId !==  store.get("username")) && (obj.notificationType === 1)) {
+                            
+                        //     sendNotification('새로운 메세지가 도착했습니다', obj.sendUserId, obj.body||obj.messageId);                 
+                        // }
                         const index = this.state.convos.findIndex(convo => convo.convoId === obj.recvConvoId),
                             convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call
                             convos[index].latestMessage = obj.body;
-                            if(obj.sendUserId!==store.get("username")){convos[index].unread += 1;}
+                            if(obj.sendUserId!==store.get("username")){ 
+                                if(this.isBrowserOpened(convos[index].browserId)) {
+                                    // 윈도우 창이 열려있는 경우
+                                    convos[index].unread = 0;
+                                }
+                                else {
+                                    // 윈도우 창이 닫혀있는 경우
+                                    convos[index].unread += 1;
+                                    if(convos[index].notificationType === 1)
+                                        sendNotification('새로운 메세지가 도착했습니다', obj.sendUserId, obj.body||obj.messageId);                 
+                                }
+                            }
                             convos[index].latestMessageAt = obj.updatedAt;
                             this.setState({ convos:sortConvos(convos) });
+                            // convos[index].isOpened ? convos[index].unread = 0 : convos[index].unread += 1;}
                     }
                     
                 }
