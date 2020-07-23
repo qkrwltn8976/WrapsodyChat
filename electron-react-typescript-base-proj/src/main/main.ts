@@ -16,7 +16,8 @@ function createMainWindow(): void {
         frame:false,
         minHeight:180,
         minWidth: 360,
-        titleBarStyle:'hidden'
+        titleBarStyle:'hidden',
+        hasShadow:true
     });
 
     // and load the index.html of the app.

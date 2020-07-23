@@ -55,7 +55,8 @@ class Chat extends Component<ChatListProps, ChatListState> {
                 width:800,
                 height:700,
                 minHeight: 200,
-                minWidth: 400
+                minWidth: 400,
+                hasShadow:true
             }
         )
         // // and load the index.html of the app.

@@ -22,6 +22,12 @@ async function handleClick (userinfo: any, uuid:string){
     }
 }
 
+const minimizeWindow = (event:any)=>{
+    console.log('bye')
+    var win = remote.getCurrentWindow()
+    win.minimize()
+}
+
 const closeWindow = (event:any)=>{
     console.log('bye')
     var win = remote.getCurrentWindow()
@@ -36,8 +42,10 @@ function Login(){
     
     return (
         <Fragment>
+            <div className = "login-body">
                 <div className = "header">
                     <h2 className = "close" onClick = {closeWindow}>x</h2>
+                    <h2 className = "min" onClick = {minimizeWindow}>-</h2>
                 </div>            
             <div className = "login-form">
                 <h1>Wrapsody Chat</h1>
@@ -57,7 +65,7 @@ function Login(){
                 </div>
             </div>
             
-
+            </div>
         </Fragment>
     )
 }

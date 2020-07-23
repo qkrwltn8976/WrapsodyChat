@@ -106,7 +106,7 @@ div.wrapmsgr_container * {
 	height: calc(100%);
 	min-height: 180px;
 	max-height: 760px;
-	border-radius: 5px;
+	/* border-radius: 5px; */
 	border-right: solid 1px #d7d8db;
 	box-shadow: 5px 5px 20px 0 rgba(62, 63, 66, 0.12), 5px 5px 20px 0 rgba(62, 63, 66, 0.12);
 	overflow: hidden;
@@ -117,7 +117,7 @@ div.wrapmsgr_container * {
 .wrapmsgr_container .wrapmsgr_chat {
 	position: fixed;
 	border: solid 1px #d7d8db;
-	border-radius: 5px;
+	/* border-radius: 5px; */
     box-shadow: 5px 5px 20px 0 rgba(62, 63, 66, 0.12);
 	overflow: hidden;
 	background-color: #ffffff;
