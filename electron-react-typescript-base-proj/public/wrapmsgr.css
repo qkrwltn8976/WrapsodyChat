@@ -233,7 +233,10 @@ div.wrapmsgr_container * {
 	-webkit-app-region: no-drag;
 }
 
-.wrapmsgr_container .wrapmsgr_header .wrapmsgr-header-icon-wrap>a{margin-left: 10px; text-decoration:none}
+.wrapmsgr_container .wrapmsgr_header .wrapmsgr-header-icon-wrap>a{
+	margin-left: 10px; 
+	text-decoration:none;
+}
 
 .wrapmsgr_container .wrapmsgr_title_header .wrapmsgr-header-icon-wrap>a{margin-left: 10px; text-decoration:none}
 
