@@ -128,19 +128,28 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
         this.setState({ search: search })
     }
 
+    setNotification =(type: number)=>{
+        this.setState(state => {
+            state.convo.notificationType = type===0?1:0
+            return{}
+        })
+        publishApi(client, "api.conversation.notification",store.get("username"),this.state.uuid, {"convoId":this.state.convo.convoId, "type": type===0?1:0})
+        return false;
+    }
+
     render() {
         let sendMsg = this.sendMsg;
         let aside, viewModeClass;
         if (this.state.convo.convoType === type.ConvoType.BOT) {
             viewModeClass = 'wrapmsgr_chatbot'
             aside = <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
-                <IntentList bot={this.state.bot} botIntent={this.state.botIntent} convoId={this.state.convo.convoId} notificationType={this.state.convo.notificationType} sendMsg={this.sendMsg} />
+                <IntentList bot={this.state.bot} botIntent={this.state.botIntent} convoId={this.state.convo.convoId} notificationType={this.state.convo.notificationType} setNotification = {this.setNotification} sendMsg={this.sendMsg} />
             </div>
         }
         else {
             viewModeClass = 'doc-chatroom'
             aside = <React.Fragment>
-                <InfoHeader convoType={this.state.convo.convoType} convoId = {this.state.convo.convoId} docName={this.state.convo.name} memberCount={this.state.convo.memberCount} notificationType = {this.state.convo.notificationType}/>
+                <InfoHeader convoType={this.state.convo.convoType} convoId = {this.state.convo.convoId} docName={this.state.convo.name} memberCount={this.state.convo.memberCount} notificationType = {this.state.convo.notificationType} setNotification = {this.setNotification}/>
                 <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
                     <SearchBar search={this.state.search} setSearch={this.setSearch} /><MemberList search={this.state.search} convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} members={this.state.members} />
                 </div></React.Fragment>

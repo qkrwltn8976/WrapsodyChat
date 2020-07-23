@@ -74,7 +74,6 @@ class Chat extends Component<ChatListProps, ChatListState> {
         client.onConnect = () => {
             subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
                 let payload = obj.payload;
-                console.log(this._isMounted)
                 console.log(payload)
                 if (payload) {
                     if (payload.Conversations) {
