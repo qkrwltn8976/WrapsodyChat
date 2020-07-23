@@ -1,6 +1,6 @@
 import { Component, Fragment, useContext } from 'react';
 import React from 'react';
-import { client, subscribe, publishApi, createClient } from '@/renderer/libs/stomp';
+import { client, subscribe, publishApi} from '@/renderer/libs/stomp';
 import { v4 } from "uuid"
 import { getConvoDate } from '@/renderer/libs/timestamp-converter';
 import {getDocType} from '@/renderer/libs/messengerLoader'

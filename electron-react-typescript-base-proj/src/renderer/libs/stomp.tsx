@@ -36,7 +36,12 @@ export function createClient(login: string, passcode: string) {
     client.activate();
     return client;
 }
+
 export var client = createClient(store.get("username"), store.get("password"))
+
+export function setClient(){
+    client = createClient(store.get("username"), store.get("password"))
+}
 
 export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
     let obj : any;

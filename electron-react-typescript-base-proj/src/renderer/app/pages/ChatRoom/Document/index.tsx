@@ -112,7 +112,7 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
                             msgs: this.state.msgs.concat(obj)
                         });
 
-                        if (obj.sendUserId !== 'admin') { // 추후 변경
+                        if (obj.sendUserId !== store.get("username")) { 
                             console.log('읽어')
                             // publishApi(client, 'api.conversation.read', 'admin', this.state.uuid, { 'convoId': this.state.convoId });
                         }
