@@ -17,6 +17,7 @@ interface Props{
     docName: string,
     notificationType?: number;
     setNotification?:any
+    participants?: number;
 }
 
 interface ShowState{
@@ -28,19 +29,19 @@ interface ShowState{
     iconLogOut: string;
     invite: string;
     leave: string;
-    //Inivite and Create
-    participants: number;
-    uuid:string;
+    uuid:string;   
 }
+
 
 class InfoHeader extends React.Component<Props, ShowState>{
     client: any;
     payload: any;
     convoId: string;
-    constructor(props: Props){
-        super(props);     
-
-        this.state = {
+    
+    constructor(props: Props, state: {}){
+        super(props, state);
+        
+        this.state = ({
             isShow: false,
             wrapmsgr_dropdown_menu: "",
             ngScope: "",
@@ -49,9 +50,9 @@ class InfoHeader extends React.Component<Props, ShowState>{
             iconLogOut: "",
             invite: "",
             leave: "",
-            participants: this.props.memberCount,
             uuid:v4(),
-        };
+        }) 
+        
     }
     
     showClick = (e) => {
@@ -64,8 +65,8 @@ class InfoHeader extends React.Component<Props, ShowState>{
                 iconPlus: "icon_plus",
                 leaveClass: "ng-scope ng-enter-prepare",
                 iconLogOut: "icon_log_out",
-                leave: "Leave",
                 invite:"Invite",
+                leave: "Leave",
             })
         }
         else{
@@ -76,8 +77,8 @@ class InfoHeader extends React.Component<Props, ShowState>{
                 iconPlus: "",
                 leaveClass: "",
                 iconLogOut: "",
-                leave: "",
                 invite: "",
+                leave: "",
           })
         }
     }
@@ -103,8 +104,6 @@ class InfoHeader extends React.Component<Props, ShowState>{
         inviteWindow.loadURL(
             __dirname + "/index.html#/invite/"+this.props.convoId
         );
-        console.log("convoID!!!!!!!!!!!!!!!!!!!!1")
-        console.log(this.props.convoId)
         inviteWindow.show();
     }
 
@@ -118,7 +117,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
             return "icon_bell";
         } 
     }
-   
+    
     render(){
         const {convoType} = this.props;
         if( convoType === ConvoType.DOC){
@@ -217,7 +216,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
                     <document-icon name="docInfo.detail.contentName" class="ng-isolate-scope"><i className="icon_txt">          <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i></document-icon>
                     <div className="doc-name ng-binding">{this.props.docName}</div>
                     <div>
-                        <span className="ng-binding">문서 권한 보유자 {this.props.memberCount} 명 / 대화 상대 {this.state.participants} 명</span>                       
+                        <span className="ng-binding">문서 권한 보유자 {this.props.memberCount} 명 / 대화 상대 {this.props.participants} 명</span>                       
                     </div>
                 </div>
             )

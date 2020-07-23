@@ -14,11 +14,12 @@ interface Props {
     search?:string;
     members?: Member[];
     treeData?: any;
+    clickCheckBox? : any;
 }
 
 
-class MemberList extends React.Component<Props>{
-
+class MemberList extends React.Component<Props, ClickState>{
+    
 
     constructor(props: Props) {
         super(props);
@@ -48,7 +49,7 @@ class MemberList extends React.Component<Props>{
                         <div className="wrapmsgr_organ_tree_header">
                             <input type="checkbox" id="manage_doc_room_select_all" ng-disabled="!loggedIn || organTreeOptions.disabled" ng-checked="checkAllMembers()" ng-click="toggleAllMembers($event)"/>
                             <label htmlFor="manage_doc_room_select_all">
-                                <i className="icon_checkbox" ng-class="{disabled: organTreeOptions.disabled}"></i>
+                                <i className="icon_checkbox" ng-class="{disabled: organTreeOptions.disabled}" onClick={this.props.clickCheckBox("All") }></i>
                             </label>
                             <span>Select All</span>
                         </div>
@@ -58,7 +59,7 @@ class MemberList extends React.Component<Props>{
                                     <span ng-style="node.type === 'dept' &amp;&amp; !node.hasChildren &amp;&amp; {'visibility': 'hidden'}">
                                         <input type="checkbox" id="member-yhj2object:2026" ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)"/>
                                         <label htmlFor="member-yhj2object:2026" data-nodrag="">
-                                            <i className="icon_checkbox disabled" ng-class="{disabled: node.disabled}"></i>
+                                            <i className="icon_checkbox disabled" ng-class="{disabled: node.disabled}" onClick={this.props.clickCheckBox("Member")}></i>
                                         </label>
                                     </span>
                                     <div wrapmsgr-user-profile="users[node.value] || node.value" user-profile-disabled="node.type === 'dept'" className="ng-isolate-scope">
@@ -76,7 +77,7 @@ class MemberList extends React.Component<Props>{
                                     <span ng-style="node.type === 'dept' &amp;&amp; !node.hasChildren &amp;&amp; {'visibility': 'hidden'}">
                                         <input type="checkbox" id="member-6d167acbb24a4841921986701622842dobject:2027" ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)"/>
                                         <label htmlFor="member-6d167acbb24a4841921986701622842dobject:2027" data-nodrag="">
-                                            <i className="icon_checkbox" ng-class="{disabled: node.disabled}"></i>
+                                            <i className="icon_checkbox" ng-class="{disabled: node.disabled}" onClick={this.props.clickCheckBox("Dept")}></i>
                                         </label>
                                     </span>
                                     <span className="wrapmsgr_treeicon ng-scope" data-nodrag="" ng-click="toggleOrgan(this)" ng-if="node.type === 'dept'" ng-style="!node.hasChildren &amp;&amp; {'visibility': 'hidden', 'cursor': 'auto'}">
