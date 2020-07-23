@@ -133,8 +133,13 @@ class Chat extends Component<ChatListProps, ChatListState> {
                                 else {
                                     // 윈도우 창이 닫혀있는 경우
                                     convos[index].unread += 1;
-                                    if(convos[index].notificationType === 1)
-                                        sendNotification('새로운 메세지가 도착했습니다', obj.sendUserId, obj.body||obj.messageId);                 
+                                    if(convos[index].notificationType === 1){
+                                        var win = remote.getCurrentWindow()
+                                        sendNotification('새로운 메세지가 도착했습니다', obj.sendUserId, obj.body||obj.messageId);
+                                        win.once('focus', () => win.flashFrame(false))
+                                        win.flashFrame(true)
+                                    }
+                                                         
                                 }
                             }
                             convos[index].latestMessageAt = obj.updatedAt;

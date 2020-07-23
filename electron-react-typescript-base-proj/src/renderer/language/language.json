@@ -1,0 +1,20 @@
+[{
+    "ko":{
+        "am": "오전",
+        "pm": "오후",
+        "chat_list_search": "문서 또는 부서 이름을 입력하십시오",
+        "member_list_search": "사용자 이름 또는 아이디를 입력하십시오",
+        "input_message": "메시지를 입력하십시오",
+        "invite": "대화상대 초대",
+        "exit": "나가기"
+    },
+    "en":{
+        "am": "am",
+        "pm": "pm",
+        "chat_list_search": "Enter a document or group name",
+        "member_list_search": "Enter a user name or ID",
+        "input_message": "Enter message",
+        "invite": "invite",
+        "exit": "exit"
+    }
+}]
