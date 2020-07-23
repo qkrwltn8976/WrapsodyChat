@@ -2,7 +2,6 @@ import * as React from 'react';
 import ReactDOM from 'react-dom';
 import { ConvoType, InfoHeaderType} from "../../libs/enum-type"
 import { getDocType } from '../../libs/messengerLoader'
-import { client, subscribe, publishApi} from '@/renderer/libs/stomp';
 import {v4} from "uuid"
 const Store = require('electron-store')
 const store = new Store()
@@ -17,6 +16,7 @@ interface Props{
     memberCount: number;
     docName: string;
     notificationType?: number;
+    setNotification?:any
 }
 
 interface ShowState{
@@ -30,15 +30,13 @@ interface ShowState{
     leave: string;
     //Inivite and Create
     participants: number;
-    notificationType:number;
     uuid:string;
-    bellCnt:number;
 }
 
 class InfoHeader extends React.Component<Props, ShowState>{
     client: any;
     payload: any;
-    convoId: string = "98f7e404-f6b7-4513-84b4-31aa1647bc6d";
+    convoId: string;
     constructor(props: Props){
         super(props);     
 
@@ -51,10 +49,8 @@ class InfoHeader extends React.Component<Props, ShowState>{
             iconLogOut: "",
             invite: "",
             leave: "",
-            participants: this.props.memberCount, // 처음엔 참가자수 멤버수 동일
-            notificationType: this.props.notificationType,
+            participants: this.props.memberCount,
             uuid:v4(),
-            bellCnt:0
         };
     }
     
@@ -90,11 +86,11 @@ class InfoHeader extends React.Component<Props, ShowState>{
         e.preventDefault();
         var currentWindow = remote.getCurrentWindow()
         var size = currentWindow.getSize()
-        var width = size[0] * 0.9;
-        var height = size[1] * 0.9;
+        // var width = size[0] * 0.9;
+        // var height = size[1] * 0.9;
         let inviteWindow = new BrowserWindow({
-            width: width,
-            height: height,
+            width: 700,
+            height: 585,
             minWidth: 370,
             minHeight: 370,
             maxWidth: 700,
@@ -105,38 +101,16 @@ class InfoHeader extends React.Component<Props, ShowState>{
             frame: false,
         })
         inviteWindow.loadURL(
-            __dirname + "/index.html#/invite/"+this.convoId
+            __dirname + "/index.html#/invite/"+this.props.convoId
         );
+        console.log("convoID!!!!!!!!!!!!!!!!!!!!1")
+        console.log(this.props.convoId)
         inviteWindow.show();
     }
 
-    //icon_bell 클릭시 notificationType 수정
-    setNoti = (e) => {
-        e.preventDefault();
-        if(this.state.notificationType===0 ){
-            this.setState({notificationType:1})
-            publishApi(client, "api.conversation.notification",store.get("username"),this.state.uuid, {"convoId":this.props.convoId, "type": 1})
-            if(this.state.bellCnt===0&& this.props.notificationType!==0){
-                this.setState({notificationType:0})
-            publishApi(client, "api.conversation.notification",store.get("username"),this.state.uuid, {"convoId":this.props.convoId, "type": 0})
-            }
-        }
-        else{
-            this.setState({notificationType:0})
-            publishApi(client, "api.conversation.notification",store.get("username"),this.state.uuid, {"convoId":this.props.convoId, "type": 0})
-        }
-
-        this.setState({bellCnt: this.state.bellCnt+1})
-        
-        console.log(this.state.notificationType)
-            
-    }
     //notificationType 에 따라 icon_bell 아이콘의 모양 결정
     getBellIcon(){
-        if(this.state.notificationType===0){
-            if(this.state.bellCnt===0&& this.props.notificationType!==0){
-                return "icon_bell"
-            }
+        if(this.props.notificationType===0){
             return "icon_bell_off";
         }
             
@@ -144,15 +118,8 @@ class InfoHeader extends React.Component<Props, ShowState>{
             return "icon_bell";
         } 
     }
-
-    componentDidMount(){
-        this.setState({notificationType: this.props.notificationType})
-    }
    
     render(){
-        console.log(this.props.notificationType)
-        console.log(this.state.notificationType)
-
         const {convoType} = this.props;
         if( convoType === ConvoType.DOC){
             return (
@@ -178,7 +145,9 @@ class InfoHeader extends React.Component<Props, ShowState>{
                     <div className="wrapmsgr_right">
                         <a href=""><i className="icon_eye" title="미리보기"></i></a>
                         <a href="" ><i className="icon_download" title="다운로드"></i></a>
-                        <a href=""><i className={this.getBellIcon()} onClick={this.setNoti}></i></a>
+                        <a href=""><i className={this.getBellIcon()} onClick= {(e) =>{
+                            e.preventDefault();
+                            this.props.setNotification(this.props.notificationType)}}></i></a>
                         <div className="ng-isolate-scope">
                             <a href=""><i className="icon_ellipsis_h" title="더 보기" onClick = {this.showClick}></i></a>
                              <div className={this.state.wrapmsgr_dropdown_menu} style={{position: "absolute"}}>

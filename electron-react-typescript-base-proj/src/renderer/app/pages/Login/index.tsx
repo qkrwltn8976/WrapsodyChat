@@ -10,7 +10,6 @@ async function handleClick (userinfo: any){
     store.set("username", userinfo.username)
     store.set("password", userinfo.password)
     
-    console.log(client.connected)
     if(client.connected){
         console.log("yess")
         var win  = remote.getCurrentWindow()
@@ -60,4 +59,4 @@ function Login(){
     )
 }
 
-export default Login
+export default Login;

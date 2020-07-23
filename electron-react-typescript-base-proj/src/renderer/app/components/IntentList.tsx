@@ -8,6 +8,7 @@ interface IntentProps {
     botIntent: BotIntent[],
     convoId: string,
     notificationType: number,
+    setNotification: any,
     sendMsg: any
 }
 
@@ -26,6 +27,16 @@ class IntentList extends React.Component<IntentProps, IntentState> {
 
     }
 
+    getBellIcon(){
+        if(this.props.notificationType===0){
+            return "icon_bell_off";
+        }
+            
+        else {
+            return "icon_bell";
+        } 
+    }
+
     render() {
         this.state = {
             bot: this.props.bot,
@@ -38,7 +49,9 @@ class IntentList extends React.Component<IntentProps, IntentState> {
                 <React.Fragment>
                     <div className="wrapmsgr_chatbot-info_div">
                         <p className="ng-binding">{this.state.bot.description}</p>
-                        <a href=""><i ng-class="{0:'icon_bell_off', 1:'icon_bell'}[current.convo.notificationType]" ng-show="notificationEnabled" ng-click="toggleNotification()" ng-attr-title="{{ current.convo.notificationType > 0 ? '알림 해제' : '알림 수신' }}" title="알림 해제" className="icon_bell"></i></a>
+                        <a href=""><i className={this.getBellIcon()} onClick= {(e) =>{
+                            e.preventDefault();
+                            this.props.setNotification(this.props.notificationType)}}></i></a>
                     </div>
                     <ul className="question-list">
 
