@@ -52,11 +52,11 @@ class Invite extends React.Component<inviteProps, inviteState>{
             subscribe(client, store.get("username"), this.state.uuid, (obj:any) => {
                 let payload = obj.payload;
                 console.log("???????????????????????????????");
-                console.log(client)
-                console.log(this.state.uuid)
                 console.log(obj);
+                console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!11");
+                console.log(payload);
                 console.log(this.state.convoId);
-                console.log(store.get("username"))
+              
                 if(payload){
                     if(payload.Room){
                         this.setState({

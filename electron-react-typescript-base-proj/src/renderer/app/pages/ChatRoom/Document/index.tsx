@@ -65,6 +65,7 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
         client.onConnect = () => {
             console.log("djkfjkjlekrj lajwelkr jlejljrle ");
             console.log(client);
+            console.log(this.state.convo.convoId);
             subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
                 let payload = obj.payload;
                 if (payload) {

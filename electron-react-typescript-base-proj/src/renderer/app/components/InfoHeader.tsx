@@ -38,7 +38,7 @@ interface ShowState{
 class InfoHeader extends React.Component<Props, ShowState>{
     client: any;
     payload: any;
-    convoId: string = "98f7e404-f6b7-4513-84b4-31aa1647bc6d";
+    convoId: string;
     constructor(props: Props){
         super(props);     
 
@@ -105,8 +105,10 @@ class InfoHeader extends React.Component<Props, ShowState>{
             frame: false,
         })
         inviteWindow.loadURL(
-            __dirname + "/index.html#/invite/"+this.convoId
+            __dirname + "/index.html#/invite/"+this.props.convoId
         );
+        console.log("convoID!!!!!!!!!!!!!!!!!!!!1")
+        console.log(this.props.convoId)
         inviteWindow.show();
     }
 
