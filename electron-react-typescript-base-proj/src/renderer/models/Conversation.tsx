@@ -13,6 +13,5 @@ export type Conversation = {
     updatedAt: number; // 대화 수정 일시
 
     browserId?: number; // 브라우저 id
-    isOpened?: boolean; // 브라우저 열림 여부
 };
 

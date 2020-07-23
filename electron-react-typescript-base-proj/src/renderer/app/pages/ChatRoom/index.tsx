@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { MsgList, MsgInput, Header, MemberList, InfoHeader, SearchBar } from '../../../components';
-import { HeaderType, MemberListType, RoomType, InfoHeaderType } from '../../../../libs/enum-type';
-import { Message } from '../../../../models/Message';
-import { Member } from '../../../../models/Member';
-import { Conversation } from '../../../../models/Conversation';
+import { MsgList, MsgInput, Header, MemberList, InfoHeader, SearchBar } from '../../components';
+import { HeaderType, MemberListType, RoomType, InfoHeaderType } from '../../../libs/enum-type';
+import { Message } from '../../../models/Message';
+import { Member } from '../../../models/Member';
+import { Conversation } from '../../../models/Conversation';
 import { Bot } from '@/renderer/models/Bot'
 import { BotIntent } from '@/renderer/models/BotIntent';
-import { subscribe, publishApi, publishChat, client } from '../../../../libs/stomp';
+import { subscribe, publishApi, publishChat, client } from '../../../libs/stomp';
 import { v4 } from "uuid"
 import * as type from '@/renderer/libs/enum-type';
 import IntentList from '@/renderer/app/components/IntentList';
@@ -29,7 +29,7 @@ interface RoomState {
     isOpened?: boolean;
 }
 
-class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
+class ChatRoom extends React.Component<RoomProps, RoomState> {
     sendMsg = (msg: Message, api: string) => {
         publishChat(client, api, this.state.uuid, msg);  
     }
@@ -177,4 +177,4 @@ class DocumentChatRoom extends React.Component<RoomProps, RoomState> {
     }
 }
 
-export default DocumentChatRoom;
+export default ChatRoom;
