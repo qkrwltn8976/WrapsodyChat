@@ -12,8 +12,8 @@ let chatWindow: Electron.BrowserWindow;
 function createMainWindow(): void {
     // Create the browser window.
     mainWindow = new BrowserWindow({
-        height: 760,
-        width: 450,
+        height: 600,
+        width: 400,
         frame:false,
         minHeight:180,
         minWidth: 360,
