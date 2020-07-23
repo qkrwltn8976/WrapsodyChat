@@ -1,5 +1,15 @@
 @CHARSET "UTF-8";
 
+::-webkit-scrollbar {     
+        background-color: #fff;
+        width: 10px;
+}
+
+::-webkit-scrollbar-thumb:window-inactive,
+::-webkit-scrollbar-thumb {
+	background:  #acacac83;
+	border-radius: 3px;
+}
 
 .group:before, .group:after{ content: ""; display: table;}
 .group:after{ clear: both;}
@@ -105,7 +115,7 @@ div.wrapmsgr_container * {
 	width: 100%;
 	height: calc(100%);
 	min-height: 180px;
-	max-height: 760px;
+	max-height: 1000px;
 	/* border-radius: 5px; */
 	border-right: solid 1px #d7d8db;
 	box-shadow: 5px 5px 20px 0 rgba(62, 63, 66, 0.12), 5px 5px 20px 0 rgba(62, 63, 66, 0.12);
@@ -165,10 +175,9 @@ div.wrapmsgr_container * {
 
 .wrapmsgr_container .wrapmsgr_unread_outer {
 	display: inline-block;
-	padding: 2px;
 	background-color: #fff;
 	border-radius: 20px;
-	height: 22px;
+	height: 19px;
 	line-height: 14px;
 }
 .wrapmsgr_container .wrapmsgr_unread {
@@ -948,11 +957,14 @@ div.wrapmsgr_container * {
     font-size: 13px;
     text-align: center;
     padding: 8px 15px;
-    margin-top: 2px;
+	margin-top: 2px;
+	margin-right:3px;
     color: #28292b;
 	border-radius: 5px;
 	background-color: #f0f2f5;
-    cursor: pointer;
+	cursor: pointer;
+	border: 0px;
+ 	box-shadow: none;
 }
 .wrapmsgr_container .wrapmsgr_msg_attachment button div {
 	max-width: 248px;
