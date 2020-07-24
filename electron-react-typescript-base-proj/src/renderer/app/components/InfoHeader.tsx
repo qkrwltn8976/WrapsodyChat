@@ -1,8 +1,9 @@
 import * as React from 'react';
-import ReactDOM from 'react-dom';
 import { ConvoType, InfoHeaderType} from "../../libs/enum-type"
 import { getDocType } from '../../libs/messengerLoader'
 import {v4} from "uuid"
+import language from "@/renderer/language/language.json"
+
 const Store = require('electron-store')
 const store = new Store()
 
@@ -58,6 +59,17 @@ class InfoHeader extends React.Component<Props, ShowState>{
     showClick = (e) => {
         e.preventDefault();
         if(this.state.isShow == false){
+            var i, l:string
+            if(store.get("language")==="ko-KR"){
+                i = language.ko.invite
+                l = language.ko.exit
+            }
+            
+            if(store.get("language")==="en-US"){
+                i = language.en.invite
+                l = language.en.exit
+            }
+
             this.setState({
                 isShow : true,
                 wrapmsgr_dropdown_menu: "wrapmsgr_dropdown_menu",
@@ -65,8 +77,8 @@ class InfoHeader extends React.Component<Props, ShowState>{
                 iconPlus: "icon_plus",
                 leaveClass: "ng-scope ng-enter-prepare",
                 iconLogOut: "icon_log_out",
-                invite:"Invite",
-                leave: "Leave",
+                invite: i,
+                leave: l,
             })
         }
         else{
@@ -150,7 +162,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
                         <div className="ng-isolate-scope">
                             <a href=""><i className="icon_ellipsis_h" title="더 보기" onClick = {this.showClick}></i></a>
                              <div className={this.state.wrapmsgr_dropdown_menu} style={{position: "absolute"}}>
-                                <div title="대화 상대 초대" className={this.state.ngScope} onClick = {this.showInvite}>
+                                <div title= "대화 상대 초대" className={this.state.ngScope} onClick = {this.showInvite}>
                                     <i className={this.state.iconPlus}></i>{this.state.invite} 
                                 </div>
                                 <div title="나가기" className={this.state.leaveClass}>

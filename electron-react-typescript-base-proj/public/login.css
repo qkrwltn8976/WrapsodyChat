@@ -114,3 +114,18 @@ html, body {
   .login-form .login-forgotpassword:active{
     text-decoration: underline;
   }
+
+  .lang{
+    text-align: center;
+  }
+
+  .lang a{
+    width: 100%;
+    text-decoration: none;
+  }
+  .lang li{
+    width: 48%;
+    list-style-type: none;
+    float: left;
+    margin-top: 20px
+  }

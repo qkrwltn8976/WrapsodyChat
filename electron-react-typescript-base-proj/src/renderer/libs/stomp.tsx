@@ -66,12 +66,12 @@ export function publishApi(client: Client, api: string, userId: string, uuid: st
     client.publish({
         destination: `/exchange/request/${api}`,
         body: JSON.stringify({
-            senderId: userId, locale: "ko-KR", payload,
+            senderId: userId, locale: store.get("language"), payload,
         }),
         headers: { "reply-to": "user-"+userId+"-"+uuid, "content-type": "application/json", "correlation_id ": api }
     });
     console.log(JSON.stringify({
-        senderId: userId, locale: "ko-KR", payload,
+        senderId: userId, locale: store.get("language"), payload,
     }))
 }
 
