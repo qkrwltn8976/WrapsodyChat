@@ -73,7 +73,7 @@ class MsgInput extends React.Component<MsgInputProps, MsgInputState> {
         var lang = store.get("language")
         if(lang === "ko-KR")
             inputText = language.ko.input_message
-        if(lang === "us-EN")
+        if(lang === "en-US")
             inputText = language.en.input_message
         return (
             <div className="wrapmsgr_footer">

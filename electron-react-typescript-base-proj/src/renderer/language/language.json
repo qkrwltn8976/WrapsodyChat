@@ -6,7 +6,9 @@
         "member_list_search": "사용자 이름 또는 아이디를 입력하십시오",
         "input_message": "메시지를 입력하십시오",
         "invite": "대화상대 초대",
-        "exit": "나가기"
+        "exit": "나가기",
+        "pNum": " 명",
+        "week":["일", "월", "화", "수", "목", "금", "토"]
     },
     "en":{
         "am": " am",
@@ -15,6 +17,8 @@
         "member_list_search": "Enter a user name or ID",
         "input_message": "Enter message",
         "invite": "invite",
-        "exit": "exit"
+        "exit": "exit",
+        "pNum": "members",
+        "week":["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     }
 }

@@ -13,8 +13,6 @@ export function getTime(timestamp: number) {
     let cov_hours: string;
     var lang = store.get("language")
     var am = true
-    
-    console.log(lang)
 
     if (hours >= 12) {
         if (hours > 12) {
@@ -32,7 +30,7 @@ export function getTime(timestamp: number) {
     if(lang === "ko-KR" && am)
         formattedTime = language.ko.am + hours + ':' + minutes.substr(-2);
     if(lang === "ko-KR" && !am)
-        formattedTime = language.ko.am + hours + ':' + minutes.substr(-2);
+        formattedTime = language.ko.pm + hours + ':' + minutes.substr(-2);
 
     if(lang === "en-US" && am)
         formattedTime = hours + ':' + minutes.substr(-2) + language.en.am;
@@ -43,14 +41,24 @@ export function getTime(timestamp: number) {
 }
 
 export function getDate(timestamp: number) {
+    var lang = store.get("language")
     let date = new Date(timestamp);
-    let week = ['일', '월', '화', '수', '목', '금', '토'];
+    let week, month, day, weekday, formattedDate
+    if(lang === "ko-KR"){
+        week = language.ko.week
+        month = date.getMonth() + 1 + '월';
+        day = date.getDate() + '일';
+        weekday = week[date.getDay()] + '요일';
+    }
+    if(lang === "en-US"){
+        week = language.en.week
+        month = date.getMonth() + 1 + " /"
+        day = date.getDate()
+        weekday = week[date.getDay()]
+    }
 
-    let month = date.getMonth() + 1 + '월';
-    let day = date.getDate() + '일';
-    let weekday = week[date.getDay()] + '요일';
 
-    let formattedDate = month + ' ' + day + ' (' + weekday + ')';
+    formattedDate = month + ' ' + day + ' (' + weekday + ')';
     return formattedDate;
 }
 

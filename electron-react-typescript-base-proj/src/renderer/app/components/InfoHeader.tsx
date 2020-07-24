@@ -131,6 +131,12 @@ class InfoHeader extends React.Component<Props, ShowState>{
     }
     
     render(){
+        var pNum:string;
+        if(store.get("language") === "ko-KR")
+            pNum = language.ko.pNum
+        if(store.get("language") === "en-US")
+            pNum = language.en.pNum
+
         const {convoType} = this.props;
         if( convoType === ConvoType.DOC){
             return (
@@ -144,7 +150,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
                     </div>
                     <div className="chatroom-user">
                         <i className="icon_users"></i>
-                        <span className="chatroom-user-cnt ng-binding">{this.props.memberCount} 명</span>
+                        <span className="chatroom-user-cnt ng-binding">{this.props.memberCount} {pNum}</span>
                     </div>
                     {/* <div className="chatroom-user">
                         <div className="chatroom-user-list ng-hide" >
