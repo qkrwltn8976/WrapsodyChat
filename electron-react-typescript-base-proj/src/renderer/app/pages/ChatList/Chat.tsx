@@ -53,7 +53,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
                 minHeight: 200,
                 minWidth: 400,
                 maxHeight:700,
-                maxWidth:800,
+                // maxWidth:800,
                 hasShadow:true,
                 icon: __dirname + './public/icon_bot_wrapsody.png'
             }
@@ -103,7 +103,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
                         )
 
                     }
-                    else if(payload.type!=undefined){
+                    if(payload.type){
                         const index = this.state.convos.findIndex(convo => convo.convoId === payload.convoId)
                         this.setState(state => {
                             state.convos[index].notificationType = payload.type

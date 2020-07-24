@@ -12,13 +12,17 @@ const store = new Store()
 interface MsgProps {
     msgs: Message[];
     convo: Conversation;
-    sendMsg: any
+    eom: boolean;
+    sendMsg: any;
+    getMsgs: any;
+    prevScrollHeight: number;
 }
 
 interface MsgListState {
     msgs: Message[];
     convo: Conversation;
     unreadExists: boolean;
+    prevScrollHeight?: number;
 }
 
 class MsgList extends React.Component<MsgProps, MsgListState> {
@@ -105,7 +109,6 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
     getAttachments(attach: Attachment[]) {
         if (attach[0].attachmentType === etype.Attachment.ACTION) {
-            console.log('&&&&&&&&&&&&'+attach[0].attachmentType)
             return (
                 <React.Fragment>
                     <div className="wrapmsgr_msg_body">Wrapsody에서 사용되는 용어입니다. 상세 설명을 보려면 용어를 클릭하세요.</div>
@@ -113,22 +116,20 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
                         <div className="wrapmsgr_msg_title"></div>
                         {attach[0].payload.map((action: Action) => {
                             return (
-                            <span className="ng-scope">
-                                <button type="button" data-attr-title={action.value} onClick={this.onAttachmentButton(action)} className="ng-scope" title={action.value} ><div className="ng-binding">{action.value}</div></button>
-                            </span>)
+                                <span className="ng-scope">
+                                    <button type="button" data-attr-title={action.value} onClick={this.onAttachmentButton(action)} className="ng-scope" title={action.value} ><div className="ng-binding">{action.value}</div></button>
+                                </span>)
                         })}
 
                     </div></React.Fragment>
             )
         }
         if (attach[0].attachmentType === etype.Attachment.IMAGE) {
-            console.log('&&&&&&&&&&&&'+attach[0].attachmentType)
-            console.log('============'+attach[0].uri+'==============')
             return (
                 <React.Fragment>
                     <div className="wrapmsgr_msg_body ng-binding" ng-bind-html="message.body | linky:'_blank'"></div>
                     {/* {attach[0].title?attach[0].title : ''} */}
-    
+
                     <div className="wrapmsgr_msg_attachment ng-scope" ng-repeat="attachment in message.attachments">
                         <div className="wrapmsgr_msg_title ng-binding">{attach[0].title}</div>
                         <img ng-attr-src="{{ 'http://ecm.dev.fasoo.com:9400' + attachment.uri }}" fullscreen-view="" img-load="onAttachmentLoaded()" className="ng-scope fullscreen-view-element" src={"http://ecm.dev.fasoo.com:9400" + attach[0].uri} />
@@ -211,7 +212,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
         if (msg.sendUserId === store.get("username")) { // 나중에 자신의 sendUserId로 수정
             return (
-                <li id={msg.id} ng-repeat="message in current.messages" className="li-right ng-scope">
+                <li id={msg.id} key={msg.id} ng-repeat="message in current.messages" className="li-right ng-scope">
                     {msgbody}
                 </li>
             )
@@ -224,61 +225,66 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         }
     }
 
-    messagesScrollToMessage() {
-
-    }
-
-    messageOnScroll() {
-        console.log('scrolling')
-    }
 
     messagesScrollToBottom() {
-
-    }
-
-    messagesScrollToLatestMessage = () => {
         const node: HTMLDivElement | null = this.scrollTarget.current; //get the element via ref
 
         if (node) { //current ref can be null, so we have to check
             node.scrollIntoView({ behavior: 'auto', inline: 'start' }); //scroll to the targeted element
         }
+    }
 
-        const scrollView: HTMLDivElement | null = this.scrollView.current;
-        if (scrollView) {
-            scrollView.addEventListener('scroll', this.messageOnScroll);
+    messagesScrollToLatestMessage = () => {
+        if (this.scrollView.current.scrollTop === 0) {
+            this.props.getMsgs(this.scrollView.current.scrollHeight);
+            if (this.props.eom) {
+                this.scrollView.current.scrollTop = 0;
+                console.log('end of message')
+            }   
+            else 
+                this.scrollView.current.scrollTop = this.scrollView.current.clientHeight;
         }
-        // window.addEventListener('scroll', this.messageOnScroll);
-
-        // connect('api.message.list', 'admin', { 'convoId': this.props.convoId, "direction": "backward", "afterAt": 1594776538458, "beforeAt": 0 })
-        // publishApi(this.state.client, 'api.message.list', 'admin', this.props.uuid, { 'convoId': this.props.convoId, "direction": "forward", "afterAt": 1594776538458 });
     }
 
     constructor(props: MsgProps) {
         super(props);
+        
     }
 
     componentDidMount() {
-        this.setState({ msgs: this.props.msgs });
-        this.messagesScrollToLatestMessage();
+        const scrollView: HTMLDivElement | null = this.scrollView.current;
+        if (scrollView) {
+            scrollView.addEventListener('scroll', this.messagesScrollToLatestMessage);
+        }
+        this.setState({prevScrollHeight: this.scrollView.current.scrollHeight})
+        
+    }
+
+    componentWillReceiveProps(newProps) {
+        // this.state = ({ msgs: newProps.msgs, convo: newProps.convo, unreadExists: (newProps.convo.unread > 0) });
+        console.log(newProps)
     }
 
     componentDidUpdate() {
-        this.messagesScrollToLatestMessage();
+        if(this.state.msgs.length <= 20) {
+            this.messagesScrollToBottom();
+        }
+        this.state = ({...this.state, prevScrollHeight: this.props.prevScrollHeight})
     }
 
     render() {
         let unreadExists = (this.props.convo.unread > 0)
-        console.log('unreadexist' + unreadExists)
-        this.state = ({ msgs: this.props.msgs, convo: this.props.convo, unreadExists: (this.props.convo.unread > 0) });
+        this.state = ({ msgs: this.props.msgs, convo: this.props.convo, unreadExists: (this.props.convo.unread > 0), prevScrollHeight: this.props.prevScrollHeight });
+        console.log(this.state)
         return (
             <div className="wrapmsgr_content">
-                <div className="wrapmsgr_messages" in-view-container="" ref={this.scrollView}>
+                <div className="wrapmsgr_messages" in-view-container="" ref={this.scrollView} id="scrollView">
                     <ul>
                         {this.state.msgs.map((msg: Message, index: number) =>
                             this.getMsgBody(msg, index)
                         )}
                     </ul>
-                    <div className="wrapmsgr_latest_message ng-hide" ng-show="current.latestMessage" onClick={this.messagesScrollToLatestMessage}>
+                    <div className="wrapmsgr_latest_message ng-hide" ng-show="current.latestMessage" onClick={this.messagesScrollToBottom}>
                         <i className="icon_arrow_down"></i>
                     </div>
                     <div ref={this.scrollTarget} data-explanation="This is where we scroll to"></div>
