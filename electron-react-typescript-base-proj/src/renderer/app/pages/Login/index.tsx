@@ -64,15 +64,19 @@ function Login(){
                     <button className="login-submit" name ="Login" value="Log in" onClick = {(e) =>handleClick(userinfo, uuid, lang)}>Login</button>
                 </div>
                 <div>
-                    <a className = "lang" href="" onClick = {(e)=> {
+                    <a className = "lang" href="" id = "en" style = {{color: "#2ecc71"}} onClick = {(e)=> {
                         e.preventDefault();
                         setLang("en-US")
+                        document.getElementById("en").style.color = "white";
+                        document.getElementById("ko").style.color = "#2ecc71";
                         }}>
                         <li>English</li>
                     </a>
-                    <a className = "lang" href = "" onClick = {(e)=>{
+                    <a className = "lang" href = "" id = "ko" onClick = {(e)=>{
                         e.preventDefault();
                         setLang("ko-KR")
+                        document.getElementById("ko").style.color = "white";
+                        document.getElementById("en").style.color = "#2ecc71";
                     }
 
                     }>
