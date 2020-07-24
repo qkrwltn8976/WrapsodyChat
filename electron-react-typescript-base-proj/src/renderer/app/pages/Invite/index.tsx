@@ -62,8 +62,6 @@ class Invite extends React.Component<inviteProps, inviteState>{
             subscribe(client, store.get("username"), this.state.uuid, (obj:any) => {
                 let payload = obj.payload;
                 if(payload){
-                    // console.log("pppppppppppppppppppppppppp")
-                    // console.log(payload)
                     if(payload.Room){
                         this.setState({
                             docName: payload.Room.name
@@ -71,7 +69,6 @@ class Invite extends React.Component<inviteProps, inviteState>{
                         console.log(this.state.docName);
                     }
                     if(payload.SyncInfo){
-                        console.log("싱크인포는 있어?!!!!!!!!!!!!!!!!!")
                         this.setState({
                             master : payload.SyncInfo.master,
                             viewAuthAllUsers: payload.SyncInfo.viewAuthAllUsers,
@@ -86,8 +83,6 @@ class Invite extends React.Component<inviteProps, inviteState>{
                             tMembers : payload.Members,
                             participants : payload.Members.length 
                         }) 
-                        console.log("tMembers는 되어야하는거 아니냐고...")
-                        console.log(this.state.tMembers)
                     }// 채팅방 참여자
                 }else{
                    

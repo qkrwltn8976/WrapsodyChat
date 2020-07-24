@@ -37,8 +37,6 @@ class Chat extends Component<ChatListProps, ChatListState> {
     convoId: string = "";
     uuid: string = v4();
     chatBotImgPath = "http://ecm.dev.fasoo.com:9400/images/icon_bot_wrapsody.png"
-
-
     
 
     getConvo = (convoId: string, name:string) => (event: any) => {
