@@ -28,7 +28,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
     roomName: [] = [];
     roomDate: [] = [];
     roomRead: [] = [];
-    roomOpened: Array<string> = [""];
+    roomOpened: Map<string, number> = new Map()
     payload: any;
     search: string = "";
     state: any = { 
@@ -42,12 +42,15 @@ class Chat extends Component<ChatListProps, ChatListState> {
     getConvo = (convoId: string, name:string) => (event: any) => {
 
         //이미 열려있는 창이라면 새로 띄우지않는다.
-        if(this.roomOpened.includes(convoId)===true){
+        if(this.roomOpened.has(convoId)===true){
             console.log("already opened")
+            this.roomOpened.get(convoId)
+            let window = BrowserWindow.fromId(this.roomOpened.get(convoId));
+            window.focus()
             return;
         }
 
-        this.roomOpened.push(convoId)
+        
         
         
         const chatWindow = new BrowserWindow(
@@ -73,9 +76,13 @@ class Chat extends Component<ChatListProps, ChatListState> {
         chatWindow.show();
 
         //창이 닫히면 roomOpened 배열에서 제거
-        chatWindow.on('close', () =>{
-            this.roomOpened.splice(this.roomOpened.indexOf(convoId),1)
+        chatWindow.on('close', () => {
+            this.roomOpened.delete(convoId)
         })
+
+        this.roomOpened.set(convoId, chatWindow.id)
+
+        
 
         const index = this.state.convos.findIndex(convo => convo.convoId === convoId),
         convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call
