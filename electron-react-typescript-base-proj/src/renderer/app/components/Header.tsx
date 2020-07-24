@@ -36,7 +36,6 @@ class Header extends React.Component<Props>{
             return(
                 <div className = "wrapmsgr_title_header">
                     <h1 className = "wrapmsgr_title" id = "forHeaderDocTitle">
-                        <span className = "ng-scope">{headerType}-</span>
                         <span className = "ng-binding" title = {docName}>{docName}</span>
                     </h1>
                     <div className = "wrapmsgr-header-icon-wrap">
