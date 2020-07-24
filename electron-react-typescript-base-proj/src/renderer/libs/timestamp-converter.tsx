@@ -1,5 +1,5 @@
 import { time } from "console";
-import language from "@/renderer/language/language.json"
+// import language from "@/renderer/language/language.json"
 
 export function getTime(timestamp: number) {
     // let unix_timestamp = 1549312452

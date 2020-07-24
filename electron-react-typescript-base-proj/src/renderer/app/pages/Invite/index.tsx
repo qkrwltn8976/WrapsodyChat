@@ -20,6 +20,7 @@ interface inviteState{
     convoId: string;
     docName: string;
     master: TreeUser;
+    viewAuthAllUsers: boolean,
     checkoutAuthList: TreeUser[],
     checkoutDeptAuthList: TreeDept[],
     viewAuthList: TreeUser[],
@@ -43,6 +44,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
                 userName : "",
                 password : "",
             }, 
+            viewAuthAllUsers: false,
             checkoutAuthList : [],
             checkoutDeptAuthList: [],
             viewAuthList: [],
@@ -71,10 +73,12 @@ class Invite extends React.Component<inviteProps, inviteState>{
                     if(payload.SyncInfo){
                         this.setState({
                             master : payload.SyncInfo.master,
+                            viewAuthAllUsers: payload.SyncInfo.viewAuthAllUsers,
                             checkoutAuthList : payload.SyncInfo.checkoutAuthList,
                             checkoutDeptAuthList : payload.SyncInfo.checkoutDeptAuthList,
                             viewAuthList : payload.SyncInfo.viewAuthList,
                             viewDeptAuthList : payload.SyncInfo.viewDeptAuthList,
+
                         })
                         console.log("SyncInfo!!!!!!!!!!!!!!!!!11")
                         console.log(this.state.checkoutAuthList)

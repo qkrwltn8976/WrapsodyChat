@@ -1,4 +1,4 @@
-{/* <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="false" ng-include="'organ_renderer'" class="ng-scope angular-ui-tree-node" expand-on-hover="false" >
+<li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="false" ng-include="'organ_renderer'" class="ng-scope angular-ui-tree-node" expand-on-hover="false" >
     <div className="organ_wrapper ng-scope">
         <span ng-style="node.type === 'dept' &amp;&amp; !node.hasChildren &amp;&amp; {'visibility': 'hidden'}">
             <input type="checkbox" id="member-34397c16f61548abb2b99c448f60d1a7object:909" ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)"/>
@@ -123,4 +123,4 @@
             </li><!-- end ngRepeat: node in node.subTree -->
 		</ol>
 	</div>
-</li> */}
+</li> 
