@@ -4,7 +4,6 @@ import { client, subscribe, publishApi} from '@/renderer/libs/stomp';
 import { v4 } from "uuid"
 import { getConvoDate } from '@/renderer/libs/timestamp-converter';
 import {getDocType} from '@/renderer/libs/messengerLoader'
-import { Client } from '@stomp/stompjs';
 import { Conversation } from '@/renderer/models/Conversation';
 import { sortConvos } from '@/renderer/libs/sort';
 import { sendNotification } from '@/renderer/libs/notification';
@@ -29,6 +28,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
     roomName: [] = [];
     roomDate: [] = [];
     roomRead: [] = [];
+    roomOpened: []=[]
     payload: any;
     search: string = "";
     state: any = { 
@@ -218,7 +218,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
                             <span className="chatroom-message-contents">{item.latestMessage}</span>
                         </div>
                         <div className="wrapmsgr_right">
-                            <span className="chatroom-date">{getConvoDate(item.updatedAt)}</span>
+                            <span className="chatroom-date">{getConvoDate(item.latestMessageAt)}</span>
                             {/* 조건부 unread 메세지 표시 */}
                             {item.unread===0 ? null:
                                 <span className="wrapmsgr_unread_outer">
