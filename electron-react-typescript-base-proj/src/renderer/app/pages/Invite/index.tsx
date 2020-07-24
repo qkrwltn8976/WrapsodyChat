@@ -61,6 +61,8 @@ class Invite extends React.Component<inviteProps, inviteState>{
             //subscribe
             subscribe(client, store.get("username"), this.state.uuid, (obj:any) => {
                 let payload = obj.payload;
+                console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                console.log(payload)
                 if(payload){
                     if(payload.Room){
                         this.setState({
@@ -72,10 +74,10 @@ class Invite extends React.Component<inviteProps, inviteState>{
                         this.setState({
                             master : payload.SyncInfo.master,
                             viewAuthAllUsers: payload.SyncInfo.viewAuthAllUsers,
-                            checkoutAuthList : payload.SyncInfo.checkoutAuthList,
-                            checkoutDeptAuthList : payload.SyncInfo.checkoutDeptAuthList,
-                            viewAuthList : payload.SyncInfo.viewAuthList,
-                            viewDeptAuthList : payload.SyncInfo.viewDeptAuthList,
+                            checkoutAuthList : payload.SyncInfo.checkoutAuthList.user,
+                            checkoutDeptAuthList : payload.SyncInfo.checkoutDeptAuthList.user,
+                            viewAuthList : payload.SyncInfo.viewAuthList.user,
+                            viewDeptAuthList : payload.SyncInfo.viewDeptAuthList.user,
                         })
                     }
                     if(payload.Members){
