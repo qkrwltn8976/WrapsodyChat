@@ -6,6 +6,17 @@
 </head>
 
 <body>
+  <script>
+      const alertOnlineStatus = () => {
+        if(!navigator.onLine){
+          window.alert("네트워크 연결이 없습니다")
+        }
+  }
+
+  window.addEventListener('offline',  alertOnlineStatus)
+
+  alertOnlineStatus()
+  </script>
   <div id="app" class="app"></div>
 </body>
 

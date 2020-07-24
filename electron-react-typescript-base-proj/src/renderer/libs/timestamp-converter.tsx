@@ -1,4 +1,7 @@
 import { time } from "console";
+import language from "@/renderer/language/language.json"
+const Store = require('electron-store')
+const store = new Store()
 
 export function getTime(timestamp: number) {
     // let unix_timestamp = 1549312452
@@ -8,14 +11,14 @@ export function getTime(timestamp: number) {
     // Hours part from the timestamp
     let hours: number = date.getHours();
     let cov_hours: string;
+    var lang = store.get("language")
+    var am = true
 
     if (hours >= 12) {
         if (hours > 12) {
             hours -= 12;
         }
-        cov_hours = "오후 " + hours;
-    } else {
-        cov_hours = "오전 " + hours;
+        am = false;
     }
     // Minutes part from the timestamp
     let minutes = "0" + date.getMinutes();
@@ -23,21 +26,39 @@ export function getTime(timestamp: number) {
     // var seconds = "0" + date.getSeconds();
 
     // Will display time in 10:30:23 format
-    let formattedTime = cov_hours + ':' + minutes.substr(-2);
+    let formattedTime: string
+    if(lang === "ko-KR" && am)
+        formattedTime = language.ko.am + hours + ':' + minutes.substr(-2);
+    if(lang === "ko-KR" && !am)
+        formattedTime = language.ko.pm + hours + ':' + minutes.substr(-2);
 
+    if(lang === "en-US" && am)
+        formattedTime = hours + ':' + minutes.substr(-2) + language.en.am;
+    if(lang === "en-US" && !am)
+        formattedTime = hours + ':' + minutes.substr(-2) + language.en.pm;
     // console.log(formattedTime);
     return formattedTime;
 }
 
 export function getDate(timestamp: number) {
+    var lang = store.get("language")
     let date = new Date(timestamp);
-    let week = ['일', '월', '화', '수', '목', '금', '토'];
+    let week, month, day, weekday, formattedDate
+    if(lang === "ko-KR"){
+        week = language.ko.week
+        month = date.getMonth() + 1 + '월';
+        day = date.getDate() + '일';
+        weekday = week[date.getDay()] + '요일';
+    }
+    if(lang === "en-US"){
+        week = language.en.week
+        month = date.getMonth() + 1 + " /"
+        day = date.getDate()
+        weekday = week[date.getDay()]
+    }
 
-    let month = date.getMonth() + 1 + '월';
-    let day = date.getDate() + '일';
-    let weekday = week[date.getDay()] + '요일';
 
-    let formattedDate = month + ' ' + day + ' (' + weekday + ')';
+    formattedDate = month + ' ' + day + ' (' + weekday + ')';
     return formattedDate;
 }
 

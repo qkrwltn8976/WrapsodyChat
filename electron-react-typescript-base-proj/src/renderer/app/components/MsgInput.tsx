@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Message } from '../../models/Message';
+import language from "@/renderer/language/language.json"
 const Store = require('electron-store')
 const store = new Store()
 
@@ -68,11 +69,17 @@ class MsgInput extends React.Component<MsgInputProps, MsgInputState> {
     }
 
     render() {
+        var inputText:string
+        var lang = store.get("language")
+        if(lang === "ko-KR")
+            inputText = language.ko.input_message
+        if(lang === "en-US")
+            inputText = language.en.input_message
         return (
             <div className="wrapmsgr_footer">
                 <form onSubmit={this.handleSubmit} ng-submit="chat()" className="ng-pristine ng-valid ng-valid-maxlength">
                     <span className="wrapmsgr_full_width_text_span">
-                        <textarea id="wrapmsgr_message_input" className="wrapmsgr_full_width_text ng-pristine ng-untouched ng-valid ng-empty ng-valid-maxlength" placeholder="메시지를 입력하십시오." ng-model="input.message" onKeyDown={this.handleKeyPressed} ng-disabled="!loggedIn"
+                        <textarea id="wrapmsgr_message_input" className="wrapmsgr_full_width_text ng-pristine ng-untouched ng-valid ng-empty ng-valid-maxlength" placeholder= {inputText} ng-model="input.message" onKeyDown={this.handleKeyPressed} ng-disabled="!loggedIn"
                         onChange={this.handleChange} value={this.state.message}></textarea>
                     </span>
                     <button type="submit" className="wrapmsgr_submit" value="보내기" title="보내기" ng-disabled="!loggedIn" onClick={this.sendMsg}>

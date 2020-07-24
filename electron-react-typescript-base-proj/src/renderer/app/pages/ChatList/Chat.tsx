@@ -4,7 +4,6 @@ import { client, subscribe, publishApi} from '@/renderer/libs/stomp';
 import { v4 } from "uuid"
 import { getConvoDate } from '@/renderer/libs/timestamp-converter';
 import {getDocType} from '@/renderer/libs/messengerLoader'
-import { Client } from '@stomp/stompjs';
 import { Conversation } from '@/renderer/models/Conversation';
 import { sortConvos } from '@/renderer/libs/sort';
 import { sendNotification } from '@/renderer/libs/notification';
@@ -29,6 +28,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
     roomName: [] = [];
     roomDate: [] = [];
     roomRead: [] = [];
+    roomOpened: []=[]
     payload: any;
     search: string = "";
     state: any = { 
@@ -37,8 +37,6 @@ class Chat extends Component<ChatListProps, ChatListState> {
     convoId: string = "";
     uuid: string = v4();
     chatBotImgPath = "http://ecm.dev.fasoo.com:9400/images/icon_bot_wrapsody.png"
-
-
     
 
     getConvo = (convoId: string, name:string) => (event: any) => {
@@ -133,8 +131,13 @@ class Chat extends Component<ChatListProps, ChatListState> {
                                 else {
                                     // 윈도우 창이 닫혀있는 경우
                                     convos[index].unread += 1;
-                                    if(convos[index].notificationType === 1)
-                                        sendNotification('새로운 메세지가 도착했습니다', obj.sendUserId, obj.body||obj.messageId);                 
+                                    if(convos[index].notificationType === 1){
+                                        var win = remote.getCurrentWindow()
+                                        sendNotification('새로운 메세지가 도착했습니다', obj.sendUserId, obj.body||obj.messageId);
+                                        win.once('focus', () => win.flashFrame(false))
+                                        win.flashFrame(true)
+                                    }
+                                                         
                                 }
                             }
                             convos[index].latestMessageAt = obj.updatedAt;
@@ -215,15 +218,13 @@ class Chat extends Component<ChatListProps, ChatListState> {
                             <span className="chatroom-message-contents">{item.latestMessage}</span>
                         </div>
                         <div className="wrapmsgr_right">
-                            <span className="chatroom-date">{getConvoDate(item.updatedAt)}</span>
+                            <span className="chatroom-date">{getConvoDate(item.latestMessageAt)}</span>
                             {/* 조건부 unread 메세지 표시 */}
                             {item.unread===0 ? null:
                                 <span className="wrapmsgr_unread_outer">
                                     <span className="wrapmsgr_unread">{item.unread}</span>
                                 </span>
                             }
-                            
-
                         </div>
                     </li>
                     :

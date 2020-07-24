@@ -1,8 +1,9 @@
 import * as React from 'react';
-import ReactDOM from 'react-dom';
 import { ConvoType, InfoHeaderType} from "../../libs/enum-type"
 import { getDocType } from '../../libs/messengerLoader'
 import {v4} from "uuid"
+import language from "@/renderer/language/language.json"
+
 const Store = require('electron-store')
 const store = new Store()
 
@@ -17,6 +18,7 @@ interface Props{
     docName: string;
     notificationType?: number;
     setNotification?:any
+    participants?: number;
 }
 
 interface ShowState{
@@ -28,19 +30,19 @@ interface ShowState{
     iconLogOut: string;
     invite: string;
     leave: string;
-    //Inivite and Create
-    participants: number;
-    uuid:string;
+    uuid:string;   
 }
+
 
 class InfoHeader extends React.Component<Props, ShowState>{
     client: any;
     payload: any;
     convoId: string;
-    constructor(props: Props){
-        super(props);     
-
-        this.state = {
+    
+    constructor(props: Props, state: {}){
+        super(props, state);
+        
+        this.state = ({
             isShow: false,
             wrapmsgr_dropdown_menu: "",
             ngScope: "",
@@ -49,14 +51,25 @@ class InfoHeader extends React.Component<Props, ShowState>{
             iconLogOut: "",
             invite: "",
             leave: "",
-            participants: this.props.memberCount,
             uuid:v4(),
-        };
+        }) 
+        
     }
     
     showClick = (e) => {
         e.preventDefault();
         if(this.state.isShow == false){
+            var i, l:string
+            if(store.get("language")==="ko-KR"){
+                i = language.ko.invite
+                l = language.ko.exit
+            }
+            
+            if(store.get("language")==="en-US"){
+                i = language.en.invite
+                l = language.en.exit
+            }
+
             this.setState({
                 isShow : true,
                 wrapmsgr_dropdown_menu: "wrapmsgr_dropdown_menu",
@@ -64,8 +77,8 @@ class InfoHeader extends React.Component<Props, ShowState>{
                 iconPlus: "icon_plus",
                 leaveClass: "ng-scope ng-enter-prepare",
                 iconLogOut: "icon_log_out",
-                leave: "Leave",
-                invite:"Invite",
+                invite: i,
+                leave: l,
             })
         }
         else{
@@ -76,8 +89,8 @@ class InfoHeader extends React.Component<Props, ShowState>{
                 iconPlus: "",
                 leaveClass: "",
                 iconLogOut: "",
-                leave: "",
                 invite: "",
+                leave: "",
           })
         }
     }
@@ -93,8 +106,8 @@ class InfoHeader extends React.Component<Props, ShowState>{
             height: 585,
             minWidth: 370,
             minHeight: 370,
-            maxWidth: 700,
-            maxHeight: 585,
+            // maxWidth: 700,
+            // maxHeight: 585,
             parent: currentWindow,
             modal: true,
             show: false,
@@ -103,8 +116,6 @@ class InfoHeader extends React.Component<Props, ShowState>{
         inviteWindow.loadURL(
             __dirname + "/index.html#/invite/"+this.props.convoId
         );
-        console.log("convoID!!!!!!!!!!!!!!!!!!!!1")
-        console.log(this.props.convoId)
         inviteWindow.show();
     }
 
@@ -118,8 +129,14 @@ class InfoHeader extends React.Component<Props, ShowState>{
             return "icon_bell";
         } 
     }
-   
+    
     render(){
+        var pNum:string;
+        if(store.get("language") === "ko-KR")
+            pNum = language.ko.pNum
+        if(store.get("language") === "en-US")
+            pNum = language.en.pNum
+
         const {convoType} = this.props;
         if( convoType === ConvoType.DOC){
             return (
@@ -133,7 +150,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
                     </div>
                     <div className="chatroom-user">
                         <i className="icon_users"></i>
-                        <span className="chatroom-user-cnt ng-binding">{this.props.memberCount} 명</span>
+                        <span className="chatroom-user-cnt ng-binding">{this.props.memberCount} {pNum}</span>
                     </div>
                     {/* <div className="chatroom-user">
                         <div className="chatroom-user-list ng-hide" >
@@ -151,7 +168,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
                         <div className="ng-isolate-scope">
                             <a href=""><i className="icon_ellipsis_h" title="더 보기" onClick = {this.showClick}></i></a>
                              <div className={this.state.wrapmsgr_dropdown_menu} style={{position: "absolute"}}>
-                                <div title="대화 상대 초대" className={this.state.ngScope} onClick = {this.showInvite}>
+                                <div title= "대화 상대 초대" className={this.state.ngScope} onClick = {this.showInvite}>
                                     <i className={this.state.iconPlus}></i>{this.state.invite} 
                                 </div>
                                 <div title="나가기" className={this.state.leaveClass}>
@@ -217,7 +234,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
                     <document-icon name="docInfo.detail.contentName" class="ng-isolate-scope"><i className="icon_txt">          <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i></document-icon>
                     <div className="doc-name ng-binding">{this.props.docName}</div>
                     <div>
-                        <span className="ng-binding">문서 권한 보유자 {this.props.memberCount} 명 / 대화 상대 {this.state.participants} 명</span>                       
+                        <span className="ng-binding">문서 권한 보유자 {this.props.memberCount} 명 / 대화 상대 {this.props.participants} 명</span>                       
                     </div>
                 </div>
             )

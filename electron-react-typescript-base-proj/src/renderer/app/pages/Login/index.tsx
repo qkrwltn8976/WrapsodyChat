@@ -7,16 +7,15 @@ const remote = require('electron').remote
 const Store = require('electron-store')
 const store = new Store()
 
-async function handleClick (userinfo: any, uuid:string){
+async function handleClick (userinfo: any, uuid:string, lang:string){
     store.set("username", userinfo.username)
     store.set("password", userinfo.password)
-
+    store.set("language", lang)
     setClient()
 
     console.log(client.connected)
 
     client.onConnect=()=>{
-        console.log("yess")
         var win  = remote.getCurrentWindow()
         win.loadURL(__dirname+"/index.html#/chatlist/")
     }
@@ -36,6 +35,7 @@ const closeWindow = (event:any)=>{
 
 function Login(){
     const [userinfo, setUser] = useState({username: "", password: ""})
+    const [lang, setLang] = useState("ko-KR")
     const uuid = v4()
 
     store.clear()
@@ -61,7 +61,27 @@ function Login(){
                 </div>
 
                 <div className = "form-group">
-                    <button className="login-submit" name ="Login" value="Log in" onClick = {(e) =>handleClick(userinfo, uuid)}>Login</button>
+                    <button className="login-submit" name ="Login" value="Log in" onClick = {(e) =>handleClick(userinfo, uuid, lang)}>Login</button>
+                </div>
+                <div>
+                    <a className = "lang" href="" id = "en" style = {{color: "#2ecc71"}} onClick = {(e)=> {
+                        e.preventDefault();
+                        setLang("en-US")
+                        document.getElementById("en").style.color = "white";
+                        document.getElementById("ko").style.color = "#2ecc71";
+                        }}>
+                        <li>English</li>
+                    </a>
+                    <a className = "lang" href = "" id = "ko" onClick = {(e)=>{
+                        e.preventDefault();
+                        setLang("ko-KR")
+                        document.getElementById("ko").style.color = "white";
+                        document.getElementById("en").style.color = "#2ecc71";
+                    }
+
+                    }>
+                        <li>Korean</li>
+                    </a>
                 </div>
             </div>
             
