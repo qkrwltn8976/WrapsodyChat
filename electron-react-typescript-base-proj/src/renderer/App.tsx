@@ -8,7 +8,7 @@ import "@public/login.css"
 import {Route, HashRouter, Switch, BrowserRouter, Redirect} from 'react-router-dom'
 import Login from './app/pages/Login';
 
-
+    
 export function App(){
     return(
         <Fragment>

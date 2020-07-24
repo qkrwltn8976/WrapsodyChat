@@ -23,15 +23,40 @@ interface RoomState {
     msgs: Message[];
     members: Member[];
     convo: Conversation;
-    bot?: Bot,
-    botIntent?: BotIntent[],
+    bot?: Bot;
+    botIntent?: BotIntent[];
     search: string;
     isOpened?: boolean;
+    eom: boolean; // end of message
+    prevScrollHeight: number;
+    topMsgId: number;
 }
 
 class ChatRoom extends React.Component<RoomProps, RoomState> {
+
+    getMsgs = (scrollHeight: number) => {
+        publishApi(client, 'api.message.list', store.get("username"), this.state.uuid, {
+            convoId: this.state.convo.convoId,
+            beforeAt: this.state.msgs[0].createdAt,
+            direction: "backward"
+        });
+    }
+
     sendMsg = (msg: Message, api: string) => {
-        publishChat(client, api, this.state.uuid, msg);  
+        publishChat(client, api, this.state.uuid, msg);
+    }
+
+    setSearch = (search: string) => {
+        this.setState({ search: search })
+    }
+
+    setNotification = (type: number) => {
+        this.setState(state => {
+            state.convo.notificationType = type === 0 ? 1 : 0
+            return {}
+        })
+        publishApi(client, "api.conversation.notification", store.get("username"), this.state.uuid, { "convoId": this.state.convo.convoId, "type": type === 0 ? 1 : 0 })
+        return false;
     }
 
     constructor(props: RoomProps, state: {}) {
@@ -43,20 +68,23 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
             msgs: [],
             members: [],
             convo: {
-                convoId: this.props.match.params.convo, 
-                convoType: 0, 
+                convoId: this.props.match.params.convo,
+                convoType: 0,
                 roomType: 0,
                 name: '',
-                readAt: 0, 
-                unread: 0, 
-                memberCount: 0, 
-                notificationType: 0, 
+                readAt: 0,
+                unread: 0,
+                memberCount: 0,
+                notificationType: 0,
                 latestMessage: '',
-                latestMessageAt: 0, 
-                createdAt: 0, 
-                updatedAt: 0, 
+                latestMessageAt: 0,
+                createdAt: 0,
+                updatedAt: 0,
             },
             search: "",
+            eom: false,
+            prevScrollHeight: 0,
+            topMsgId: 0
         })
 
     }
@@ -69,9 +97,17 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                 let payload = obj.payload;
                 if (payload) {
                     console.log(payload)
-                    if (payload.Messages) {
+                    if (payload.Messages && payload.direction === 'backward') {
+                        let oldMsgs = payload.Messages;
+                        let eom = false;
+
+                        if(payload.Messages.length < 20) {
+                            eom = true;
+                        }
                         this.setState({
-                            msgs: payload.Messages
+                            msgs: oldMsgs.concat(this.state.msgs),
+                            eom,
+                            topMsgId: payload.Messages[payload.Messages.length-1].messageId
                         });
                     }
 
@@ -81,10 +117,12 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                         })
                     }
 
-                    if (payload.Conversation) {
-                        console.log(payload.Conversation)
+                    if (payload.Conversation && payload.Messages) {
+                        // console.log(payload.Conversation)
                         this.setState({
                             convo: payload.Conversation,
+                            msgs: payload.Messages,
+                            topMsgId: payload.Messages[payload.Messages.length-1].messageId
                         })
                     }
 
@@ -107,11 +145,11 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                             msgs: this.state.msgs.concat(obj)
                         });
 
-                        if (obj.sendUserId !== store.get("username")) { 
+                        if (obj.sendUserId !== store.get("username")) {
                             console.log('읽어')
                             // publishApi(client, 'api.conversation.read', 'admin', this.state.uuid, { 'convoId': this.state.convoId });
                         }
-                        
+
                     }
 
                     // if(obj.readAt) { // 읽음 처리
@@ -124,32 +162,19 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
         }
     }
 
-    setSearch = (search: string) => {
-        this.setState({ search: search })
-    }
-
-    setNotification =(type: number)=>{
-        this.setState(state => {
-            state.convo.notificationType = type===0?1:0
-            return{}
-        })
-        publishApi(client, "api.conversation.notification",store.get("username"),this.state.uuid, {"convoId":this.state.convo.convoId, "type": type===0?1:0})
-        return false;
-    }
-
     render() {
         let sendMsg = this.sendMsg;
         let aside, viewModeClass;
         if (this.state.convo.convoType === type.ConvoType.BOT) {
             viewModeClass = 'wrapmsgr_chatbot'
             aside = <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
-                <IntentList bot={this.state.bot} botIntent={this.state.botIntent} convoId={this.state.convo.convoId} notificationType={this.state.convo.notificationType} setNotification = {this.setNotification} sendMsg={this.sendMsg} />
+                <IntentList bot={this.state.bot} botIntent={this.state.botIntent} convoId={this.state.convo.convoId} notificationType={this.state.convo.notificationType} setNotification={this.setNotification} sendMsg={this.sendMsg} />
             </div>
         }
         else {
             viewModeClass = 'doc-chatroom'
             aside = <React.Fragment>
-                <InfoHeader convoType={this.state.convo.convoType} convoId = {this.state.convo.convoId} docName={this.state.convo.name} memberCount={this.state.convo.memberCount} notificationType = {this.state.convo.notificationType} setNotification = {this.setNotification}/>
+                <InfoHeader convoType={this.state.convo.convoType} convoId={this.state.convo.convoId} docName={this.state.convo.name} memberCount={this.state.convo.memberCount} notificationType={this.state.convo.notificationType} setNotification={this.setNotification} />
                 <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
                     <SearchBar search={this.state.search} setSearch={this.setSearch} /><MemberList search={this.state.search} convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} members={this.state.members} />
                 </div></React.Fragment>
@@ -164,7 +189,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                             <div className={"wrapmsgr_content  wrapmsgr_viewmode_full " + viewModeClass}>
                                 {aside}
                                 <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass" id="DocumentChat">
-                                    <MsgList msgs={this.state.msgs} convo={this.state.convo} sendMsg={this.sendMsg} />
+                                    <MsgList msgs={this.state.msgs} convo={this.state.convo} sendMsg={this.sendMsg} getMsgs={this.getMsgs} eom={this.state.eom} topMsgId={this.state.topMsgId} />
                                     <MsgInput convoId={this.state.convo.convoId} uuid={this.state.uuid} sendMsg={sendMsg.bind(this)} />
                                 </div>
                             </div>

@@ -52,7 +52,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
             invite: "",
             leave: "",
             uuid:v4(),
-        }) 
+        }); 
         
     }
     
@@ -67,7 +67,10 @@ class InfoHeader extends React.Component<Props, ShowState>{
             
             if(store.get("language")==="en-US"){
                 i = language.en.invite
-                l = language.en.exit
+                l = language.
+                
+                
+                en.exit
             }
 
             this.setState({
@@ -81,7 +84,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
                 leave: l,
             })
         }
-        else{
+        else {
             this.setState({
                 isShow: false,
                 wrapmsgr_dropdown_menu: "",
