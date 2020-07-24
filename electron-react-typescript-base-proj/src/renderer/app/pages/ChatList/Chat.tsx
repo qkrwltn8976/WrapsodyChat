@@ -28,7 +28,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
     roomName: [] = [];
     roomDate: [] = [];
     roomRead: [] = [];
-    roomOpened: []=[]
+    roomOpened: Array<string> = [""];
     payload: any;
     search: string = "";
     state: any = { 
@@ -41,6 +41,14 @@ class Chat extends Component<ChatListProps, ChatListState> {
 
     getConvo = (convoId: string, name:string) => (event: any) => {
 
+        //이미 열려있는 창이라면 새로 띄우지않는다.
+        if(this.roomOpened.includes(convoId)===true){
+            console.log("already opened")
+            return;
+        }
+
+        this.roomOpened.push(convoId)
+        
         
         const chatWindow = new BrowserWindow(
             {
@@ -64,6 +72,11 @@ class Chat extends Component<ChatListProps, ChatListState> {
         chatWindow.setTitle(name)
         chatWindow.show();
 
+        //창이 닫히면 roomOpened 배열에서 제거
+        chatWindow.on('close', () =>{
+            this.roomOpened.splice(this.roomOpened.indexOf(convoId),1)
+        })
+
         const index = this.state.convos.findIndex(convo => convo.convoId === convoId),
         convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call
         convos[index].unread = 0;
@@ -71,6 +84,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
         convos[index].isOpened = true;
         this.setState({ convos });
         // console.log(chatWindow.isDestroyed())
+
         
     }
 
