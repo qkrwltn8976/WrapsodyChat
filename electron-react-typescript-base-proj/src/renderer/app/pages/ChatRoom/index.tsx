@@ -29,6 +29,7 @@ interface RoomState {
     isOpened?: boolean;
     eom: boolean; // end of message
     prevScrollHeight: number;
+    topMsgId: number;
 }
 
 class ChatRoom extends React.Component<RoomProps, RoomState> {
@@ -82,7 +83,8 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
             },
             search: "",
             eom: false,
-            prevScrollHeight: 0
+            prevScrollHeight: 0,
+            topMsgId: 0
         })
 
     }
@@ -98,23 +100,15 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                     if (payload.Messages && payload.direction === 'backward') {
                         let oldMsgs = payload.Messages;
                         let eom = false;
-                        const height = document.getElementById('scrollView').scrollHeight;
-                        console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&  ' + height)
-                        if(payload.Messages.length === 0) {
+
+                        if(payload.Messages.length < 20) {
                             eom = true;
                         }
                         this.setState({
                             msgs: oldMsgs.concat(this.state.msgs),
-                            eom
+                            eom,
+                            topMsgId: payload.Messages[payload.Messages.length-1].messageId
                         });
-                        const height2 = document.getElementById('scrollView').scrollHeight;
-                        console.log('&&&&&&&&&&&&&&&&&&&&&&asdfasdfsd&&&&  ' + height2)
-                        // this.setState({prevScrollHeight: scrollHeight});
-                        this.setState({
-                            prevScrollHeight: height2 - height
-                        });
-
-                        console.log('prev  ' + this.state.prevScrollHeight)
                     }
 
                     if (payload.Members) {
@@ -127,7 +121,8 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                         // console.log(payload.Conversation)
                         this.setState({
                             convo: payload.Conversation,
-                            msgs: payload.Messages
+                            msgs: payload.Messages,
+                            topMsgId: payload.Messages[payload.Messages.length-1].messageId
                         })
                     }
 
@@ -194,7 +189,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                             <div className={"wrapmsgr_content  wrapmsgr_viewmode_full " + viewModeClass}>
                                 {aside}
                                 <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass" id="DocumentChat">
-                                    <MsgList msgs={this.state.msgs} convo={this.state.convo} sendMsg={this.sendMsg} getMsgs={this.getMsgs} eom={this.state.eom} prevScrollHeight={this.state.prevScrollHeight}/>
+                                    <MsgList msgs={this.state.msgs} convo={this.state.convo} sendMsg={this.sendMsg} getMsgs={this.getMsgs} eom={this.state.eom} topMsgId={this.state.topMsgId} />
                                     <MsgInput convoId={this.state.convo.convoId} uuid={this.state.uuid} sendMsg={sendMsg.bind(this)} />
                                 </div>
                             </div>

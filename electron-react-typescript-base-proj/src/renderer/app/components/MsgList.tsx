@@ -15,14 +15,13 @@ interface MsgProps {
     eom: boolean;
     sendMsg: any;
     getMsgs: any;
-    prevScrollHeight: number;
+    topMsgId: number;
 }
 
 interface MsgListState {
     msgs: Message[];
     convo: Conversation;
     unreadExists: boolean;
-    prevScrollHeight?: number;
 }
 
 class MsgList extends React.Component<MsgProps, MsgListState> {
@@ -82,7 +81,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
     sendBotCommand = (command: string) => {
         let msg: Message = {
-            id: '',
+            messageId: 0,
             sendUserId: store.get("username"),
             recvConvoId: this.state.convo.convoId,
             body: command,
@@ -209,16 +208,15 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
             // 더하기 메세지버블 + bubble
         }
 
-
         if (msg.sendUserId === store.get("username")) { // 나중에 자신의 sendUserId로 수정
             return (
-                <li id={msg.id} key={msg.id} ng-repeat="message in current.messages" className="li-right ng-scope">
+                <li id={msg.messageId.toString()}  ng-repeat="message in current.messages">
                     {msgbody}
                 </li>
             )
         } else {
             return (
-                <li id={msg.id} ng-repeat="message in current.messages" className="ng-scope">
+                <li id={msg.messageId.toString()} ng-repeat="message in current.messages">
                     {msgbody}
                 </li>
             )
@@ -239,10 +237,9 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
             this.props.getMsgs(this.scrollView.current.scrollHeight);
             if (this.props.eom) {
                 this.scrollView.current.scrollTop = 0;
-                console.log('end of message')
             }   
             else 
-                this.scrollView.current.scrollTop = this.scrollView.current.clientHeight;
+                document.getElementById(this.props.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' })
         }
     }
 
@@ -256,8 +253,6 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         if (scrollView) {
             scrollView.addEventListener('scroll', this.messagesScrollToLatestMessage);
         }
-        this.setState({prevScrollHeight: this.scrollView.current.scrollHeight})
-        
     }
 
     componentWillReceiveProps(newProps) {
@@ -269,12 +264,11 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         if(this.state.msgs.length <= 20) {
             this.messagesScrollToBottom();
         }
-        this.state = ({...this.state, prevScrollHeight: this.props.prevScrollHeight})
     }
 
     render() {
         let unreadExists = (this.props.convo.unread > 0)
-        this.state = ({ msgs: this.props.msgs, convo: this.props.convo, unreadExists: (this.props.convo.unread > 0), prevScrollHeight: this.props.prevScrollHeight });
+        this.state = ({ msgs: this.props.msgs, convo: this.props.convo, unreadExists: (this.props.convo.unread > 0)});
         console.log(this.state)
         return (
             <div className="wrapmsgr_content">

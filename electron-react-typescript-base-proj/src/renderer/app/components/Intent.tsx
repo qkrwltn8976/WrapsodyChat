@@ -23,7 +23,7 @@ interface IntentState {
 class Intent extends React.Component<IntentProps, IntentState>{
     sendBotCommand = (command: string) => (e: any) => {
         let msg : Message = {
-            id:'',
+            messageId: 0,
             sendUserId: store.get("username"),
             recvConvoId: this.props.convoId,
             body: command,

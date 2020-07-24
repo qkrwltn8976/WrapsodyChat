@@ -1,7 +1,7 @@
 import { Attachment } from "./Attachment";
 
 export type Message = {
-  id: string; // 메시지 ID
+  messageId: number; // 메시지 ID
   sendUserId: string; // 보낸 유저 ID
   recvConvoId: string; // 받는 대화 ID
   title?: string; // 메시지 제목
