@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { ConvoType, InfoHeaderType} from "../../libs/enum-type"
 import { getDocType } from '../../libs/messengerLoader'
+import {client} from "@/renderer/libs/stomp"
 import {v4} from "uuid"
 import language from "@/renderer/language/language.json"
+import { publishApi } from '@/renderer/libs/stomp';
 
 const Store = require('electron-store')
 const store = new Store()
@@ -35,7 +37,6 @@ interface ShowState{
 
 
 class InfoHeader extends React.Component<Props, ShowState>{
-    client: any;
     payload: any;
     convoId: string;
     
@@ -122,6 +123,14 @@ class InfoHeader extends React.Component<Props, ShowState>{
         inviteWindow.show();
     }
 
+    leaveRoom = (e)=>{
+        e.preventDefault();
+        publishApi(client, "api.room.leave", store.get("username"), this.state.uuid, {convoId: this.props.convoId})
+        console.log("나가?")
+        var win = remote.getCurrentWindow()
+        win.close()
+    }
+
     //notificationType 에 따라 icon_bell 아이콘의 모양 결정
     getBellIcon(){
         if(this.props.notificationType===0){
@@ -174,7 +183,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
                                 <div title= "대화 상대 초대" className={this.state.ngScope} onClick = {this.showInvite}>
                                     <i className={this.state.iconPlus}></i>{this.state.invite} 
                                 </div>
-                                <div title="나가기" className={this.state.leaveClass}>
+                                <div title="나가기" className={this.state.leaveClass} onClick= {this.leaveRoom}>
                                     <i className={this.state.iconLogOut}></i>{this.state.leave}
                                 </div>
                             </div>
