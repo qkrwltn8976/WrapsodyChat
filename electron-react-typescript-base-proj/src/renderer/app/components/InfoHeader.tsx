@@ -56,20 +56,17 @@ class InfoHeader extends React.Component<Props, ShowState>{
                 l = language.
                 en.exit
             }
-
-            this.setState({
-                isShow : true,
-            })
         }
-        else {
-            this.setState({
-                isShow: false,
-          })
-        }
+        this.setState({
+            isShow: !this.state.isShow
+        })
     }
 
     showInvite = (e) => {
         e.preventDefault();
+        this.setState({
+            isShow: !this.state.isShow
+        })
         var currentWindow = remote.getCurrentWindow()
         var size = currentWindow.getSize()
         // var width = size[0] * 0.9;
