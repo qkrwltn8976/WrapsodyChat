@@ -311,7 +311,7 @@ div.wrapmsgr_container * {
 	display: inline-block;
 	width: 100%;
 	height: 100%;
-	background-color: #fff;
+	background-color: #edeff3;
 	border-radius: 5px;
 	border: solid 1px #edeff3;
 	padding-left: 15px;
@@ -847,7 +847,7 @@ div.wrapmsgr_container * {
 .wrapmsgr_container .wrapmsgr_article .wrapmsgr_messages {
 	position: relative;
 	height: 100%;
-    background: #fff;
+    background: rgb(118, 255, 136);
     overflow-x: hidden;
     overflow-y: auto;
     padding: 0;
