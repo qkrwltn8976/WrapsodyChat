@@ -20,11 +20,12 @@ interface inviteState{
     convoId: string;
     docName: string;
     master: TreeUser;
-    checkoutAuthList: TreeUser[],
+    tMembers: TreeUser[],
+    viewAuthAllUsers: boolean,
+    checkoutAuthList: TreeUser[] ,
     checkoutDeptAuthList: TreeDept[],
     viewAuthList: TreeUser[],
     viewDeptAuthList: TreeDept[],
-    members: TreeUser[],
     participants: number,
     isAllChecked: boolean,
     isMemberChecked: boolean,
@@ -43,11 +44,12 @@ class Invite extends React.Component<inviteProps, inviteState>{
                 userName : "",
                 password : "",
             }, 
+            viewAuthAllUsers: false,
             checkoutAuthList : [],
             checkoutDeptAuthList: [],
             viewAuthList: [],
             viewDeptAuthList: [],
-            members:[],
+            tMembers:[],
             participants: 0,
             isAllChecked: false,
             isMemberChecked: false,
@@ -59,9 +61,9 @@ class Invite extends React.Component<inviteProps, inviteState>{
             //subscribe
             subscribe(client, store.get("username"), this.state.uuid, (obj:any) => {
                 let payload = obj.payload;
+                console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+                console.log(payload)
                 if(payload){
-                    console.log("pppppppppppppppppppppppppp")
-                    console.log(payload)
                     if(payload.Room){
                         this.setState({
                             docName: payload.Room.name
@@ -71,20 +73,16 @@ class Invite extends React.Component<inviteProps, inviteState>{
                     if(payload.SyncInfo){
                         this.setState({
                             master : payload.SyncInfo.master,
-                            checkoutAuthList : payload.SyncInfo.checkoutAuthList,
-                            checkoutDeptAuthList : payload.SyncInfo.checkoutDeptAuthList,
-                            viewAuthList : payload.SyncInfo.viewAuthList,
-                            viewDeptAuthList : payload.SyncInfo.viewDeptAuthList,
+                            viewAuthAllUsers: payload.SyncInfo.viewAuthAllUsers,
+                            checkoutAuthList : payload.SyncInfo.checkoutAuthList.user,
+                            checkoutDeptAuthList : payload.SyncInfo.checkoutDeptAuthList.user,
+                            viewAuthList : payload.SyncInfo.viewAuthList.user,
+                            viewDeptAuthList : payload.SyncInfo.viewDeptAuthList.user,
                         })
-                        console.log("SyncInfo!!!!!!!!!!!!!!!!!11")
-                        console.log(this.state.checkoutAuthList)
-                        console.log(this.state.checkoutDeptAuthList)
-                        console.log(this.state.viewAuthList)
-                        console.log(this.state.viewDeptAuthList)
                     }
                     if(payload.Members){
                         this.setState({
-                            members : payload.Members,
+                            tMembers : payload.Members,
                             participants : payload.Members.length 
                         }) 
                     }// 채팅방 참여자
@@ -152,13 +150,13 @@ class Invite extends React.Component<inviteProps, inviteState>{
                                 <Header docName = "" headerType={HeaderType.INVITE}/>
                                 <form name="manageDocRoomForm" ng-submit="submitDocRoom()" className="ng-pristine ng-valid">
                                     <div className="wrapmsgr_popup_body">
-                                        <InfoHeader convoType= {ConvoType.IC} memberCount = {this.state.members.length} participants = {this.state.participants} docName = {this.state.docName}/>
+                                        <InfoHeader convoType= {ConvoType.IC} memberCount = {this.state.tMembers.length} participants = {this.state.participants} docName = {this.state.docName}/>
                                         <div className="group">
                                             <div className="wrapmsgr_organ_tree ng-scope angular-ui-tree" ui-tree="organTreeOptions" data-clone-enabled="true" data-nodrop-enabled="true" data-drag-delay="100" style = {organ_tree_calc_width}>
-                                                <MemberList memberListType = {MemberListType.SELECT} clickCheckBox = {this.clickCheckBox}/>
+                                                <MemberList memberListType = {MemberListType.SELECT} clickCheckBox = {this.clickCheckBox} tMembers = {this.state.tMembers} checkoutAuthList = {this.state.checkoutAuthList} checkoutDeptAuthList = {this.state.checkoutDeptAuthList}/>
                                             </div>    
                                             <div className="wrapmsgr_organ_tree right-list-col ng-scope angular-ui-tree" ui-tree="inviteTreeOptions">
-                                                <MemberList memberListType = {MemberListType.SELECTED}/>
+                                                <MemberList memberListType = {MemberListType.SELECTED} tMembers = {this.state.tMembers}/>
                                             </div>
                                         </div>
                                     </div>
@@ -175,26 +173,3 @@ class Invite extends React.Component<inviteProps, inviteState>{
 
 export default Invite;
 
-// const treeData= [
-//     {
-//       key: 'Fasso',
-//       label: 'Fasso',
-//       nodes: [
-//         {
-//           key: 'Wrapsody',
-//           label: 'Wrapsody',
-//           nodes: [
-//             {
-//               key: 'employee',
-//               label: 'employee',
-//               nodes: []
-//             },
-//           ],
-//         },
-//       ],
-//     },
-//     {
-//       key: 'Sparrow',
-//       label: 'Sparrow',
-//     },
-// ];

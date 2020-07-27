@@ -49,11 +49,9 @@ export function subscribe(client: Client, userId: string, uuid: string, callback
         if (message.body || message.isBinaryBody || message.command) {
             obj = JSON.parse(message.body);
             callback(obj); 
-            console.log("aaaaaaaaaaaaaaaaaaaaaaa");
         }
         else {
             console.log("got empty message");
-            console.log("bbbbbbbbbbbbbbbbbbbbbb");
         }
 
     }, {

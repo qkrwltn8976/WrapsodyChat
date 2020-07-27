@@ -45,7 +45,7 @@ class MsgInput extends React.Component<MsgInputProps, MsgInputState> {
     sendMsg = () => {
         console.log(this.state.message)
         let msg : Message = {
-            id:'',
+            messageId: 0,
             sendUserId: store.get("username"),
             recvConvoId: this.convoId,
             body: this.state.message,
