@@ -247,7 +247,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
                 this.scrollView.current.scrollTop = 0;
             }   
             else 
-                document.getElementById(this.props.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' })
+                document.getElementById(this.props.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
         }
     }
 
@@ -265,14 +265,14 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
     componentWillReceiveProps(newProps) {
         // this.state = ({ msgs: newProps.msgs, convo: newProps.convo, unreadExists: (newProps.convo.unread > 0) });
-        console.log(newProps)
+        
     }
 
-    componentDidUpdate() {
-        // if (this.state.msgs.length <= 20) {
-        //     this.messagesScrollToBottom();
-        // }
-        this.messagesScrollToBottom();
+    componentDidUpdate = () => {
+        if (this.state.msgs.length <= 20) {
+            this.messagesScrollToBottom();
+        }
+        // this.messagesScrollToBottom();
     }
 
     render() {

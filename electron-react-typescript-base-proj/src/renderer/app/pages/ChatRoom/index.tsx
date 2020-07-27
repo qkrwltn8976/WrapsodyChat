@@ -142,8 +142,10 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                     console.log(obj);
                     if ((obj.body || obj.messageId) && obj.recvConvoId === this.state.convo.convoId) { // 받은 메세지 처리
                         this.setState({
-                            msgs: this.state.msgs.concat(obj)
+                            msgs: this.state.msgs.concat(obj),
+                            topMsgId: obj.messageId
                         });
+                        document.getElementById(this.state.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
 
                         if (obj.sendUserId !== store.get("username")) {
                             console.log('읽어')
