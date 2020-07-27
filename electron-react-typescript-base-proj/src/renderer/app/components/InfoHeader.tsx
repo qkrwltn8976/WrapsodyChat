@@ -23,13 +23,6 @@ interface Props{
 
 interface ShowState{
     isShow: boolean;
-    wrapmsgr_dropdown_menu:string;
-    ngScope: string;
-    iconPlus: string;
-    leaveClass: string;
-    iconLogOut: string;
-    invite: string;
-    leave: string;
     uuid:string;   
 }
 
@@ -44,14 +37,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
         
         this.state = ({
             isShow: false,
-            wrapmsgr_dropdown_menu: "",
-            ngScope: "",
-            iconPlus: "",
-            leaveClass: "",
-            iconLogOut: "",
-            invite: "",
-            leave: "",
-            uuid:v4(),
+            uuid: v4(),
         }); 
         
     }
@@ -68,32 +54,16 @@ class InfoHeader extends React.Component<Props, ShowState>{
             if(store.get("language")==="en-US"){
                 i = language.en.invite
                 l = language.
-                
-                
                 en.exit
             }
 
             this.setState({
                 isShow : true,
-                wrapmsgr_dropdown_menu: "wrapmsgr_dropdown_menu",
-                ngScope: "ng-scope",
-                iconPlus: "icon_plus",
-                leaveClass: "ng-scope ng-enter-prepare",
-                iconLogOut: "icon_log_out",
-                invite: i,
-                leave: l,
             })
         }
         else {
             this.setState({
                 isShow: false,
-                wrapmsgr_dropdown_menu: "",
-                ngScope: "",
-                iconPlus: "",
-                leaveClass: "",
-                iconLogOut: "",
-                invite: "",
-                leave: "",
           })
         }
     }
@@ -170,12 +140,12 @@ class InfoHeader extends React.Component<Props, ShowState>{
                             this.props.setNotification(this.props.notificationType)}}></i></a>
                         <div className="ng-isolate-scope">
                             <a href=""><i className="icon_ellipsis_h" title="더 보기" onClick = {this.showClick}></i></a>
-                             <div className={this.state.wrapmsgr_dropdown_menu} style={{position: "absolute"}}>
-                                <div title= "대화 상대 초대" className={this.state.ngScope} onClick = {this.showInvite}>
-                                    <i className={this.state.iconPlus}></i>{this.state.invite} 
+                             <div className={ this.state.isShow ? 'wrapmsgr_dropdown_menu' : 'wrapmsgr_dropdown_menu hidden'} style={{position: "absolute"}}>
+                                <div title= "대화 상대 초대" className= "ng-scope" onClick = {this.showInvite}>
+                                    <i className= "icon_plus"></i>Invite
                                 </div>
-                                <div title="나가기" className={this.state.leaveClass}>
-                                    <i className={this.state.iconLogOut}></i>{this.state.leave}
+                                <div title="나가기" className= "ng-scope ng-enter-prepare">
+                                    <i className="icon_log_out"></i>Leave
                                 </div>
                             </div>
                         </div>
