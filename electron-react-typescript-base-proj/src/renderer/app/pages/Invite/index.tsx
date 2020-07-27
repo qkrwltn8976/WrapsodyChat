@@ -16,10 +16,10 @@ interface inviteProps{
 }
 
 interface inviteState{
-    uuid: string;
-    convoId: string;
-    docName: string;
-    master: TreeUser;
+    uuid: string,
+    convoId: string,
+    docName: string,
+    master: TreeUser,
     tMembers: TreeUser[],
     viewAuthAllUsers: boolean,
     checkoutAuthList: TreeUser[] ,
@@ -153,7 +153,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
                                         <InfoHeader convoType= {ConvoType.IC} memberCount = {this.state.tMembers.length} participants = {this.state.participants} docName = {this.state.docName}/>
                                         <div className="group">
                                             <div className="wrapmsgr_organ_tree ng-scope angular-ui-tree" ui-tree="organTreeOptions" data-clone-enabled="true" data-nodrop-enabled="true" data-drag-delay="100" style = {organ_tree_calc_width}>
-                                                <MemberList memberListType = {MemberListType.SELECT} clickCheckBox = {this.clickCheckBox} tMembers = {this.state.tMembers} checkoutAuthList = {this.state.checkoutAuthList} checkoutDeptAuthList = {this.state.checkoutDeptAuthList}/>
+                                                <MemberList memberListType = {MemberListType.SELECT} clickCheckBox = {this.clickCheckBox} tMembers = {this.state.tMembers} checkoutAuthList = {this.state.checkoutAuthList} checkoutDeptAuthList = {this.state.checkoutDeptAuthList} master = {this.state.master}/>
                                             </div>    
                                             <div className="wrapmsgr_organ_tree right-list-col ng-scope angular-ui-tree" ui-tree="inviteTreeOptions">
                                                 <MemberList memberListType = {MemberListType.SELECTED} tMembers = {this.state.tMembers}/>
