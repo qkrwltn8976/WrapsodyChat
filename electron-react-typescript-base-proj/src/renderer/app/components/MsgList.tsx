@@ -210,13 +210,13 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
         if (msg.sendUserId === store.get("username")) { // 나중에 자신의 sendUserId로 수정
             return (
-                <li id={msg.messageId.toString()}  ng-repeat="message in current.messages">
+                <li id={msg.messageId.toString()}  ng-repeat="message in current.messages" className="li-right ng-scope">
                     {msgbody}
                 </li>
             )
         } else {
             return (
-                <li id={msg.messageId.toString()} ng-repeat="message in current.messages">
+                <li id={msg.messageId.toString()} ng-repeat="message in current.messages" className="ng-scope">
                     {msgbody}
                 </li>
             )
@@ -224,7 +224,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     }
 
 
-    messagesScrollToBottom() {
+    messagesScrollToBottom = () => {
         const node: HTMLDivElement | null = this.scrollTarget.current; //get the element via ref
 
         if (node) { //current ref can be null, so we have to check
@@ -261,9 +261,10 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     }
 
     componentDidUpdate() {
-        if(this.state.msgs.length <= 20) {
-            this.messagesScrollToBottom();
-        }
+        // if (this.state.msgs.length <= 20) {
+        //     this.messagesScrollToBottom();
+        // }
+        this.messagesScrollToBottom();
     }
 
     render() {
