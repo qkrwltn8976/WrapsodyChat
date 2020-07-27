@@ -163,8 +163,8 @@ class InfoHeader extends React.Component<Props, ShowState>{
                         </div>
                     </div> */}
                     <div className="wrapmsgr_right">
-                        <a href=""><i className="icon_eye" title="미리보기"></i></a>
-                        <a href="" ><i className="icon_download" title="다운로드"></i></a>
+                        <a href=""><i className="icon_eye" title="미리보기" onClick = {(e)=>{e.preventDefault()}}></i></a>
+                        <a href="" ><i className="icon_download" title="다운로드" onClick = {(e)=>{e.preventDefault()}}></i></a>
                         <a href=""><i className={this.getBellIcon()} onClick= {(e) =>{
                             e.preventDefault();
                             this.props.setNotification(this.props.notificationType)}}></i></a>

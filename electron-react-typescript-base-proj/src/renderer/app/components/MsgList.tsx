@@ -6,8 +6,10 @@ import { getShortName } from '../../libs/messengerLoader';
 import { Attachment } from '@/renderer/models/Attachment';
 import { Action } from '@/renderer/models/Action';
 import * as etype from '@/renderer/libs/enum-type';
+const {remote} = require('electron')
 const Store = require('electron-store')
 const store = new Store()
+const {BrowserWindow} = remote
 
 interface MsgProps {
     msgs: Message[];
@@ -131,7 +133,13 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
                     <div className="wrapmsgr_msg_attachment ng-scope" ng-repeat="attachment in message.attachments">
                         <div className="wrapmsgr_msg_title ng-binding">{attach[0].title}</div>
-                        <img ng-attr-src="{{ 'http://ecm.dev.fasoo.com:9400' + attachment.uri }}" fullscreen-view="" img-load="onAttachmentLoaded()" className="ng-scope fullscreen-view-element" src={"http://ecm.dev.fasoo.com:9400" + attach[0].uri} />
+                        <img className="ng-scope fullscreen-view-element" src={"http://ecm.dev.fasoo.com:9400" + attach[0].uri}
+                            onClick = {(e)=>{
+                                e.preventDefault();
+                                var win = new BrowserWindow()
+                                win.loadURL("http://ecm.dev.fasoo.com:9400" + attach[0].uri)
+                            }}
+                        />
                     </div>
                 </React.Fragment>
             )
