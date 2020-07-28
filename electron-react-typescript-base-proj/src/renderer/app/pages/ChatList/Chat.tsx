@@ -41,7 +41,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
 
     getConvo = (convoId: string, name:string, unread: number, readAt: number) => (event: any) => {
 
-        //이미 열려있는 창이라면 새로 띄우지않는다.
+        //이미 열려있는 창이라면 포커스만 주고 새로 띄우지않는다.
         if(this.roomOpened.has(convoId)===true){
             console.log("already opened")
             this.roomOpened.get(convoId)
@@ -89,8 +89,6 @@ class Chat extends Component<ChatListProps, ChatListState> {
         convos[index].isOpened = true;
         convos[index].readAt = Date.now();
         this.setState({ convos });
-        // console.log(chatWindow.isDestroyed())
-
         
     }
 
@@ -109,7 +107,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
         client.onConnect = () => {
             subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
                 let payload = obj.payload;
-                console.log(payload)
+                console.log(obj)
                 if (payload) {
                     if (payload.Conversations) {
                         //채팅방 시간순 정렬
@@ -126,9 +124,16 @@ class Chat extends Component<ChatListProps, ChatListState> {
                         this.setState(state => {
                             state.convos[index].notificationType = payload.type
 
-                            return{
-                                
-                            }
+                            return{}
+                        })
+                    }
+                    if(obj.type === "ROOM_LEFT"){
+                        const index = this.state.convos.findIndex(convo => convo.convoId === payload.convoId)
+                        console.log("나가요")
+                        console.log(index)
+                        this.setState(state => {
+                            state.convos.splice(index, 1)
+                            return{}
                         })
                     }
                 } else {
