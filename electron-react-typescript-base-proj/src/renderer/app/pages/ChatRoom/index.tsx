@@ -61,6 +61,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
 
     constructor(props: RoomProps, state: {}) {
         super(props, state);
+        console.log('@@@@@@@@@@@@@')
         console.log(props)
 
         this.state = ({
@@ -72,8 +73,8 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                 convoType: 0,
                 roomType: 0,
                 name: '',
-                readAt: 0,
-                unread: 0,
+                readAt: this.props.match.params.readAt,
+                unread: this.props.match.params.unread,
                 memberCount: 0,
                 notificationType: 0,
                 latestMessage: '',
@@ -120,7 +121,19 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                     if (payload.Conversation && payload.Messages) {
                         // console.log(payload.Conversation)
                         this.setState({
-                            convo: payload.Conversation,
+                            convo: {                
+                                convoId: this.props.match.params.convo,
+                                convoType: payload.Conversation.convoType,
+                                roomType: payload.Conversation.roomType,
+                                name: payload.Conversation.name,
+                                readAt: this.props.match.params.readAt,
+                                unread: this.props.match.params.unread,
+                                memberCount: payload.Conversation.memberCount,
+                                notificationType: payload.Conversation.notificationType,
+                                latestMessage: payload.Conversation.lastestMessage,
+                                latestMessageAt: payload.Conversation.latestMessageAt,
+                                createdAt: payload.Conversation.createdAt,
+                                updatedAt: payload.Conversation.updatedAt,},
                             msgs: payload.Messages,
                             topMsgId: payload.Messages[payload.Messages.length-1].messageId
                         })
@@ -142,8 +155,10 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                     console.log(obj);
                     if ((obj.body || obj.messageId) && obj.recvConvoId === this.state.convo.convoId) { // 받은 메세지 처리
                         this.setState({
-                            msgs: this.state.msgs.concat(obj)
+                            msgs: this.state.msgs.concat(obj),
+                            topMsgId: obj.messageId
                         });
+                        document.getElementById(this.state.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
 
                         if (obj.sendUserId !== store.get("username")) {
                             console.log('읽어')
