@@ -120,11 +120,11 @@ class Chat extends Component<ChatListProps, ChatListState> {
                         )
 
                     }
-                    if(payload.type){
+                    if(obj.type === "NOTIFICATION_UPDATED"){
+                        console.log("알람알람")
                         const index = this.state.convos.findIndex(convo => convo.convoId === payload.convoId)
                         this.setState(state => {
                             state.convos[index].notificationType = payload.type
-
                             return{}
                         })
                     }
