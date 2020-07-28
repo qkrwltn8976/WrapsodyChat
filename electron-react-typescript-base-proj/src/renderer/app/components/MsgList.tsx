@@ -156,12 +156,22 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         let time;
         let profile;
         let msgbubble;
+        let profileClass;
+        let senderName;
+        if(this.state.convo.convoType === etype.ConvoType.BOT) {
+            profileClass = 'bot-profile';
+            senderName = this.state.convo.name;
+        }
+        else {
+            profileClass = 'no-photo cyan';
+            senderName = msg.sendUserId;
+        }
 
         if (!this.isContinuous(this.state.msgs[index - 1], msg)) {
             profile = <React.Fragment><div className="wrapmsgr_msg_user ng-isolate-scope" ng-attr-title="{{users[message.sendUserId].userName}}" wrapmsgr-user-profile="users[message.sendUserId]" user-profile-disabled="message.sendUserId.substr(0, 5) == '@BOT@'" title="administrator">
-                <span className="user-photo ng-binding ng-isolate-scope no-photo cyan">{getShortName(msg.sendUserId)}</span>
+                <span className={"user-photo ng-binding ng-isolate-scope " + profileClass }>{getShortName(msg.sendUserId)}</span>
             </div>
-                <div className="wrapmsgr_msg_userid ng-binding">{msg.sendUserId}</div></React.Fragment>
+                <div className="wrapmsgr_msg_userid ng-binding">{senderName}</div></React.Fragment>
         }
         if (!this.isContinuous(msg, this.state.msgs[index + 1])) {
             time = <div className="wrapmsgr_msg_time">

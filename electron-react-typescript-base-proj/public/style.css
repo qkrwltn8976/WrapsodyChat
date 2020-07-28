@@ -1,3 +1,7 @@
 .app {
   color: grey;
 }
+
+.bot-profile {
+  background-image: url('http://ecm.dev.fasoo.com:9400/images/icon_bot_wrapsody.png') 
+}
