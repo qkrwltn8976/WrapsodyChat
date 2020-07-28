@@ -30,6 +30,7 @@ interface inviteState{
     isAllChecked: boolean,
     isMemberChecked: boolean,
     isDeptChecked: boolean,
+    isAllBoxChecked: string,
 }
 
 class Invite extends React.Component<inviteProps, inviteState>{
@@ -54,6 +55,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
             isAllChecked: false,
             isMemberChecked: false,
             isDeptChecked: false,
+            isAllBoxChecked:"",
         })
     }
     componentDidMount(){
@@ -61,23 +63,20 @@ class Invite extends React.Component<inviteProps, inviteState>{
             //subscribe
             subscribe(client, store.get("username"), this.state.uuid, (obj:any) => {
                 let payload = obj.payload;
-                console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-                console.log(payload)
                 if(payload){
                     if(payload.Room){
                         this.setState({
                             docName: payload.Room.name
                         })
-                        console.log(this.state.docName);
                     }
                     if(payload.SyncInfo){
                         this.setState({
                             master : payload.SyncInfo.master,
                             viewAuthAllUsers: payload.SyncInfo.viewAuthAllUsers,
                             checkoutAuthList : payload.SyncInfo.checkoutAuthList.user,
-                            checkoutDeptAuthList : payload.SyncInfo.checkoutDeptAuthList.user,
+                            checkoutDeptAuthList : payload.SyncInfo.checkoutDeptAuthList.dept,
                             viewAuthList : payload.SyncInfo.viewAuthList.user,
-                            viewDeptAuthList : payload.SyncInfo.viewDeptAuthList.user,
+                            viewDeptAuthList : payload.SyncInfo.viewDeptAuthList.dept,
                         })
                     }
                     if(payload.Members){
@@ -100,9 +99,15 @@ class Invite extends React.Component<inviteProps, inviteState>{
             let all = 0;
             if(this.state.isAllChecked){
                 all : this.state.participants
+                this.setState({
+                    isAllBoxChecked : "checked"
+                })
             }else{
                 all = this.state.checkoutAuthList.length + this.state.checkoutDeptAuthList.length 
                 + this.state.viewAuthList.length + this.state.viewDeptAuthList.length
+                this.setState({
+                    isAllBoxChecked : ""
+                })
             }
             this.setState({ 
                 participants : all,
@@ -153,7 +158,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
                                         <InfoHeader convoType= {ConvoType.IC} memberCount = {this.state.tMembers.length} participants = {this.state.participants} docName = {this.state.docName}/>
                                         <div className="group">
                                             <div className="wrapmsgr_organ_tree ng-scope angular-ui-tree" ui-tree="organTreeOptions" data-clone-enabled="true" data-nodrop-enabled="true" data-drag-delay="100" style = {organ_tree_calc_width}>
-                                                <MemberList memberListType = {MemberListType.SELECT} clickCheckBox = {this.clickCheckBox} tMembers = {this.state.tMembers} checkoutAuthList = {this.state.checkoutAuthList} checkoutDeptAuthList = {this.state.checkoutDeptAuthList} master = {this.state.master}/>
+                                                <MemberList memberListType = {MemberListType.SELECT} clickCheckBox = {this.clickCheckBox} tMembers = {this.state.tMembers} checkoutAuthList = {this.state.checkoutAuthList} checkoutDeptAuthList = {this.state.checkoutDeptAuthList} master = {this.state.master} isAllBoxChecked = {this.state.isAllBoxChecked}/>
                                             </div>    
                                             <div className="wrapmsgr_organ_tree right-list-col ng-scope angular-ui-tree" ui-tree="inviteTreeOptions">
                                                 <MemberList memberListType = {MemberListType.SELECTED} tMembers = {this.state.tMembers}/>

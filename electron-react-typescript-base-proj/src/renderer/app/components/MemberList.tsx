@@ -3,7 +3,10 @@ import { Member } from '../../models/Member';
 import { getShortName } from '../../libs/messengerLoader';
 import { TreeUser } from '../../models/TreeUser';
 import { TreeDept } from '../../models/TreeDept';
-
+import { client , subscribe, publishApi } from '../../libs/stomp'
+import { v4 } from "uuid";
+const Store = require('electron-store')
+const store = new Store()
 
 interface Group {
     longName: string;
@@ -24,22 +27,63 @@ interface Props {
     viewDeptAuthList?: TreeDept[];
     tMembers?: TreeUser[];
     master?: TreeUser;
+    isAllBoxChecked?: string,
+}
+
+interface State{
+    uuid: string
 }
 
 
-class MemberList extends React.Component<Props>{
-    constructor(props: Props) {
-        super(props);
+class MemberList extends React.Component<Props, State>{
+    constructor(props: Props, state: State) {
+        super(props, state);
+        this.state = ({
+            uuid: v4(),
+        })
     }
-    expandDept = () => {
+    componentDidMount(){
+        client.onConnect = () => {
+            subscribe(client, store.get("username"), this.state.uuid, (obj:any) => {
+                let payload = obj.payload;
+                console.log("ppppppppppppppppppppppppppppppppp")
+                console.log(payload)
+                if(payload){
+                    if(payload.Nodes){
+                        console.log("Tree***************************************Tree");
+                        console.log(payload.Nodes)
+                    }
+                }
+            })
+            if(this.props.checkoutDeptAuthList){
+                console.log("checkoutDeptAuthList있는데...")
+                console.log(this.props.checkoutDeptAuthList)
+                this.props.checkoutDeptAuthList.map(dept =>{
+                    console.log("map!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    console.log(dept)
+                    publishApi(client, 'api.organ.tree', store.get("username"), this.state.uuid, {"root": "N", "path": dept.deptCode})
+                })
+            }else{
+                console.log("왜 없지???????????????????????????????????")
+            }
+            if(this.props.viewDeptAuthList){
+                console.log("viewDeptAuthList있는데...")
+                console.log(this.props.viewDeptAuthList)
+                this.props.viewDeptAuthList.map(dept => {
+                    console.log("map!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    console.log(dept)
+                    publishApi(client, 'api.organ.tree', store.get("username"), this.state.uuid, {"root": "N", "path": dept.deptCode})
+                })
+            } 
+        }
+    }
 
+    expandDept = (deptCode: string) => {
+        
     }// 부서 펼침
     
     render() {
         const { memberListType, convoId} = this.props
-        console.log("dksl dho dksskdhk wlsWK ghksk!!!!!!!!")
-        console.log(this.props.checkoutAuthList)
-
         let ownerComponent;
         let checkoutAuthListComponent;
         let checkoutDeptAuthListComponent;
@@ -86,7 +130,7 @@ class MemberList extends React.Component<Props>{
                                     </label>
                                 </span>
                                 <span className="wrapmsgr_treeicon ng-scope" data-nodrag="" ng-click="toggleOrgan(this)" ng-if="node.type === 'dept'" ng-style="!node.hasChildren &amp;&amp; {'visibility': 'hidden', 'cursor': 'auto'}">
-                                    <i className="icon_triangle wrapmsgr_collapse" ng-class="{true: 'wrapmsgr_collapse', false: 'wrapmsgr_expand'}[collapsed]" onClick = {this.expandDept}></i>
+                                    <i className="icon_triangle wrapmsgr_collapse" ng-class="{true: 'wrapmsgr_collapse', false: 'wrapmsgr_expand'}[collapsed]"></i>
                                 </span>
                                 <div wrapmsgr-user-profile="users[node.value] || node.value" user-profile-disabled="node.type === 'dept'" className="ng-isolate-scope">
                                     <span className="user-photo ng-binding ng-isolate-scope group no-photo green">{getShortName(dept.deptName)}</span>
@@ -141,7 +185,7 @@ class MemberList extends React.Component<Props>{
                                     </label>
                                 </span>
                                 <span className="wrapmsgr_treeicon ng-scope" data-nodrag="" ng-click="toggleOrgan(this)" ng-if="node.type === 'dept'" ng-style="!node.hasChildren &amp;&amp; {'visibility': 'hidden', 'cursor': 'auto'}">
-                                    <i className="icon_triangle wrapmsgr_collapse" ng-class="{true: 'wrapmsgr_collapse', false: 'wrapmsgr_expand'}[collapsed]" onClick = {this.expandDept}></i>
+                                    <i className="icon_triangle wrapmsgr_collapse" ng-class="{true: 'wrapmsgr_collapse', false: 'wrapmsgr_expand'}[collapsed]"></i>
                                 </span>
                                 <div wrapmsgr-user-profile="users[node.value] || node.value" user-profile-disabled="node.type === 'dept'" className="ng-isolate-scope">
                                     <span className="user-photo ng-binding ng-isolate-scope group no-photo green">{getShortName(dept.deptName)}</span>
@@ -175,12 +219,12 @@ class MemberList extends React.Component<Props>{
             return (
                 <React.Fragment>
                     <div className="wrapmsgr_organ_tree_header">
-                        <input type="checkbox" id="manage_doc_room_select_all" ng-disabled="!loggedIn || organTreeOptions.disabled" ng-checked="checkAllMembers()" ng-click="toggleAllMembers($event)"/>
+                        <input type="checkbox" id="manage_doc_room_select_all" ng-disabled="!loggedIn || organTreeOptions.disabled" ng-checked="checkAllMembers()" ng-click="toggleAllMembers($event)" checked/>
                         <label htmlFor="manage_doc_room_select_all">
                             <i className="icon_checkbox" ng-class="{disabled: organTreeOptions.disabled}" onClick={this.props.clickCheckBox("All") }></i>
                         </label>
                         <span>Select All</span>
-                    </div> 
+                    </div>
                     <ol ui-tree-nodes="" ng-model="docInfo.organ" ng-show="docInfo.organ.length > 0" className="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-not-empty">  
                         { 
                         this.props.tMembers.map(member => 
@@ -191,8 +235,6 @@ class MemberList extends React.Component<Props>{
                                 ownerComponent = <div></div>
                             }
                             const checkboxId = "member-"+ member.userId+"object:"+ Math.random()
-                            console.log("###############################################")
-                            console.log(checkboxId)
                             return(
                                 <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className="ng-scope angular-ui-tree-node selected" expand-on-hover="false">
                                     <div className="organ_wrapper ng-scope">
@@ -251,65 +293,3 @@ class MemberList extends React.Component<Props>{
 
 export default MemberList;
 
-
-
-// <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" class="ng-scope angular-ui-tree-node" expand-on-hover="false" style="">
-//     <div class="organ_wrapper ng-scope">
-//         <span ng-style="node.type === 'dept' &amp;&amp; !node.hasChildren &amp;&amp; {'visibility': 'hidden'}">
-//             <input type="checkbox" id="member-lunarcell9object:891" ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)">
-//             <label for="member-lunarcell9object:891" data-nodrag="">
-//                 <i class="icon_checkbox" ng-class="{disabled: node.disabled}"></i>
-//             </label>
-//         </span>
-//         <!-- ngIf: node.type === 'dept' -->
-//         <div wrapmsgr-user-profile="users[node.value] || node.value" user-profile-disabled="node.type === 'dept'" class="ng-isolate-scope">
-//             <span class="user-photo ng-binding ng-isolate-scope no-photo cyan" user="{userName: node.columnText, userId: node.value, type: node.type}" "="">주훈</span>
-//             <span class="wrapmsgr_member ng-binding">김주훈</span>
-//         </div>
-//         <span class="wrapmsgr_master ng-hide" ng-show="node.value == docInfo.detail.masterUserId">Owner</span>
-//         <ol ui-tree-nodes="" ng-model="node.subTree" ng-class="{expanded: !collapsed}" class="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-empty">
-//             <!-- ngRepeat: node in node.subTree -->
-//         </ol>
-//     </div>
-// </li>
-
-
-
-// <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" class="ng-scope angular-ui-tree-node selected" expand-on-hover="false">
-//     <div class="organ_wrapper ng-scope">
-//         <span ng-style="node.type === 'dept' &amp;&amp; !node.hasChildren &amp;&amp; {'visibility': 'hidden'}">
-//             <input type="checkbox" id="member-minjiobject:890" ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)" disabled="disabled" checked="checked">
-//             <label for="member-minjiobject:890" data-nodrag="">
-//                 <i class="icon_checkbox disabled" ng-class="{disabled: node.disabled}"></i>
-//             </label>
-//         </span>
-//         <!-- ngIf: node.type === 'dept' -->
-//         <div wrapmsgr-user-profile="users[node.value] || node.value" user-profile-disabled="node.type === 'dept'" class="ng-isolate-scope">
-//             <span class="user-photo ng-binding ng-isolate-scope no-photo cyan" user="{userName: node.columnText, userId: node.value, type: node.type}" "="">민지</span>
-//             <span class="wrapmsgr_member ng-binding">김민지</span>
-//         </div>
-//         <span class="wrapmsgr_master ng-hide" ng-show="node.value == docInfo.detail.masterUserId">Owner</span>
-//         <ol ui-tree-nodes="" ng-model="node.subTree" ng-class="{expanded: !collapsed}" class="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-empty">
-//             <!-- ngRepeat: node in node.subTree -->
-//         </ol>
-//     </div>
-// </li>
-
-
-// {/* <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className="ng-scope angular-ui-tree-node selected" expand-on-hover="false">
-//                             <div className="organ_wrapper ng-scope">
-//                                 <span ng-style="node.type === 'dept' &amp;&amp; !node.hasChildren &amp;&amp; {'visibility': 'hidden'}">
-//                                     <input type="checkbox" id="member-yhj2object:2026" ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)"/>
-//                                     <label htmlFor="member-yhj2object:2026" data-nodrag="">
-//                                         <i className="icon_checkbox disabled" ng-class="{disabled: node.disabled}"></i>
-//                                     </label>
-//                                 </span>
-//                                 <div wrapmsgr-user-profile="users[node.value] || node.value" user-profile-disabled="node.type === 'dept'" className="ng-isolate-scope">
-//                                     <span className="user-photo ng-binding ng-isolate-scope no-photo purple">{getShortName(member.userName)}</span>
-//                                     <span className="wrapmsgr_member ng-binding">{member.userName}</span>
-//                                 </div>
-//                                 <span className="wrapmsgr_master" ng-show="node.value == docInfo.detail.masterUserId">Owner</span>
-//                                 <ol ui-tree-nodes="" ng-model="node.subTree" ng-class="{expanded: !collapsed}" className="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-empty">
-//                                 </ol>
-//                             </div>
-//                         </li> */}
