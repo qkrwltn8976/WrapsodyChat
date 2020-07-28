@@ -27,7 +27,8 @@ interface Props {
     viewDeptAuthList?: TreeDept[];
     tMembers?: TreeUser[];
     master?: TreeUser;
-    isAllBoxChecked?: string,
+    isAllChecked?: boolean,
+    expandTree?: any,
 }
 
 interface State{
@@ -42,42 +43,6 @@ class MemberList extends React.Component<Props, State>{
             uuid: v4(),
         })
     }
-    componentDidMount(){
-        client.onConnect = () => {
-            subscribe(client, store.get("username"), this.state.uuid, (obj:any) => {
-                let payload = obj.payload;
-                console.log("ppppppppppppppppppppppppppppppppp")
-                console.log(payload)
-                if(payload){
-                    if(payload.Nodes){
-                        console.log("Tree***************************************Tree");
-                        console.log(payload.Nodes)
-                    }
-                }
-            })
-            if(this.props.checkoutDeptAuthList){
-                console.log("checkoutDeptAuthList있는데...")
-                console.log(this.props.checkoutDeptAuthList)
-                this.props.checkoutDeptAuthList.map(dept =>{
-                    console.log("map!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                    console.log(dept)
-                    publishApi(client, 'api.organ.tree', store.get("username"), this.state.uuid, {"root": "N", "path": dept.deptCode})
-                })
-            }else{
-                console.log("왜 없지???????????????????????????????????")
-            }
-            if(this.props.viewDeptAuthList){
-                console.log("viewDeptAuthList있는데...")
-                console.log(this.props.viewDeptAuthList)
-                this.props.viewDeptAuthList.map(dept => {
-                    console.log("map!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                    console.log(dept)
-                    publishApi(client, 'api.organ.tree', store.get("username"), this.state.uuid, {"root": "N", "path": dept.deptCode})
-                })
-            } 
-        }
-    }
-
     expandDept = (deptCode: string) => {
         
     }// 부서 펼침
@@ -129,7 +94,7 @@ class MemberList extends React.Component<Props, State>{
                                         <i className="icon_checkbox" ng-class="{disabled: node.disabled}" onClick={this.props.clickCheckBox("Dept")}></i>
                                     </label>
                                 </span>
-                                <span className="wrapmsgr_treeicon ng-scope" data-nodrag="" ng-click="toggleOrgan(this)" ng-if="node.type === 'dept'" ng-style="!node.hasChildren &amp;&amp; {'visibility': 'hidden', 'cursor': 'auto'}">
+                                <span className="wrapmsgr_treeicon ng-scope" data-nodrag="" ng-click="toggleOrgan(this)" ng-if="node.type === 'dept'" ng-style="!node.hasChildren &amp;&amp; {'visibility': 'hidden', 'cursor': 'auto'}" onClick = {this.props.expandTree}>
                                     <i className="icon_triangle wrapmsgr_collapse" ng-class="{true: 'wrapmsgr_collapse', false: 'wrapmsgr_expand'}[collapsed]"></i>
                                 </span>
                                 <div wrapmsgr-user-profile="users[node.value] || node.value" user-profile-disabled="node.type === 'dept'" className="ng-isolate-scope">
@@ -219,7 +184,7 @@ class MemberList extends React.Component<Props, State>{
             return (
                 <React.Fragment>
                     <div className="wrapmsgr_organ_tree_header">
-                        <input type="checkbox" id="manage_doc_room_select_all" ng-disabled="!loggedIn || organTreeOptions.disabled" ng-checked="checkAllMembers()" ng-click="toggleAllMembers($event)" checked/>
+                        <input type="checkbox" id="manage_doc_room_select_all" ng-disabled="!loggedIn || organTreeOptions.disabled" ng-checked="checkAllMembers()" ng-click="toggleAllMembers($event)" checked = {this.props.isAllChecked}/>
                         <label htmlFor="manage_doc_room_select_all">
                             <i className="icon_checkbox" ng-class="{disabled: organTreeOptions.disabled}" onClick={this.props.clickCheckBox("All") }></i>
                         </label>
