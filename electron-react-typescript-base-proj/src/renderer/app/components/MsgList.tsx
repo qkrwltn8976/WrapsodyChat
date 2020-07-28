@@ -32,6 +32,12 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     private scrollView = React.createRef<HTMLDivElement>();
 
     isReadAt(before: number, after: number) {
+        console.log(this.state)
+        console.log(this.state.unreadExists)
+        console.log(this.state.convo.readAt >= before)
+        console.log('+++++++++++++++++++++++++++++++++++=')
+        console.log(this.state.convo.readAt)
+        console.log(this.state.convo.readAt < after)
         return this.state.convo && this.state.unreadExists && this.state.convo.readAt >= before && this.state.convo.readAt < after;
     }
 
@@ -69,13 +75,13 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         )
     }
 
-    getSystemMsg(body: string) {
+    getSystemMsg(body: string, type: string) {
         let msgspan;
 
         msgspan = <span className="ng-binding">{body}<a href="" className="wrapmsgr_right"></a></span>;
 
         return (
-            <div className="wrapmsgr_msg_system ng-scope" ng-if="message.messageType >= MESSAGE_TYPE_SYSTEM">
+            <div className="wrapmsgr_msg_system ng-scope" ng-if="message.messageType >= MESSAGE_TYPE_SYSTEM" id={type}>
                 {msgspan}
             </div>
         )
@@ -150,12 +156,22 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         let time;
         let profile;
         let msgbubble;
+        let profileClass;
+        let senderName;
+        if(this.state.convo.convoType === etype.ConvoType.BOT) {
+            profileClass = 'bot-profile';
+            senderName = this.state.convo.name;
+        }
+        else {
+            profileClass = 'no-photo cyan';
+            senderName = msg.sendUserId;
+        }
 
         if (!this.isContinuous(this.state.msgs[index - 1], msg)) {
             profile = <React.Fragment><div className="wrapmsgr_msg_user ng-isolate-scope" ng-attr-title="{{users[message.sendUserId].userName}}" wrapmsgr-user-profile="users[message.sendUserId]" user-profile-disabled="message.sendUserId.substr(0, 5) == '@BOT@'" title="administrator">
-                <span className="user-photo ng-binding ng-isolate-scope no-photo cyan">{getShortName(msg.sendUserId)}</span>
+                <span className={"user-photo ng-binding ng-isolate-scope " + profileClass }>{getShortName(msg.sendUserId)}</span>
             </div>
-                <div className="wrapmsgr_msg_userid ng-binding">{msg.sendUserId}</div></React.Fragment>
+                <div className="wrapmsgr_msg_userid ng-binding">{senderName}</div></React.Fragment>
         }
         if (!this.isContinuous(msg, this.state.msgs[index + 1])) {
             time = <div className="wrapmsgr_msg_time">
@@ -188,7 +204,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         let msgbody;
 
         if (msg.sendUserId === "@SYS@")
-            msgbubble = this.getSystemMsg(msg.body);
+            msgbubble = this.getSystemMsg(msg.body, 'sys');
         else {
             msgbubble = this.getUserMsg(msg, index);
         }
@@ -203,9 +219,9 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
             diff = this.diffDays(prev.createdAt, msg.createdAt)
             readAt = this.isReadAt(prev.createdAt, msg.createdAt)
         }
-
+        console.log('--------------------------' + readAt)
         if (readAt)
-            readUntil = this.getSystemMsg('여기까지 읽었습니다');
+            readUntil = this.getSystemMsg('여기까지 읽었습니다', 'read');
         else
             readUntil = '';
         msgbody = <React.Fragment>{readUntil}{msgbubble}</React.Fragment>;
@@ -247,7 +263,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
                 this.scrollView.current.scrollTop = 0;
             }   
             else 
-                document.getElementById(this.props.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' })
+                document.getElementById(this.props.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
         }
     }
 
@@ -263,22 +279,20 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         }
     }
 
-    componentWillReceiveProps(newProps) {
-        // this.state = ({ msgs: newProps.msgs, convo: newProps.convo, unreadExists: (newProps.convo.unread > 0) });
-        console.log(newProps)
-    }
+    componentDidUpdate = () => {
+        // 처음 채팅방에 접속했을 경우
+        if (this.state.msgs.length <= 20) 
+            this.messagesScrollToBottom();
 
-    componentDidUpdate() {
-        // if (this.state.msgs.length <= 20) {
-        //     this.messagesScrollToBottom();
-        // }
-        this.messagesScrollToBottom();
+             // 안 읽은 메세지가 있는 경우
+        if(this.state.unreadExists && document.getElementById('read'))
+            document.getElementById('read').scrollIntoView({ behavior: 'auto', inline: 'start' });
     }
 
     render() {
         let unreadExists = (this.props.convo.unread > 0)
         this.state = ({ msgs: this.props.msgs, convo: this.props.convo, unreadExists: (this.props.convo.unread > 0)});
-        console.log(this.state)
+
         return (
             <div className="wrapmsgr_content">
                 <div className="wrapmsgr_messages" in-view-container="" ref={this.scrollView} id="scrollView">

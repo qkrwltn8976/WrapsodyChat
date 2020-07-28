@@ -14,7 +14,7 @@ export function App(){
         <Fragment>
             <HashRouter >
             <Switch>
-                <Route exact path="/chatroom/:convo" component = {ChatRoom} />
+                <Route exact path="/chatroom/:convo/:unread/:readAt" component = {ChatRoom} />
                 <Route exact path="/chatlist" component = {ChatList} />
                 <Route exact path="/" component = {Login}/> 
                 {/* <Route render={() => <Redirect to="/"/> }/> */}

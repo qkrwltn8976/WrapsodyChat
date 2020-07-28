@@ -9,7 +9,7 @@ import { publishApi } from '@/renderer/libs/stomp';
 const Store = require('electron-store')
 const store = new Store()
 
-const { remote }  = require('electron')
+const { remote, ipcRenderer }  = require('electron')
 const { BrowserWindow } = remote
 
 interface Props{ 
@@ -42,7 +42,26 @@ class InfoHeader extends React.Component<Props, ShowState>{
         }); 
         
     }
-    
+
+    showPreview = (e) =>{
+        e.preventDefault();
+        var win = new BrowserWindow()
+        win.loadURL("http://ecm.dev.fasoo.com:9099/filesync/document/preview.do?id="+this.convoId)
+    }
+
+    //실제로 사용되어야할 주소
+    //downloadFile ="http://ecm.dev.fasoo.com:9099/filesync/down.do?id="+ this.props.convoId
+    downloadFile = (e) =>{
+        e.preventDefault()
+        var win = new BrowserWindow()
+        win.loadURL("http://wrapsody.fasoo.com:7066/filesync/document/download.do?syncId=20161123064228b6a713b403d7495eb7909a74eb2f9733")
+        console.log("다운로드해라")
+        // ipcRenderer.send("download",{
+        //     url: "http://ecm.dev.fasoo.com:9099/filesync/document/download.do?syncId="+this.convoId,
+        //     properties: {directory: __dirname}
+        // })
+    }
+
     showClick = (e) => {
         e.preventDefault();
         if(this.state.isShow == false){
@@ -110,6 +129,14 @@ class InfoHeader extends React.Component<Props, ShowState>{
     }
     
     render(){
+
+        ipcRenderer.on("download progress", (event, progress) => {
+            console.log(progress); // Progress in fraction, between 0 and 1
+            const progressInPercentages = progress * 100; // With decimal point and a bunch of numbers
+            const cleanProgressInPercentages = Math.floor(progress * 100); // Without decimal point
+        });
+
+
         var pNum:string;
         if(store.get("language") === "ko-KR")
             pNum = language.ko.pNum
@@ -139,8 +166,8 @@ class InfoHeader extends React.Component<Props, ShowState>{
                         </div>
                     </div> */}
                     <div className="wrapmsgr_right">
-                        <a href=""><i className="icon_eye" title="미리보기" onClick = {(e)=>{e.preventDefault()}}></i></a>
-                        <a href="" ><i className="icon_download" title="다운로드" onClick = {(e)=>{e.preventDefault()}}></i></a>
+                        <a href=""><i className="icon_eye" title="미리보기" onClick = {this.showPreview}></i></a>
+                        <a href= "" ><i className="icon_download" title="다운로드" onClick = {this.downloadFile}></i></a>
                         <a href=""><i className={this.getBellIcon()} onClick= {(e) =>{
                             e.preventDefault();
                             this.props.setNotification(this.props.notificationType)}}></i></a>
@@ -207,7 +234,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
         //         </div>
         //     )
         // }
-        if(convoType == ConvoType.IC){
+        if(convoType === ConvoType.IC){
             return (
                 <div className="doc-chatroom-info_div">
                     <document-icon name="docInfo.detail.contentName" class="ng-isolate-scope"><i className="icon_txt">          <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i></document-icon>

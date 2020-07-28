@@ -1,8 +1,9 @@
 /**
  * Entry point of the Election app.
  */
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import '@public/icon_bot_wrapsody.png'
+const {download} = require("electron-dl")
 import * as path from 'path';
 import * as url from 'url';
 
@@ -31,8 +32,14 @@ function createMainWindow(): void {
         })
     );
 
-    mainWindow.setTitle("Wrapsody Chat")
+    ipcMain.on("download", (event, info) => {
+        console.log("알았다")
+        info.properties.onProgress = status => mainWindow.webContents.send("download progress", status);
+        download(BrowserWindow.getFocusedWindow(), info.url, info.properties)
+            .then(dl => mainWindow.webContents.send("download complete", dl.getSavePath()));
+    });
 
+    mainWindow.setTitle("Wrapsody Chat")
     mainWindow.show()
 
     // // Emitted when the window is closed.

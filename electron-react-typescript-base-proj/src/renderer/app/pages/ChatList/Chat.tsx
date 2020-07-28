@@ -39,7 +39,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
     chatBotImgPath = "http://ecm.dev.fasoo.com:9400/images/icon_bot_wrapsody.png"
     
 
-    getConvo = (convoId: string, name:string) => (event: any) => {
+    getConvo = (convoId: string, name:string, unread: number, readAt: number) => (event: any) => {
 
         //이미 열려있는 창이라면 포커스만 주고 새로 띄우지않는다.
         if(this.roomOpened.has(convoId)===true){
@@ -48,9 +48,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
             let window = BrowserWindow.fromId(this.roomOpened.get(convoId));
             window.focus()
             return;
-        }
-
-        
+        }      
         
         
         const chatWindow = new BrowserWindow(
@@ -69,7 +67,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
         )
         // // and load the index.html of the app.
         chatWindow.loadURL(
-            __dirname+"/index.html#/chatroom/"+convoId          
+            __dirname+"/index.html#/chatroom/"+convoId+"/"+unread+"/"+readAt          
         );
 
         chatWindow.setTitle(name)
@@ -89,6 +87,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
         convos[index].unread = 0;
         convos[index].browserId = chatWindow.id;
         convos[index].isOpened = true;
+        convos[index].readAt = Date.now();
         this.setState({ convos });
         
     }
@@ -120,11 +119,11 @@ class Chat extends Component<ChatListProps, ChatListState> {
                         )
 
                     }
-                    if(payload.type){
+                    if(obj.type === "NOTIFICATION_UPDATED"){
+                        console.log("알람알람")
                         const index = this.state.convos.findIndex(convo => convo.convoId === payload.convoId)
                         this.setState(state => {
                             state.convos[index].notificationType = payload.type
-
                             return{}
                         })
                     }
@@ -227,7 +226,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
                         {/* <Link to = {"/document/"+item.convoId}> */}
                         {/* 검색 활성화 */}
                         { item.name && (this.props.search === null || item.name.toLowerCase().includes(this.props.search.toLowerCase()))?
-                        <li onClick={this.getConvo(item.convoId, item.name)} className="ng-scope">
+                        <li onClick={this.getConvo(item.convoId, item.name, item.unread, item.readAt)} className="ng-scope">
                         {/* /챗봇, 문서채팅방의 아이콘 표시/ */}
                         {item.convoType ===2? 
                             <span className = "user-photo" style = {{backgroundImage:'url(http://ecm.dev.fasoo.com:9400/images/icon_bot_wrapsody.png)'}}></span>:
