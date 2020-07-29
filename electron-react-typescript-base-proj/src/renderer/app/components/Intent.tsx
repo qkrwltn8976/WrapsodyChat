@@ -43,6 +43,9 @@ class Intent extends React.Component<IntentProps, IntentState>{
     }
 
     toggleIntentGroup = (e: BotIntent) => {
+        console.log("toggle--------------------------")
+        console.log(this.state.active)
+        console.log(this.state.commands)
         if (this.state.active) {
             this.setState({ active: false })
         } else {
@@ -81,10 +84,13 @@ class Intent extends React.Component<IntentProps, IntentState>{
             <div className="ng-binding"  onClick={(e) => this.toggleIntentGroup(this.props.intent)}>
                 {this.props.intent.name}
                 <i className={this.state.active ? 'icon_triangle wrapmsgr_expand' : 'icon_triangle wrapmsgr_collapse'}></i>
-            </div><ul className={this.state.active ? 'question-sub-list ' : 'question-sub-list hidden'}>
-                {this.state.commands.map((command: BotCommand) => {
+            </div>
+            <ul className={this.state.active ? 'question-sub-list ' : 'question-sub-list hidden'}>
+                {
+                this.state.commands.map((command: BotCommand) => {
                     return (this.getCommand(command))
-                })}
+                })
+                }
             </ul></li>)
     }
 }
