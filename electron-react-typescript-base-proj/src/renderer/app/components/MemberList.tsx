@@ -6,6 +6,8 @@ import { TreeDept } from '../../models/TreeDept';
 import { client , subscribe, publishApi } from '../../libs/stomp'
 import { v4 } from "uuid";
 import { MemberComponent, Dept } from '../components'
+import { hasChildren } from '@/renderer/libs/hasChildrent';
+
 const Store = require('electron-store')
 const store = new Store()
 
@@ -68,7 +70,7 @@ class MemberList extends React.Component<Props, State>{
                 {
                     console.log(dept)
                     return(
-                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master}/> 
+                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {hasChildren(dept.deptCode)}/> 
                     )
                 })
         }
@@ -87,7 +89,7 @@ class MemberList extends React.Component<Props, State>{
                 this.props.viewDeptAuthList.map(dept => 
                 {   console.log(dept)
                     return(
-                        <Dept clickCheckBox = {this.props.clickCheckBox} deptName = {dept.deptName} deptCode = {dept.deptCode} master = {this.props.master}/>
+                        <Dept clickCheckBox = {this.props.clickCheckBox} deptName = {dept.deptName} deptCode = {dept.deptCode} master = {this.props.master} hasChildren = {hasChildren(dept.deptCode)}/>
                     )
                 })
         }
