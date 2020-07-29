@@ -60,6 +60,22 @@ export function subscribe(client: Client, userId: string, uuid: string, callback
     // return obj;
 }
 
+export function subscribeCmd(client:Client,callback:any){
+    let obj : any;
+    client.subscribe(`/exchange/chat`, (message: IMessage) => {
+        if (message.body || message.isBinaryBody || message.command) {
+            obj = JSON.parse(message.body);
+            callback(obj); 
+        }
+        else {
+            console.log("got empty message");
+        }
+
+    }, {
+        "x-queue-name": `module-command`
+    });
+}
+
 export function publishApi(client: Client, api: string, userId: string, uuid: string, payload: {}) {
     client.publish({
         destination: `/exchange/request/${api}`,

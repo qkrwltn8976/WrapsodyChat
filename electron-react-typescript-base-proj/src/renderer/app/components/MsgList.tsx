@@ -32,12 +32,12 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     private scrollView = React.createRef<HTMLDivElement>();
 
     isReadAt(before: number, after: number) {
-        console.log(this.state)
-        console.log(this.state.unreadExists)
-        console.log(this.state.convo.readAt >= before)
-        console.log('+++++++++++++++++++++++++++++++++++=')
-        console.log(this.state.convo.readAt)
-        console.log(this.state.convo.readAt < after)
+        // console.log(this.state)
+        // console.log(this.state.unreadExists)
+        // console.log(this.state.convo.readAt >= before)
+        // console.log('+++++++++++++++++++++++++++++++++++=')
+        // console.log(this.state.convo.readAt)
+        // console.log(this.state.convo.readAt < after)
         return this.state.convo && this.state.unreadExists && this.state.convo.readAt >= before && this.state.convo.readAt < after;
     }
 
