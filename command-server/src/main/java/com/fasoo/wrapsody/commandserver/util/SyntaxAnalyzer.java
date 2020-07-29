@@ -1,4 +1,4 @@
-package com.fasoo.wrapsody.commandserver.controller;
+package com.fasoo.wrapsody.commandserver.util;
 
 public class SyntaxAnalyzer {
     String message;

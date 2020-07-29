@@ -12,8 +12,15 @@ public class RabbitMQSender {
     private String exchange;
     @Value("${fasoo.wrapsody.rabbitmq.routingkey}")
     private String routingkey;
-    public void send(String company) {
-        rabbitTemplate.convertAndSend(exchange, routingkey, company);
-        System.out.println("Send msg = " + company);
+
+    private String msg;
+    public void send(String message) {
+        rabbitTemplate.convertAndSend(exchange, routingkey, message);
+        System.out.println("Send msg = " + message);
+        this.msg = message;
+    }
+
+    public String getMsg() {
+        return this.msg;
     }
 }

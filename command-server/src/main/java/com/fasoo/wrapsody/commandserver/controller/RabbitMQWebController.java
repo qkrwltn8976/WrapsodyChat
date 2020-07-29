@@ -12,12 +12,14 @@ public class RabbitMQWebController {
     @Autowired
     RabbitMQSender rabbitMQSender;
 
+
     @GetMapping(value = "/producer")
     public String producer() {
 //        Employee emp = new Employee();
 //        emp.setEmpId(empId);
 //        emp.setEmpName(empName);
-        rabbitMQSender.send("hello");
+        rabbitMQSender.send("안녕");
         return "Message sent to the RabbitMQ JavaInUse Successfully";
     }
+
 }
