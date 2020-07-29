@@ -1,5 +1,11 @@
 package com.fasoo.wrapsody.commandserver.util;
 
+import com.fasoo.wrapsody.commandserver.controller.keyword.Bookmark;
+import com.fasoo.wrapsody.commandserver.controller.keyword.Deadline;
+import com.fasoo.wrapsody.commandserver.controller.keyword.Revision;
+
+import java.text.ParseException;
+
 public class SyntaxAnalyzer {
     String message;
     String []cmd;
@@ -38,6 +44,18 @@ public class SyntaxAnalyzer {
                     break;
                 }
             }
+        }
+    }
+
+    public void dodo() throws ParseException {
+        if(type == Command.BOOKMARK){
+            Bookmark b = new Bookmark(cmd);
+        }
+        if(type == Command.DEADLINE){
+            Deadline d = new Deadline(cmd);
+        }
+        if(type == Command.REVISION){
+            Revision r = new Revision(cmd);
         }
     }
 
