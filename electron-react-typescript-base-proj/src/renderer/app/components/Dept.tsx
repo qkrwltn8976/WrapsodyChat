@@ -73,7 +73,9 @@ class Dept extends React.Component<Props, State>{
                 }
             })
         }
-    
+        console.log("chchchhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+        console.log(this.props.deptName)
+        console.log(this.props.hasChildren)
         const checkboxId = "dept-"+ this.props.deptName+"object:"+ Math.random()
         return(
             <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className="ng-scope angular-ui-tree-node" expand-on-hover="false">

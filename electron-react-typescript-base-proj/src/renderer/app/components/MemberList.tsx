@@ -6,7 +6,7 @@ import { TreeDept } from '../../models/TreeDept';
 import { client , subscribe, publishApi } from '../../libs/stomp'
 import { v4 } from "uuid";
 import { MemberComponent, Dept } from '../components'
-import { hasChildren } from '@/renderer/libs/hasChildrent';
+import { Nodes } from '../../models/Nodes';
 
 const Store = require('electron-store')
 const store = new Store()
@@ -35,7 +35,8 @@ interface Props {
 }
 
 interface State{
-    uuid: string
+    uuid: string,
+    hasChildren: boolean,
 }
 
 
@@ -44,8 +45,32 @@ class MemberList extends React.Component<Props, State>{
         super(props, state);
         this.state = ({
             uuid: v4(),
+            hasChildren: true,
         })
     }
+    // getHasChildren = (deptCode : any) => {
+    //     subscribe(client, store.get("username"), this.state.uuid, (obj:any) =>{
+    //         let payload = obj.payload;
+    //         console.log(payload)
+    //         if(payload.Nodes){
+    //             if(payload.Nodes.length == 0){
+    //                 this.setState({
+    //                     hasChildren : false,
+    //                 })
+    //             }else{
+    //                 this.setState({
+    //                     hasChildren: true,
+    //                 })
+    //             }
+    //         }else{
+    //             this.setState({
+    //                 hasChildren: false,
+    //             })
+    //         }
+    //     })
+    //     publishApi(client, 'api.organ.tree', store.get("username"), this.state.uuid, {"root": "N", "path": deptCode})
+    // }
+    
     render() {
         const { memberListType, convoId} = this.props
         let ownerComponent;
@@ -55,6 +80,7 @@ class MemberList extends React.Component<Props, State>{
         let viewDeptAuthListComponent;
         let rootTreeComponent;
 
+        
         if(this.props.checkoutAuthList){
             checkoutAuthListComponent = 
                 this.props.checkoutAuthList.map(member => 
@@ -68,9 +94,9 @@ class MemberList extends React.Component<Props, State>{
             checkoutDeptAuthListComponent = 
                 this.props.checkoutDeptAuthList.map(dept => 
                 {
-                    console.log(dept)
+                    // this.getHasChildren(dept.deptCode)
                     return(
-                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {hasChildren(dept.deptCode)}/> 
+                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {this.state.hasChildren}/> 
                     )
                 })
         }
@@ -87,9 +113,10 @@ class MemberList extends React.Component<Props, State>{
         if(this.props.viewDeptAuthList){
             viewDeptAuthListComponent = 
                 this.props.viewDeptAuthList.map(dept => 
-                {   console.log(dept)
+                {   
+                    // this.getHasChildren(dept.deptCode)
                     return(
-                        <Dept clickCheckBox = {this.props.clickCheckBox} deptName = {dept.deptName} deptCode = {dept.deptCode} master = {this.props.master} hasChildren = {hasChildren(dept.deptCode)}/>
+                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {this.state.hasChildren}/> 
                     )
                 })
         }
