@@ -3,7 +3,10 @@ import Chat from "@/renderer/app/pages/ChatList/Chat";
 import { MsgList, MsgInput, Header, SearchBar, Footer } from '@/renderer/app/components';
 import { HeaderType, SearchType } from '../../../libs/enum-type';
 import { useState } from 'react';
-
+import { client, subscribe } from '@/renderer/libs/stomp';
+import { v4 } from 'uuid';
+const Store = require('electron-store')
+const store = new Store()
 
 
 declare global{ namespace JSX{
@@ -15,6 +18,7 @@ declare global{ namespace JSX{
 
 
 function ChatList() {
+
 
     const[search, setSearch] = useState("");
 

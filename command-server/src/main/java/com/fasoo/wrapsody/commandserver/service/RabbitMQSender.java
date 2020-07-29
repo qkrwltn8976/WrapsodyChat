@@ -1,5 +1,4 @@
 package com.fasoo.wrapsody.commandserver.service;
-import com.fasoo.wrapsody.commandserver.model.Employee;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

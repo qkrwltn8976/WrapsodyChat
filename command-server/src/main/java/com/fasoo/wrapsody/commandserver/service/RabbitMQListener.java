@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RabbitMQListener implements MessageListener {
     public void onMessage(Message message) {
-        System.out.println("Consuming Message - " + new String(message.getBody()));
+        System.out.println("Consuming Message - ");
+        System.out.println(new String(message.getBody()));
     }
 }

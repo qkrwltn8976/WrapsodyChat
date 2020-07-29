@@ -1,6 +1,6 @@
 import { Component, Fragment, useContext } from 'react';
 import React from 'react';
-import { client, subscribe, publishApi} from '@/renderer/libs/stomp';
+import { client, subscribe, publishApi, subscribeCmd} from '@/renderer/libs/stomp';
 import { v4 } from "uuid"
 import { getConvoDate } from '@/renderer/libs/timestamp-converter';
 import {getDocType} from '@/renderer/libs/messengerLoader'
@@ -172,6 +172,12 @@ class Chat extends Component<ChatListProps, ChatListState> {
                     
                 }
             });
+
+            // subscribeCmd(client, (obj:any)=>{
+            //     console.log("command test")
+            //     console.log(obj)
+            // })
+
             publishApi(client, 'api.conversation.list', store.get("username"), this.state.uuid, {});
         }
         client.activate();
