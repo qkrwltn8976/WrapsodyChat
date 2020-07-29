@@ -58,7 +58,7 @@ class MemberList extends React.Component<Props, State>{
                 this.props.checkoutAuthList.map(member => 
                 {
                     return(
-                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} member = {member} master = {this.props.master} />
+                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} />
                     )
                 })    
         }
@@ -78,7 +78,7 @@ class MemberList extends React.Component<Props, State>{
                 this.props.viewAuthList.map(member => 
                 {
                     return(
-                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} member = {member} master = {this.props.master} />
+                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} />
                     )
                 })
         }
@@ -120,7 +120,7 @@ class MemberList extends React.Component<Props, State>{
                         { this.props.tMembers.map(member => 
                         {
                             return(
-                                <MemberComponent clickCheckBox = {this.props.clickCheckBox}  member = {member} master = {this.props.master}/>
+                                <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master}/>
                             )
                         })}
                         {checkoutAuthListComponent}

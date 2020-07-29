@@ -5,6 +5,7 @@ import { Nodes } from '../../models/Nodes'
 import { TreeMember } from '../../models/TreeMember'
 import { v4 } from 'uuid';
 import { publishApi, subscribe, client } from '@/renderer/libs/stomp';
+import MemberComponent from './MemberComponent';
 
 const Store = require('electron-store')
 const store = new Store()
@@ -35,6 +36,8 @@ class Dept extends React.Component<Props, State>{
     componentDidMount() {
         subscribe(client, store.get("username"), this.state.uuid, (obj:any) =>{
             let payload = obj.payload;
+            console.log("ddddddddddddddddddddddddddddd")
+            console.log(payload)
             if(payload){
                 this.setState({
                     childNodes: payload.Nodes
@@ -56,38 +59,15 @@ class Dept extends React.Component<Props, State>{
         if(this.state.childNodes){
             nodesComponent = this.state.childNodes.map(node=>{
                 if(node.parentCode == this.props.deptCode && node.type == "dept"){
-                    const checkboxId = "dept-"+ node.columnText+"object:"+ Math.random()
                     return(
                         <Dept clickCheckBox = {this.props.clickCheckBox} deptName = {node.columnText} deptCode = {node.value} master = {this.props.master}/>
                     )
                 }
                 if(node.parentCode == this.props.deptCode && node.type == "user"){
-                    let ownerComponent;
-                    if(node.columnText == this.props.master.userName){
-                        ownerComponent = <span className="wrapmsgr_master" ng-show="node.value == docInfo.detail.masterUserId">Owner</span>
-                    }else{
-                        ownerComponent = <div></div>
-                    }
-                    const checkboxId = "member-"+ node.columnText+"object:"+ Math.random()
                     return(
-                        <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className="ng-scope angular-ui-tree-node" expand-on-hover="false">
-                            <div className="organ_wrapper ng-scope">
-                                <span ng-style="node.type === 'dept' &amp;&amp; !node.hasChildren &amp;&amp; {'visibility': 'hidden'}">
-                                    <input type="checkbox" id={checkboxId} ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)" />
-                                    <label htmlFor={checkboxId} data-nodrag="">
-                                        <i className="icon_checkbox" ng-class="{disabled: node.disabled}" ></i>
-                                    </label>
-                                </span>
-                                <div wrapmsgr-user-profile="users[node.value] || node.value" user-profile-disabled="node.type === 'dept'" className="ng-isolate-scope">
-                                    <span className="user-photo ng-binding ng-isolate-scope no-photo cyan">{getShortName(node.columnText)}</span>
-                                    <span className="wrapmsgr_member ng-binding">{node.columnText}</span>
-                                </div>
-                                {ownerComponent}
-                                <ol ui-tree-nodes="" ng-model="node.subTree" ng-class="{expanded: !collapsed}" className="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-empty">
-                                </ol>
-                            </div>
-                        </li>
+                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {node.value} userName = {node.columnText} master = {this.props.master} />
                     )
+                   
                 }
             })
         }

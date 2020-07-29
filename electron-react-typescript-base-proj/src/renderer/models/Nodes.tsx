@@ -7,5 +7,5 @@ export type Nodes = {
     showChildren: boolean
     subTree:[]
     type: string,
-    value: number,
+    value: string,
 }
