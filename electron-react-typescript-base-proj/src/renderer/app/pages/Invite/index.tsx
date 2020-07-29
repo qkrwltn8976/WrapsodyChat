@@ -4,13 +4,13 @@ import { HeaderType, MemberListType, RoomType, InfoHeaderType, CIType, ConvoType
 import { Room } from '../../../models/Room'
 import { subscribe, publishApi, publishChat, client } from '@/renderer/libs/stomp';
 import { v4 } from "uuid";
-import { TreeUser } from '../../../models/TreeUser';
+import { TreeMember } from '../../../models/TreeMember';
 import { TreeDept } from '../../../models/TreeDept';
+import { Nodes } from '../../../models/Nodes';
 
 const Store = require('electron-store');
 const store = new Store();
-// state -> expand, checked 
-// props -> Invite, Create
+
 interface inviteProps{
     match: any,
 }
@@ -19,12 +19,12 @@ interface inviteState{
     uuid: string,
     convoId: string,
     docName: string,
-    master: TreeUser,
-    tMembers: TreeUser[],
+    master: TreeMember,
+    tMembers: TreeMember[],
     viewAuthAllUsers: boolean,
-    checkoutAuthList: TreeUser[] ,
+    checkoutAuthList: TreeMember[] ,
     checkoutDeptAuthList: TreeDept[],
-    viewAuthList: TreeUser[],
+    viewAuthList: TreeMember[],
     viewDeptAuthList: TreeDept[],
     participants: number,
     isAllChecked: boolean,
@@ -56,7 +56,6 @@ class Invite extends React.Component<inviteProps, inviteState>{
             isDeptChecked: false,
         })
         console.log("consturctor안에서 subscribe하고 있는중0")
-        this.publishTreeData = this.publishTreeData.bind(this)
     }
 
     componentDidMount(){
@@ -86,12 +85,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
                             participants : payload.Members.length 
                         }) 
                     }// 채팅방 참여자
-                    if(payload){
-                        if(payload.Nodes){
-                            console.log("Tree***************************************Tree");
-                            console.log(payload.Nodes)
-                        }
-                    }
+                    
                 }else{
                     
                 }// payload없으면...
@@ -99,27 +93,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
             publishApi(client, 'api.conversation.view', store.get("username"), this.state.uuid, { 'convoId': this.state.convoId });
         }  
     }
-    publishTreeData(){
-        if(this.state.viewDeptAuthList){
-            console.log("checkoutDeptAuthList있는데...")
-            console.log(this.state.checkoutDeptAuthList)
-            this.state.checkoutDeptAuthList.map(dept =>{
-                console.log("map!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                console.log(dept)
-                publishApi(client, 'api.organ.tree', store.get("username"), this.state.uuid, {"root": "N", "path": dept.deptCode})
-            })
-        }
-        if(this.state.viewDeptAuthList){
-            console.log("viewDeptAuthList있는데...")
-            console.log(this.state.viewDeptAuthList)
-            this.state.viewDeptAuthList.map(dept => {
-                console.log("map!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                console.log(dept)
-                publishApi(client, 'api.organ.tree', store.get("username"), this.state.uuid, {"root": "N", "path": dept.deptCode})
-            })
-        } 
-    }
-
+    
     clickCheckBox = (checkBoxType: string) => (e:Event) =>{
         e.preventDefault()
         if(checkBoxType == "All"){
@@ -179,7 +153,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
                                         <InfoHeader convoType= {ConvoType.IC} memberCount = {this.state.tMembers.length} participants = {this.state.participants} docName = {this.state.docName}/>
                                         <div className="group">
                                             <div className="wrapmsgr_organ_tree ng-scope angular-ui-tree" ui-tree="organTreeOptions" data-clone-enabled="true" data-nodrop-enabled="true" data-drag-delay="100" style = {organ_tree_calc_width}>
-                                                <MemberList memberListType = {MemberListType.SELECT} clickCheckBox = {this.clickCheckBox} tMembers = {this.state.tMembers} checkoutAuthList = {this.state.checkoutAuthList} checkoutDeptAuthList = {this.state.checkoutDeptAuthList} master = {this.state.master} expandTree = {this.publishTreeData} isAllChecked = {this.state.isAllChecked}/>
+                                                <MemberList memberListType = {MemberListType.SELECT} clickCheckBox = {this.clickCheckBox} tMembers = {this.state.tMembers} checkoutAuthList = {this.state.checkoutAuthList} checkoutDeptAuthList = {this.state.checkoutDeptAuthList} viewAuthList = {this.state.viewAuthList} viewDeptAuthList = {this.state.viewDeptAuthList} master = {this.state.master} isAllChecked = {this.state.isAllChecked} />
                                             </div>    
                                             <div className="wrapmsgr_organ_tree right-list-col ng-scope angular-ui-tree" ui-tree="inviteTreeOptions">
                                                 <MemberList memberListType = {MemberListType.SELECTED} tMembers = {this.state.tMembers}/>
