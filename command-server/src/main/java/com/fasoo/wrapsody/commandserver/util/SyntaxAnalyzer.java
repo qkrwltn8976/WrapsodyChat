@@ -27,7 +27,7 @@ public class SyntaxAnalyzer {
         }
     }
 
-    public SyntaxAnalyzer(String message){
+    public SyntaxAnalyzer(String message) throws ParseException {
         //메세지가 '@' 으로 시작하면 구문분석한다
         if(message.indexOf(0)=='@') {
             this.message = message;
@@ -44,6 +44,10 @@ public class SyntaxAnalyzer {
                     break;
                 }
             }
+        }
+
+        if(iscommand && type!=null) {
+            this.dodo();
         }
     }
 
