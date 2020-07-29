@@ -82,20 +82,20 @@ export function publishApi(client: Client, api: string, userId: string, uuid: st
         body: JSON.stringify({
             senderId: userId, locale: store.get("language"), payload,
         }),
-        headers: { "reply-to": "user-"+userId+"-"+uuid, "content-type": "application/json", "correlation_id ": api }
+        headers: { "user-id": userId, "reply-to": "user-"+userId+"-"+uuid, "content-type": "application/json", "correlation_id ": api }
     });
     console.log(JSON.stringify({
         senderId: userId, locale: store.get("language"), payload,
     }))
 }
 
-export function publishChat(client: Client, api: string, uuid: string, payload: any) {
+export function publishChat(client: Client, api: string, userId: string, uuid: string, payload: any) {
     client.publish({
         destination: `/exchange/request/${api}.${uuid}`,
         body: JSON.stringify({
             sendUserId: payload.sendUserId, recvConvoId: payload.recvConvoId, body: payload.body, messageType: payload.messageType
         }),
-        headers: { __TypeId__: `com.wrapsody.messaging.model.Message`,"content-type": "application/json"}
+        headers: { __TypeId__: `com.wrapsody.messaging.model.Message`,"content-type": "application/json", "user-id": userId}
     });
     console.log(JSON.stringify({
         sendUserId: payload.sendUserId, recvConvoId: payload.recvConvoId, body: payload.body, messageType: payload.messageType

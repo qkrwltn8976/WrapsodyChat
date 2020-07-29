@@ -43,7 +43,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
     }
 
     sendMsg = (msg: Message, api: string) => {
-        publishChat(client, api, this.state.uuid, msg);
+        publishChat(client, api, store.get("username"), this.state.uuid, msg);
     }
 
     setSearch = (search: string) => {
