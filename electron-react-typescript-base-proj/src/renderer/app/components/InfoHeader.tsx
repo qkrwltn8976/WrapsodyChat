@@ -43,6 +43,31 @@ class InfoHeader extends React.Component<Props, ShowState>{
         
     }
 
+    showBookmarks = (e) => {
+        e.preventDefault();
+
+        var currentWindow = remote.getCurrentWindow()
+        var size = currentWindow.getSize()
+        // var width = size[0] * 0.9;
+        // var height = size[1] * 0.9;
+        let bookmarkWindow = new BrowserWindow({
+            width: 700,
+            height: 585,
+            minWidth: 370,
+            minHeight: 370,
+            // maxWidth: 700,
+            // maxHeight: 585,
+            parent: currentWindow,
+            modal: true,
+            show: false,
+            frame: false,
+        })
+        bookmarkWindow.loadURL(
+            __dirname + "/index.html#/bookmark/"+this.props.convoId
+        );
+        bookmarkWindow.show();
+    }
+
     showPreview = (e) =>{
         e.preventDefault();
         var win = new BrowserWindow()
@@ -166,6 +191,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
                         </div>
                     </div> */}
                     <div className="wrapmsgr_right">
+                        <a href=""><i className="icon_bookmark" title="북마크" onClick = {this.showBookmarks}></i></a>
                         <a href=""><i className="icon_eye" title="미리보기" onClick = {this.showPreview}></i></a>
                         <a href= "" ><i className="icon_download" title="다운로드" onClick = {this.downloadFile}></i></a>
                         <a href=""><i className={this.getBellIcon()} onClick= {(e) =>{

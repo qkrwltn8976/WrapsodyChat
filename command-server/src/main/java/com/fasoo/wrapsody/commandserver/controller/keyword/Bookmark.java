@@ -16,6 +16,7 @@ public class Bookmark {
             String c = cmd[1].toLowerCase();
             if(c.compareTo(Function.START.getName())==0){
                 System.out.println("bookmark start");
+                // 
             }
             else if(c.compareTo(Function.STOP.getName())==0){
                 System.out.println("bookmark stop");

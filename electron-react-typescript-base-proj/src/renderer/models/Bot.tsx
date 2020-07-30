@@ -1,6 +1,6 @@
 export type Bot = {
     autoJoin: boolean,
-    botUserId: string
+    botUserId: string,
     createdAt: number,
     descCode: String,
     description: string,
