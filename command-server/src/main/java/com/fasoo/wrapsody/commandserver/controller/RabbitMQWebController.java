@@ -14,11 +14,11 @@ public class RabbitMQWebController {
 
 
     @GetMapping(value = "/producer")
-    public String producer() {
+    public String producer(String message) {
 //        Employee emp = new Employee();
 //        emp.setEmpId(empId);
 //        emp.setEmpName(empName);
-        rabbitMQSender.send("안녕");
+        rabbitMQSender.send(message);
         return "Message sent to the RabbitMQ JavaInUse Successfully";
     }
 

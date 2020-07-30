@@ -16,18 +16,17 @@ public class RabbitMQListener implements MessageListener {
     ObjectMapper objectMapper = new ObjectMapper();
 
     public void onMessage(Message message) {
-        System.out.println("Consuming Message - ");
-        System.out.println();
-
-        msg = MessageService.setMessage(new String(message.getBody()));
-        try {
-            analyzer = new SyntaxAnalyzer(msg.getBody());
-            System.out.println(msg.getBody());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        System.out.println(analyzer.getType());
-        System.out.println(analyzer.isCommand());
+        System.out.println("Consuming Message - "+ new String(message.getBody()));
+//
+//            msg = MessageService.setMessage(new String(message.getBody()));
+//        try {
+//            analyzer =  new SyntaxAnalyzer(msg);
+//            System.out.println(msg);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
     }
+
+
 
 }
