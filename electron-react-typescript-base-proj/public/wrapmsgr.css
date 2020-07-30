@@ -1341,7 +1341,8 @@ div.wrapmsgr_container * {
     -ms-transition: max-height 0.25s ease-out;
     -moz-transition: max-height 0.25s ease-out;
     -webkit-transition: max-height 0.25s ease-out;
-    padding-top: 9px;
+	padding-top: 9px;
+	list-style-type: none;
 }
 .wrapmsgr_container .wrapmsgr_organ_tree li > .organ_wrapper > ol.expanded {
 	max-height: none;

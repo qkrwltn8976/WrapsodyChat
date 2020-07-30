@@ -28,15 +28,17 @@ interface Props {
     checkoutDeptAuthList?: TreeDept[];
     viewAuthList?: TreeMember[];
     viewDeptAuthList?: TreeDept[];
-    tMembers?: TreeMember[];
+    oldMembers?: TreeMember[];
+    tempMembers?: TreeMember[];
     master?: TreeMember;
     isAllChecked?: boolean,
+    isMemberChecked?: boolean,
+    isDeptChecked?: boolean,
     childNodes?: any,
 }
 
 interface State{
     uuid: string,
-    hasChildren: boolean,
 }
 
 
@@ -45,7 +47,6 @@ class MemberList extends React.Component<Props, State>{
         super(props, state);
         this.state = ({
             uuid: v4(),
-            hasChildren: true,
         })
     }
     
@@ -64,7 +65,7 @@ class MemberList extends React.Component<Props, State>{
                 this.props.checkoutAuthList.map(member => 
                 {
                     return(
-                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} tMembers = {this.props.tMembers}/>
+                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} />
                     )
                 })    
         }
@@ -74,7 +75,7 @@ class MemberList extends React.Component<Props, State>{
                 {
                     // this.getHasChildren(dept.deptCode)
                     return(
-                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {this.state.hasChildren} tMembers = {this.props.tMembers}/> 
+                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {true} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked}/> 
                     )
                 })
         }
@@ -84,7 +85,7 @@ class MemberList extends React.Component<Props, State>{
                 this.props.viewAuthList.map(member => 
                 {
                     return(
-                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master}  tMembers = {this.props.tMembers}/>
+                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master}  oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} />
                     )
                 })
         }
@@ -94,7 +95,7 @@ class MemberList extends React.Component<Props, State>{
                 {   
                     // this.getHasChildren(dept.deptCode)
                     return(
-                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {this.state.hasChildren} tMembers = {this.props.tMembers}/> 
+                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {true} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} /> 
                     )
                 })
         }
@@ -119,12 +120,12 @@ class MemberList extends React.Component<Props, State>{
                     <div className="wrapmsgr_organ_tree_header">
                         <input type="checkbox" id="manage_doc_room_select_all" ng-disabled="!loggedIn || organTreeOptions.disabled" ng-checked="checkAllMembers()" ng-click="toggleAllMembers($event)" checked = {this.props.isAllChecked}/>
                         <label htmlFor="manage_doc_room_select_all">
-                            <i className="icon_checkbox" ng-class="{disabled: organTreeOptions.disabled}" onClick={this.props.clickCheckBox("All") }></i>
+                            <i className="icon_checkbox" ng-class="{disabled: organTreeOptions.disabled}" onClick={this.props.clickCheckBox("All")}></i>
                         </label>
                         <span>Select All</span>
                     </div>
                     <ol ui-tree-nodes="" ng-model="docInfo.organ" ng-show="docInfo.organ.length > 0" className="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-not-empty">  
-                        {/* { this.props.tMembers.map(member => 
+                        {/* { this.props.oldMembers.map(member => 
                         {
                             return(
                                 <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master}/>
@@ -140,7 +141,7 @@ class MemberList extends React.Component<Props, State>{
         } else if (memberListType == 'selected') {
             return (
                 <ol ui-tree-nodes="" ng-model="inviteMembers" ng-show="inviteMembers.length > 0" className="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-not-empty">
-                    {this.props.tMembers.map(member => 
+                    {this.props.oldMembers.map(member => 
                     {
                         return(
                             <li ng-repeat="member in inviteMembers | orderBy:['-disabled', 'userName']" ui-tree-node="" data-collapsed="true" className="ng-scope angular-ui-tree-node" expand-on-hover="false">
@@ -154,6 +155,21 @@ class MemberList extends React.Component<Props, State>{
                             </li>
                         )
                     })}
+                    {
+                        this.props.tempMembers.map(member=>{
+                            return(
+                                <li ng-repeat="member in inviteMembers | orderBy:['-disabled', 'userName']" ui-tree-node="" data-collapsed="true" className="ng-scope angular-ui-tree-node" expand-on-hover="false" >
+                                    <div wrapmsgr-user-profile="users[member.userId] || member.userId" className="ng-isolate-scope">
+                                        <span className="user-photo ng-binding ng-isolate-scope no-photo red">{getShortName(member.userName)}</span>
+                                        <span className="wrapmsgr_member ng-binding">
+                                            {member.userName}
+                                            <a href=""><i className="icon_times ng-scope" ng-if="member.userId != user.id &amp;&amp; !member.disabled" ng-click="removeInviteMember(member, $event)"></i></a>
+                                        </span>
+                                    </div>
+                                </li>
+                            )
+                        })
+                    }
                 </ol>
             );
         }

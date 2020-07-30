@@ -8,18 +8,37 @@ interface Props{
     userId: string,
     userName: string,
     master?: TreeMember,
-    tMembers?: TreeMember[],
+    oldMembers?: TreeMember[],
+    isAllChecked?: boolean,
 }
 interface State{
+    isChecked: boolean,
 }
 
 
-class MemberComponent extends React.Component<Props>{
-    constructor(props: Props){
+class MemberComponent extends React.Component<Props, State>{
+    constructor(props: Props, state: State){
         super(props);
+        this.state = ({
+            isChecked : false
+        })
+        this.changeIsChecked = this.changeIsChecked.bind(this);
     }
-    
-    render(){
+
+    changeIsChecked = (e) => {
+        e.preventDefault()
+        let newMember : TreeMember[];
+        newMember = [{
+            userId : this.props.userId,
+            userName : this.props.userName,
+            password : null,
+        }]
+        this.setState({
+            isChecked : !this.state.isChecked
+        },this.props.clickCheckBox("Member", this.state.isChecked, newMember,e))
+    }
+
+    render() {
         let ownerComponent;
         if(this.props.userName == this.props.master.userName){
             ownerComponent = <span className="wrapmsgr_master" ng-show="node.value == docInfo.detail.masterUserId">Owner</span>
@@ -27,8 +46,8 @@ class MemberComponent extends React.Component<Props>{
             ownerComponent = <div></div>
         }
         let isParticipants = false;
-        for(var tmember of this.props.tMembers){
-            if(tmember.userId == this.props.userId){
+        for(var old of this.props.oldMembers){
+            if(old.userId == this.props.userId){
                 isParticipants = true;
                 break;
             }
@@ -39,9 +58,9 @@ class MemberComponent extends React.Component<Props>{
             <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className={isParticipants ? "ng-scope angular-ui-tree-node selected" : "ng-scope angular-ui-tree-node"} expand-on-hover="false">
                 <div className="organ_wrapper ng-scope">
                     <span ng-style="node.type === 'dept' &amp;&amp; !node.hasChildren &amp;&amp; {'visibility': 'hidden'}">
-                        <input type="checkbox" id={checkboxId} ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)" checked = {isParticipants}/>
+                        <input type="checkbox" id={checkboxId} ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)" checked = {this.state.isChecked}/>
                         <label htmlFor={checkboxId} data-nodrag="">
-                            <i className={isParticipants? "icon_checkbox disabled" : "icon_checkbox"} ng-class="{disabled: node.disabled}" ></i>
+                            <i className={isParticipants? "icon_checkbox disabled" : "icon_checkbox"} ng-class="{disabled: node.disabled}" onClick={this.changeIsChecked}></i>
                         </label>
                     </span>
                     <div wrapmsgr-user-profile="users[node.value] || node.value" user-profile-disabled="node.type === 'dept'" className="ng-isolate-scope">
