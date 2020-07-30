@@ -16,6 +16,7 @@ interface Props{
     deptName: string,
     deptCode: any,
     hasChildren?: boolean,
+    tMembers?: TreeMember[],
 }
 
 interface State{
@@ -62,12 +63,12 @@ class Dept extends React.Component<Props, State>{
             nodesComponent = this.state.childNodes.map(node=>{
                 if(node.parentCode == this.props.deptCode && node.type == "dept"){
                     return(
-                        <Dept clickCheckBox = {this.props.clickCheckBox} deptName = {node.columnText} deptCode = {node.value} master = {this.props.master} />
+                        <Dept clickCheckBox = {this.props.clickCheckBox} deptName = {node.columnText} deptCode = {node.value} master = {this.props.master} tMembers = {this.props.tMembers}/>
                     )
                 }
                 if(node.parentCode == this.props.deptCode && node.type == "user"){
                     return(
-                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {node.value} userName = {node.columnText} master = {this.props.master} />
+                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {node.value} userName = {node.columnText} master = {this.props.master} tMembers = {this.props.tMembers}/>
                     )
                    
                 }

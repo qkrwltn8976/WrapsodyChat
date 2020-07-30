@@ -48,28 +48,6 @@ class MemberList extends React.Component<Props, State>{
             hasChildren: true,
         })
     }
-    // getHasChildren = (deptCode : any) => {
-    //     subscribe(client, store.get("username"), this.state.uuid, (obj:any) =>{
-    //         let payload = obj.payload;
-    //         console.log(payload)
-    //         if(payload.Nodes){
-    //             if(payload.Nodes.length == 0){
-    //                 this.setState({
-    //                     hasChildren : false,
-    //                 })
-    //             }else{
-    //                 this.setState({
-    //                     hasChildren: true,
-    //                 })
-    //             }
-    //         }else{
-    //             this.setState({
-    //                 hasChildren: false,
-    //             })
-    //         }
-    //     })
-    //     publishApi(client, 'api.organ.tree', store.get("username"), this.state.uuid, {"root": "N", "path": deptCode})
-    // }
     
     render() {
         const { memberListType, convoId} = this.props
@@ -86,7 +64,7 @@ class MemberList extends React.Component<Props, State>{
                 this.props.checkoutAuthList.map(member => 
                 {
                     return(
-                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} />
+                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} tMembers = {this.props.tMembers}/>
                     )
                 })    
         }
@@ -96,7 +74,7 @@ class MemberList extends React.Component<Props, State>{
                 {
                     // this.getHasChildren(dept.deptCode)
                     return(
-                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {this.state.hasChildren}/> 
+                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {this.state.hasChildren} tMembers = {this.props.tMembers}/> 
                     )
                 })
         }
@@ -106,7 +84,7 @@ class MemberList extends React.Component<Props, State>{
                 this.props.viewAuthList.map(member => 
                 {
                     return(
-                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} />
+                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master}  tMembers = {this.props.tMembers}/>
                     )
                 })
         }
@@ -116,7 +94,7 @@ class MemberList extends React.Component<Props, State>{
                 {   
                     // this.getHasChildren(dept.deptCode)
                     return(
-                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {this.state.hasChildren}/> 
+                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {this.state.hasChildren} tMembers = {this.props.tMembers}/> 
                     )
                 })
         }
@@ -146,12 +124,12 @@ class MemberList extends React.Component<Props, State>{
                         <span>Select All</span>
                     </div>
                     <ol ui-tree-nodes="" ng-model="docInfo.organ" ng-show="docInfo.organ.length > 0" className="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-not-empty">  
-                        { this.props.tMembers.map(member => 
+                        {/* { this.props.tMembers.map(member => 
                         {
                             return(
                                 <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master}/>
                             )
-                        })}
+                        })} */}
                         {checkoutAuthListComponent}
                         {viewAuthListComponent}
                         {checkoutDeptAuthListComponent}
