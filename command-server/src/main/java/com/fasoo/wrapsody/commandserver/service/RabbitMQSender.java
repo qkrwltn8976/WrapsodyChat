@@ -14,9 +14,10 @@ public class RabbitMQSender {
     private String routingkey;
 
     private String msg;
+
     public void send(String message) {
-        rabbitTemplate.convertAndSend(exchange, routingkey, message);
         System.out.println("Send msg = " + message);
+        rabbitTemplate.convertAndSend("chat", "chat.command", message);
         this.msg = message;
     }
 
