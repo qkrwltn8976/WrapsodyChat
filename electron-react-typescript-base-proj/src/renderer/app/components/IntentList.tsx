@@ -20,6 +20,7 @@ interface IntentState {
 interface toggleState {
     active: boolean
 }
+
 class IntentList extends React.Component<IntentProps, IntentState> {
 
     constructor(props: IntentProps) {

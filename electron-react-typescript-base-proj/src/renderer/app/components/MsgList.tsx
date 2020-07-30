@@ -13,11 +13,12 @@ const {BrowserWindow} = remote
 
 interface MsgProps {
     msgs: Message[];
-    convo: Conversation;
-    eom: boolean;
-    sendMsg: any;
-    getMsgs: any;
-    topMsgId: number;
+    convo?: Conversation;
+    eom?: boolean;
+    sendMsg?: any;
+    getMsgs?: any;
+    topMsgId?: number;
+    isBookmark?: boolean;
 }
 
 interface MsgListState {
@@ -158,7 +159,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         let msgbubble;
         let profileClass;
         let senderName;
-        if(this.state.convo.convoType === etype.ConvoType.BOT) {
+        if(this.state.convo && this.state.convo.convoType === etype.ConvoType.BOT) {
             profileClass = 'bot-profile';
             senderName = this.state.convo.name;
         }
@@ -273,16 +274,23 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     }
 
     componentDidMount() {
+        console.log(this.props.isBookmark)
         const scrollView: HTMLDivElement | null = this.scrollView.current;
         if (scrollView) {
             scrollView.addEventListener('scroll', this.messagesScrollToLatestMessage);
         }
+
     }
 
     componentDidUpdate = () => {
         // 처음 채팅방에 접속했을 경우
-        if (this.state.msgs.length <= 20) 
-            this.messagesScrollToBottom();
+        if (this.state.msgs.length <= 20) {
+            if(this.props.isBookmark) 
+                this.scrollView.current.scrollTop = 0;
+            else
+                this.messagesScrollToBottom();
+        }
+            
 
              // 안 읽은 메세지가 있는 경우
         if(this.state.unreadExists && document.getElementById('read'))
@@ -290,8 +298,8 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     }
 
     render() {
-        let unreadExists = (this.props.convo.unread > 0)
-        this.state = ({ msgs: this.props.msgs, convo: this.props.convo, unreadExists: (this.props.convo.unread > 0)});
+        let unreadExists = (this.props.convo && this.props.convo.unread > 0)
+        this.state = ({ msgs: this.props.msgs, convo: this.props.convo, unreadExists});
 
         return (
             <div className="wrapmsgr_content">

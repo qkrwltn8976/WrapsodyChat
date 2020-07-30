@@ -1,11 +1,13 @@
 import * as React from 'react';
 import { Message } from '../../models/Message';
 import language from "@/renderer/language/language.json"
+// import { MentionsInput, Mention } from 'react-mentions'
 const Store = require('electron-store')
 const store = new Store()
 
 interface MsgInputState {
     message: string;
+    commands: string[];
 }
 
 interface MsgInputProps {
@@ -44,7 +46,7 @@ class MsgInput extends React.Component<MsgInputProps, MsgInputState> {
 
     sendMsg = () => {
         console.log(this.state.message)
-        let msg : Message = {
+        let msg: Message = {
             messageId: 0,
             sendUserId: store.get("username"),
             recvConvoId: this.convoId,
@@ -60,7 +62,8 @@ class MsgInput extends React.Component<MsgInputProps, MsgInputState> {
     constructor(props: MsgInputProps) {
         super(props);
         this.state = {
-            message: ''
+            message: '',
+            commands: ["revision", "deadline", "bookmark"]
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -69,19 +72,27 @@ class MsgInput extends React.Component<MsgInputProps, MsgInputState> {
     }
 
     render() {
-        var inputText:string
+        var inputText: string
         var lang = store.get("language")
-        if(lang === "ko-KR")
+        if (lang === "ko-KR")
             inputText = language.ko.input_message
-        if(lang === "en-US")
+        if (lang === "en-US")
             inputText = language.en.input_message
         return (
             <div className="wrapmsgr_footer">
                 <form onSubmit={this.handleSubmit} ng-submit="chat()" className="ng-pristine ng-valid ng-valid-maxlength">
                     <span className="wrapmsgr_full_width_text_span">
-                        <textarea id="wrapmsgr_message_input" className="wrapmsgr_full_width_text ng-pristine ng-untouched ng-valid ng-empty ng-valid-maxlength" placeholder= {inputText} ng-model="input.message" onKeyDown={this.handleKeyPressed} ng-disabled="!loggedIn"
-                        onChange={this.handleChange} value={this.state.message}></textarea>
+                        <textarea id="wrapmsgr_message_input" className="wrapmsgr_full_width_text ng-pristine ng-untouched ng-valid ng-empty ng-valid-maxlength" placeholder={inputText} ng-model="input.message" onKeyDown={this.handleKeyPressed} ng-disabled="!loggedIn"
+                            onChange={this.handleChange} value={this.state.message}></textarea>
+
                     </span>
+                    {/* <MentionsInput value={this.state.message} onChange={this.handleChange}>
+                        <Mention
+                            trigger="@"
+                            data={this.state.commands}
+                            // renderSuggestion={this.renderUserSuggestion}
+                        />
+                    </MentionsInput> */}
                     <button type="submit" className="wrapmsgr_submit" value="보내기" title="보내기" ng-disabled="!loggedIn" onClick={this.sendMsg}>
                         <i className="icon_paper_plane"></i>
                     </button>
