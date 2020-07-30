@@ -65,7 +65,7 @@ class MemberList extends React.Component<Props, State>{
                 this.props.checkoutAuthList.map(member => 
                 {
                     return(
-                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} />
+                        <MemberComponent type = {"select"} clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} />
                     )
                 })    
         }
@@ -85,7 +85,7 @@ class MemberList extends React.Component<Props, State>{
                 this.props.viewAuthList.map(member => 
                 {
                     return(
-                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master}  oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} />
+                        <MemberComponent type = {"select"} clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master}  oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} />
                     )
                 })
         }
@@ -144,29 +144,13 @@ class MemberList extends React.Component<Props, State>{
                     {this.props.oldMembers.map(member => 
                     {
                         return(
-                            <li ng-repeat="member in inviteMembers | orderBy:['-disabled', 'userName']" ui-tree-node="" data-collapsed="true" className="ng-scope angular-ui-tree-node" expand-on-hover="false">
-                                <div wrapmsgr-user-profile="users[member.userId] || member.userId" className="ng-isolate-scope">
-                                    <span className="user-photo ng-binding ng-isolate-scope no-photo green">{getShortName(member.userName)}</span>
-                                    <span className="wrapmsgr_member ng-binding">
-                                        {member.userName}
-                                        <a href=""></a>
-                                    </span>
-                                </div>
-                            </li>
+                           <MemberComponent type = {"selectedOld"}  clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master}/>
                         )
                     })}
                     {
                         this.props.tempMembers.map(member=>{
                             return(
-                                <li ng-repeat="member in inviteMembers | orderBy:['-disabled', 'userName']" ui-tree-node="" data-collapsed="true" className="ng-scope angular-ui-tree-node" expand-on-hover="false" >
-                                    <div wrapmsgr-user-profile="users[member.userId] || member.userId" className="ng-isolate-scope">
-                                        <span className="user-photo ng-binding ng-isolate-scope no-photo red">{getShortName(member.userName)}</span>
-                                        <span className="wrapmsgr_member ng-binding">
-                                            {member.userName}
-                                            <a href=""><i className="icon_times ng-scope" ng-if="member.userId != user.id &amp;&amp; !member.disabled" ng-click="removeInviteMember(member, $event)"></i></a>
-                                        </span>
-                                    </div>
-                                </li>
+                            <MemberComponent type = {"selectedTemp"} clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} />
                             )
                         })
                     }

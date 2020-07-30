@@ -73,7 +73,7 @@ class Dept extends React.Component<Props, State>{
                 }
                 if(node.parentCode == this.props.deptCode && node.type == "user"){
                     return(
-                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {node.value} userName = {node.columnText} master = {this.props.master} oldMembers = {this.props.oldMembers}isAllChecked = {this.props.isAllChecked}/>
+                        <MemberComponent type = {"select"} clickCheckBox = {this.props.clickCheckBox} userId = {node.value} userName = {node.columnText} master = {this.props.master} oldMembers = {this.props.oldMembers}isAllChecked = {this.props.isAllChecked}/>
                     )
                    
                 }

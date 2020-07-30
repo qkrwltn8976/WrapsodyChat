@@ -156,7 +156,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
                                                 <MemberList memberListType = {MemberListType.SELECT} clickCheckBox = {this.clickCheckBox} oldMembers = {this.state.oldMembers} checkoutAuthList = {this.state.checkoutAuthList} checkoutDeptAuthList = {this.state.checkoutDeptAuthList} viewAuthList = {this.state.viewAuthList} viewDeptAuthList = {this.state.viewDeptAuthList} master = {this.state.master} isAllChecked = {this.state.isAllChecked} />
                                             </div>    
                                             <div className="wrapmsgr_organ_tree right-list-col ng-scope angular-ui-tree" ui-tree="inviteTreeOptions">
-                                                <MemberList memberListType = {MemberListType.SELECTED} oldMembers = {this.state.oldMembers} tempMembers = {this.state.tempMembers}/>
+                                                <MemberList memberListType = {MemberListType.SELECTED} oldMembers = {this.state.oldMembers} tempMembers = {this.state.tempMembers} clickCheckBox = {this.clickCheckBox} master = {this.state.master}/>
                                             </div>
                                         </div>
                                     </div>
