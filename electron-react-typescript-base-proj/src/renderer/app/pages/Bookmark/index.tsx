@@ -66,7 +66,7 @@ class BookmarkPage extends React.Component<BookmarkProps, BookmarkState> {
                     console.log(payload.Messages)
                     if (payload.Messages && payload.direction === 'forward') {
                         this.setState({
-                            msgs: this.state.msgs.concat(payload.Messages),
+                            msgs: (payload.beforeAt ? this.state.msgs.concat(payload.Messages) :  payload.Messages),
                         });
                     }
                 }
