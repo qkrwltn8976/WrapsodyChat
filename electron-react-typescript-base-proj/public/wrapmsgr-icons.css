@@ -121,6 +121,9 @@
 .wrapmsgr_container .icon_bell_off:before {
   content: "\ec02";
 }
+.wrapmsgr_container .icon_bookmark:before {
+  content: "\e935";
+}
 
 .wrapmsgr_container .icon_doc,
 .wrapmsgr_container .icon_pdf,

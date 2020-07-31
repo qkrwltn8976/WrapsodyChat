@@ -13,11 +13,13 @@ const {BrowserWindow} = remote
 
 interface MsgProps {
     msgs: Message[];
-    convo: Conversation;
-    eom: boolean;
-    sendMsg: any;
-    getMsgs: any;
-    topMsgId: number;
+    convo?: Conversation;
+    eom?: boolean;
+    sendMsg?: any;
+    getMsgs?: any;
+    getBottomMsgs?: any;
+    topMsgId?: number;
+    isBookmark?: boolean;
 }
 
 interface MsgListState {
@@ -158,7 +160,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         let msgbubble;
         let profileClass;
         let senderName;
-        if(this.state.convo.convoType === etype.ConvoType.BOT) {
+        if(this.state.convo && this.state.convo.convoType === etype.ConvoType.BOT) {
             profileClass = 'bot-profile';
             senderName = this.state.convo.name;
         }
@@ -254,18 +256,35 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         if (node) { //current ref can be null, so we have to check
             node.scrollIntoView({ behavior: 'auto', inline: 'start' }); //scroll to the targeted element
         }
+
     }
 
-    messagesScrollToLatestMessage = () => {
-        if (this.scrollView.current.scrollTop === 0) {
-            this.props.getMsgs(this.scrollView.current.scrollHeight);
+    messageOnScroll = () => {
+
+        let height = this.scrollView.current.scrollHeight-this.scrollView.current.clientHeight;
+        let scrollTop = this.scrollView.current.scrollTop;
+        console.log(scrollTop)
+
+        console.log(height)
+        if (scrollTop === 0 && !this.props.isBookmark) {
+            // 메세지 최상단까지 스크롤 할 경우 api 호출
+            this.props.getMsgs();
             if (this.props.eom) {
                 this.scrollView.current.scrollTop = 0;
             }   
             else 
                 document.getElementById(this.props.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
         }
+
+        if(Math.floor(scrollTop) === height) {
+            console.log('botototototo')
+            this.props.getBottomMsgs();
+        }
     }
+
+    // messageScrollToRecentMessage = () => {
+    //     if(this.scrollView.current.scrollHeight)
+    // }
 
     constructor(props: MsgProps) {
         super(props);
@@ -273,16 +292,23 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     }
 
     componentDidMount() {
+        console.log(this.props.isBookmark)
         const scrollView: HTMLDivElement | null = this.scrollView.current;
         if (scrollView) {
-            scrollView.addEventListener('scroll', this.messagesScrollToLatestMessage);
+            scrollView.addEventListener('scroll', this.messageOnScroll);
         }
+
     }
 
     componentDidUpdate = () => {
         // 처음 채팅방에 접속했을 경우
-        if (this.state.msgs.length <= 20) 
-            this.messagesScrollToBottom();
+        if (this.state.msgs.length <= 20) {
+            if(this.props.isBookmark) 
+                this.scrollView.current.scrollTop = 0;
+            else
+                this.messagesScrollToBottom();
+        }
+            
 
              // 안 읽은 메세지가 있는 경우
         if(this.state.unreadExists && document.getElementById('read'))
@@ -290,8 +316,8 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     }
 
     render() {
-        let unreadExists = (this.props.convo.unread > 0)
-        this.state = ({ msgs: this.props.msgs, convo: this.props.convo, unreadExists: (this.props.convo.unread > 0)});
+        let unreadExists = (this.props.convo && this.props.convo.unread > 0)
+        this.state = ({ msgs: this.props.msgs, convo: this.props.convo, unreadExists});
 
         return (
             <div className="wrapmsgr_content">

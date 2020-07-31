@@ -34,7 +34,7 @@ interface RoomState {
 
 class ChatRoom extends React.Component<RoomProps, RoomState> {
 
-    getMsgs = (scrollHeight: number) => {
+    getMsgs = (payload: any) => {
         publishApi(client, 'api.message.list', store.get("username"), this.state.uuid, {
             convoId: this.state.convo.convoId,
             beforeAt: this.state.msgs[0].createdAt,
@@ -43,7 +43,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
     }
 
     sendMsg = (msg: Message, api: string) => {
-        publishChat(client, api, store.get("username"), this.state.uuid, msg);
+        publishChat(client, api, store.get("username"),this.state.uuid, msg);
     }
 
     setSearch = (search: string) => {

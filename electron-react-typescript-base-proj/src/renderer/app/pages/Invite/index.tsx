@@ -20,16 +20,15 @@ interface inviteState{
     convoId: string,
     docName: string,
     master: TreeMember,
-    tMembers: TreeMember[],
+    tempDepts: TreeMember[],
+    tempMembers: TreeMember[],
+    oldMembers: TreeMember[],
     viewAuthAllUsers: boolean,
     checkoutAuthList: TreeMember[] ,
     checkoutDeptAuthList: TreeDept[],
     viewAuthList: TreeMember[],
     viewDeptAuthList: TreeDept[],
-    participants: number,
     isAllChecked: boolean,
-    isMemberChecked: boolean,
-    isDeptChecked: boolean,
 }
 
 class Invite extends React.Component<inviteProps, inviteState>{
@@ -49,13 +48,11 @@ class Invite extends React.Component<inviteProps, inviteState>{
             checkoutDeptAuthList: [],
             viewAuthList: [],
             viewDeptAuthList: [],
-            tMembers:[],
-            participants: 0,
+            tempDepts:[],
+            tempMembers:[],
+            oldMembers:[],
             isAllChecked: false,
-            isMemberChecked: false,
-            isDeptChecked: false,
         })
-        console.log("consturctor안에서 subscribe하고 있는중0")
     }
 
     componentDidMount(){
@@ -81,8 +78,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
                     }
                     if(payload.Members){
                         this.setState({
-                            tMembers : payload.Members,
-                            participants : payload.Members.length 
+                            oldMembers: payload.Members,
                         }) 
                     }// 채팅방 참여자
                     
@@ -94,51 +90,66 @@ class Invite extends React.Component<inviteProps, inviteState>{
         }  
     }
     
-    clickCheckBox = (checkBoxType: string) => (e:Event) =>{
-        e.preventDefault()
+    clickCheckBox = (checkBoxType: string, isChecked:boolean, newMembers: TreeMember[], ...newDepts: TreeMember[]) =>{
+        
         if(checkBoxType == "All"){
-            let all = 0;
-            if(this.state.isAllChecked){
-                all : this.state.participants
-            }else{
-                all = this.state.checkoutAuthList.length + this.state.checkoutDeptAuthList.length 
-                + this.state.viewAuthList.length + this.state.viewDeptAuthList.length
-            }
-            this.setState({ 
-                participants : all,
-                isAllChecked : !this.state.isAllChecked
-            })
-        }else if(checkBoxType == "Member"){
-            if(this.state.isMemberChecked){
-                this.setState({ 
-                    participants : this.state.participants - 1
+            
+        }else if(checkBoxType == "Member" && newMembers){
+            if(!isChecked){
+                this.setState({
+                    tempMembers: this.state.tempMembers.concat(newMembers),
                 })
+                this.setState(prevState =>({
+                   checkoutAuthList:{
+                       ...prevState.checkoutAuthList,
+                        isChecked: true
+                   },
+                   viewAuthList:{
+                       ...prevState.viewAuthList,
+                       isChecked: true
+                   } 
+                }))
             }else{
-                this.setState({ 
-                    participants : this.state.participants + 1
-                })
+                const idx = this.state.tempMembers.findIndex( obj => obj.userName === newMembers[0].userName) 
+                if (idx > -1) {
+                    this.state.tempMembers.splice(idx,1)
+                    this.setState({
+                        tempMembers: this.state.tempMembers
+                    })
+                }
             }
-            this.setState({ 
-                isMemberChecked : !this.state.isMemberChecked
-            })
+           
         }else if(checkBoxType == "Dept"){
-            let deptNum = 0;
-            if(this.state.isDeptChecked){ // 이미 체크되어있었음 -> 체크해제
-                this.setState({ 
-                    participants: this.state.participants - deptNum,
+            console.log("-------------------Dept-------------------")
+            console.log(isChecked)
+            if(isChecked && newDepts && newMembers){
+                this.setState({
+                    tempMembers: this.state.tempMembers.concat(newMembers),
+                    tempDepts : this.state.tempDepts.concat(newDepts),
                 })
-            }else{
-                this.setState({ 
-                    participants: this.state.participants + deptNum,
+            }else if(isChecked && newMembers){
+                this.setState({
+                    tempMembers: this.state.tempMembers.concat(newMembers),
                 })
             }
-            this.setState({ 
-                isDeptChecked : !this.state.isDeptChecked
-            })
-        }// dept코드 받아서 dept숫자 더해야할듯 나중에..
+            else if(!isChecked && newMembers){
+                newMembers.map(member=>{
+                    const idxM = this.state.tempMembers.findIndex( obj => obj.userId === member.userId) 
+                    if (idxM > -1) {
+                        this.state.tempMembers.splice(idxM,1)
+                        this.setState({
+                            tempMembers: this.state.tempMembers
+                        })
+                    }
+                })
+                
+            }
+        }
     }
 
     render(){
+        console.log("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
+        console.log(this.state.tempMembers)
         let aside, viewModeClass;
         var organ_tree_calc_width = { width: 'calc(100% - 300px)' };
         return(
@@ -150,13 +161,13 @@ class Invite extends React.Component<inviteProps, inviteState>{
                                 <Header docName = "" headerType={HeaderType.INVITE}/>
                                 <form name="manageDocRoomForm" ng-submit="submitDocRoom()" className="ng-pristine ng-valid">
                                     <div className="wrapmsgr_popup_body">
-                                        <InfoHeader convoType= {ConvoType.IC} memberCount = {this.state.tMembers.length} participants = {this.state.participants} docName = {this.state.docName}/>
+                                        <InfoHeader convoType= {ConvoType.IC} memberCount = {this.state.oldMembers.length} docName = {this.state.docName} tempMembers = {this.state.tempMembers}/>
                                         <div className="group">
                                             <div className="wrapmsgr_organ_tree ng-scope angular-ui-tree" ui-tree="organTreeOptions" data-clone-enabled="true" data-nodrop-enabled="true" data-drag-delay="100" style = {organ_tree_calc_width}>
-                                                <MemberList memberListType = {MemberListType.SELECT} clickCheckBox = {this.clickCheckBox} tMembers = {this.state.tMembers} checkoutAuthList = {this.state.checkoutAuthList} checkoutDeptAuthList = {this.state.checkoutDeptAuthList} viewAuthList = {this.state.viewAuthList} viewDeptAuthList = {this.state.viewDeptAuthList} master = {this.state.master} isAllChecked = {this.state.isAllChecked} />
+                                                <MemberList memberListType = {MemberListType.SELECT} clickCheckBox = {this.clickCheckBox} oldMembers = {this.state.oldMembers} checkoutAuthList = {this.state.checkoutAuthList} checkoutDeptAuthList = {this.state.checkoutDeptAuthList} viewAuthList = {this.state.viewAuthList} viewDeptAuthList = {this.state.viewDeptAuthList} master = {this.state.master} isAllChecked = {this.state.isAllChecked} tempMembers = {this.state.tempMembers}/>
                                             </div>    
                                             <div className="wrapmsgr_organ_tree right-list-col ng-scope angular-ui-tree" ui-tree="inviteTreeOptions">
-                                                <MemberList memberListType = {MemberListType.SELECTED} tMembers = {this.state.tMembers}/>
+                                                <MemberList memberListType = {MemberListType.SELECTED} oldMembers = {this.state.oldMembers} tempMembers = {this.state.tempMembers} clickCheckBox = {this.clickCheckBox} master = {this.state.master}/>
                                             </div>
                                         </div>
                                     </div>
