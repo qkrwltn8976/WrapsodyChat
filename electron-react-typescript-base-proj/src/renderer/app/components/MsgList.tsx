@@ -17,6 +17,7 @@ interface MsgProps {
     eom?: boolean;
     sendMsg?: any;
     getMsgs?: any;
+    getBottomMsgs?: any;
     topMsgId?: number;
     isBookmark?: boolean;
 }
@@ -255,18 +256,35 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         if (node) { //current ref can be null, so we have to check
             node.scrollIntoView({ behavior: 'auto', inline: 'start' }); //scroll to the targeted element
         }
+
     }
 
-    messagesScrollToLatestMessage = () => {
-        if (this.scrollView.current.scrollTop === 0) {
-            this.props.getMsgs(this.scrollView.current.scrollHeight);
+    messageOnScroll = () => {
+
+        let height = this.scrollView.current.scrollHeight-this.scrollView.current.clientHeight;
+        let scrollTop = this.scrollView.current.scrollTop;
+        console.log(scrollTop)
+
+        console.log(height)
+        if (scrollTop === 0 && !this.props.isBookmark) {
+            // 메세지 최상단까지 스크롤 할 경우 api 호출
+            this.props.getMsgs();
             if (this.props.eom) {
                 this.scrollView.current.scrollTop = 0;
             }   
             else 
                 document.getElementById(this.props.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
         }
+
+        if(Math.floor(scrollTop) === height) {
+            console.log('botototototo')
+            this.props.getBottomMsgs();
+        }
     }
+
+    // messageScrollToRecentMessage = () => {
+    //     if(this.scrollView.current.scrollHeight)
+    // }
 
     constructor(props: MsgProps) {
         super(props);
@@ -277,7 +295,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         console.log(this.props.isBookmark)
         const scrollView: HTMLDivElement | null = this.scrollView.current;
         if (scrollView) {
-            scrollView.addEventListener('scroll', this.messagesScrollToLatestMessage);
+            scrollView.addEventListener('scroll', this.messageOnScroll);
         }
 
     }
