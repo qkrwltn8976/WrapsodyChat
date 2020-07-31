@@ -15,7 +15,10 @@ public class CustomMessage {
     private int messageType;
     private boolean isNotice;
     //  attachments?: Attachment[]
-    public CustomMessage (long messageId, String sendUserId, String recvConvoId, String body, int messageType, long createdAt, long updatedAt) {
+
+    protected CustomMessage(){}
+
+    public CustomMessage (long createdAt, long updatedAt, long messageId, String sendUserId, String recvConvoId, String body, int messageType) {
         this.messageId = messageId;
         this.sendUserId = sendUserId;
         this.recvConvoId = recvConvoId;
@@ -26,7 +29,16 @@ public class CustomMessage {
     }
     @Override
     public String toString() {
-        return "Message [sendUserId=" + this.sendUserId + ", body=" + this.body+"]";
+        return"{" +
+                "createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", messageId=" + messageId +
+                ", sendUserId='" + sendUserId +'\'' +
+                ", recvConvoId='" + recvConvoId +'\'' +
+                ", body='" + body +'\'' +
+                ", messageType=" + messageType +
+                ", isNotice= false"+
+                '}';
     }
 
     public long getMessageId(){return this.messageId;}
