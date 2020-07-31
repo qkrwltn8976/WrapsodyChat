@@ -6,6 +6,8 @@ import { TreeDept } from '../../models/TreeDept';
 import { client , subscribe, publishApi } from '../../libs/stomp'
 import { v4 } from "uuid";
 import { MemberComponent, Dept } from '../components'
+import { Nodes } from '../../models/Nodes';
+
 const Store = require('electron-store')
 const store = new Store()
 
@@ -26,14 +28,17 @@ interface Props {
     checkoutDeptAuthList?: TreeDept[];
     viewAuthList?: TreeMember[];
     viewDeptAuthList?: TreeDept[];
-    tMembers?: TreeMember[];
+    oldMembers?: TreeMember[];
+    tempMembers?: TreeMember[];
     master?: TreeMember;
     isAllChecked?: boolean,
+    isMemberChecked?: boolean,
+    isDeptChecked?: boolean,
     childNodes?: any,
 }
 
 interface State{
-    uuid: string
+    uuid: string,
 }
 
 
@@ -44,6 +49,7 @@ class MemberList extends React.Component<Props, State>{
             uuid: v4(),
         })
     }
+    
     render() {
         const { memberListType, convoId} = this.props
         let ownerComponent;
@@ -53,12 +59,13 @@ class MemberList extends React.Component<Props, State>{
         let viewDeptAuthListComponent;
         let rootTreeComponent;
 
+        
         if(this.props.checkoutAuthList){
             checkoutAuthListComponent = 
                 this.props.checkoutAuthList.map(member => 
                 {
                     return(
-                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} member = {member} master = {this.props.master} />
+                        <MemberComponent type = {"select"} clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked}  tempMembers = {this.props.tempMembers}/>
                     )
                 })    
         }
@@ -66,9 +73,9 @@ class MemberList extends React.Component<Props, State>{
             checkoutDeptAuthListComponent = 
                 this.props.checkoutDeptAuthList.map(dept => 
                 {
-                    console.log(dept)
+                    // this.getHasChildren(dept.deptCode)
                     return(
-                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master}/> 
+                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {true} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} tempMembers = {this.props.tempMembers}/> 
                     )
                 })
         }
@@ -78,16 +85,17 @@ class MemberList extends React.Component<Props, State>{
                 this.props.viewAuthList.map(member => 
                 {
                     return(
-                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} member = {member} master = {this.props.master} />
+                        <MemberComponent type = {"select"} clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master}  oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} tempMembers = {this.props.tempMembers} />
                     )
                 })
         }
         if(this.props.viewDeptAuthList){
             viewDeptAuthListComponent = 
                 this.props.viewDeptAuthList.map(dept => 
-                {   console.log(dept)
+                {   
+                    // this.getHasChildren(dept.deptCode)
                     return(
-                        <Dept clickCheckBox = {this.props.clickCheckBox} deptName = {dept.deptName} deptCode = {dept.deptCode} master = {this.props.master}/>
+                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {true} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} tempMembers = {this.props.tempMembers} /> 
                     )
                 })
         }
@@ -112,17 +120,11 @@ class MemberList extends React.Component<Props, State>{
                     <div className="wrapmsgr_organ_tree_header">
                         <input type="checkbox" id="manage_doc_room_select_all" ng-disabled="!loggedIn || organTreeOptions.disabled" ng-checked="checkAllMembers()" ng-click="toggleAllMembers($event)" checked = {this.props.isAllChecked}/>
                         <label htmlFor="manage_doc_room_select_all">
-                            <i className="icon_checkbox" ng-class="{disabled: organTreeOptions.disabled}" onClick={this.props.clickCheckBox("All") }></i>
+                            <i className="icon_checkbox" ng-class="{disabled: organTreeOptions.disabled}" onClick={this.props.clickCheckBox("All")}></i>
                         </label>
                         <span>Select All</span>
                     </div>
                     <ol ui-tree-nodes="" ng-model="docInfo.organ" ng-show="docInfo.organ.length > 0" className="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-not-empty">  
-                        { this.props.tMembers.map(member => 
-                        {
-                            return(
-                                <MemberComponent clickCheckBox = {this.props.clickCheckBox}  member = {member} master = {this.props.master}/>
-                            )
-                        })}
                         {checkoutAuthListComponent}
                         {viewAuthListComponent}
                         {checkoutDeptAuthListComponent}
@@ -133,20 +135,19 @@ class MemberList extends React.Component<Props, State>{
         } else if (memberListType == 'selected') {
             return (
                 <ol ui-tree-nodes="" ng-model="inviteMembers" ng-show="inviteMembers.length > 0" className="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-not-empty">
-                    {this.props.tMembers.map(member => 
+                    {this.props.oldMembers.map(member => 
                     {
                         return(
-                            <li ng-repeat="member in inviteMembers | orderBy:['-disabled', 'userName']" ui-tree-node="" data-collapsed="true" className="ng-scope angular-ui-tree-node" expand-on-hover="false">
-                                <div wrapmsgr-user-profile="users[member.userId] || member.userId" className="ng-isolate-scope">
-                                    <span className="user-photo ng-binding ng-isolate-scope no-photo green">{getShortName(member.userName)}</span>
-                                    <span className="wrapmsgr_member ng-binding">
-                                        {member.userName}
-                                        <a href=""></a>
-                                    </span>
-                                </div>
-                            </li>
+                           <MemberComponent type = {"selectedOld"}  clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} tempMembers = {this.props.tempMembers}/>
                         )
                     })}
+                    {
+                        this.props.tempMembers.map(member=>{
+                            return(
+                            <MemberComponent type = {"selectedTemp"} clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} tempMembers = {this.props.tempMembers} />
+                            )
+                        })
+                    }
                 </ol>
             );
         }

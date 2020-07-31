@@ -5,6 +5,7 @@ import {client} from "@/renderer/libs/stomp"
 import {v4} from "uuid"
 import language from "@/renderer/language/language.json"
 import { publishApi } from '@/renderer/libs/stomp';
+import { TreeMember } from '../../models/TreeMember';
 
 const Store = require('electron-store')
 const store = new Store()
@@ -20,7 +21,7 @@ interface Props{
     docName: string;
     notificationType?: number;
     setNotification?:any
-    participants?: number;
+    tempMembers?: TreeMember[],
 }
 
 interface ShowState{
@@ -35,7 +36,6 @@ class InfoHeader extends React.Component<Props, ShowState>{
     
     constructor(props: Props, state: {}){
         super(props, state);
-        
         this.state = ({
             isShow: false,
             uuid: v4(),
@@ -160,8 +160,6 @@ class InfoHeader extends React.Component<Props, ShowState>{
             const progressInPercentages = progress * 100; // With decimal point and a bunch of numbers
             const cleanProgressInPercentages = Math.floor(progress * 100); // Without decimal point
         });
-
-
         var pNum:string;
         if(store.get("language") === "ko-KR")
             pNum = language.ko.pNum
@@ -266,7 +264,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
                     <document-icon name="docInfo.detail.contentName" class="ng-isolate-scope"><i className="icon_txt">          <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i></document-icon>
                     <div className="doc-name ng-binding">{this.props.docName}</div>
                     <div>
-                        <span className="ng-binding">문서 권한 보유자 {this.props.memberCount} 명 / 대화 상대 {this.props.participants} 명</span>                       
+                        <span className="ng-binding">문서 권한 보유자 {this.props.memberCount} 명 / 대화 상대 {this.props.memberCount + this.props.tempMembers.length} 명</span>                       
                     </div>
                 </div>
             )
