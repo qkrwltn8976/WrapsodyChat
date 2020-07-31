@@ -15,7 +15,6 @@ interface BookmarkListState {
 
 class BookmarkList extends React.Component<BookmarkListProps, BookmarkListState> {
     getMsgs = (bookmark: Bookmark) => (e) => {
-        console.log('asdfasdf')
         this.props.getMsgs(bookmark);
     }
 
