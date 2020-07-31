@@ -91,17 +91,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
     clickCheckBox = (checkBoxType: string, isChecked:boolean, newMembers: TreeMember[]) =>{
         
         if(checkBoxType == "All"){
-            // let all = 0;
-            // if(this.state.isAllChecked){
-            //     all : this.state.participants
-            // }else{
-            //     all = this.state.checkoutAuthList.length + this.state.checkoutDeptAuthList.length 
-            //     + this.state.viewAuthList.length + this.state.viewDeptAuthList.length
-            // }
-            // this.setState({ 
-            //     participants : all,
-            //     isAllChecked : !this.state.isAllChecked
-            // })
+            
         }else if(checkBoxType == "Member" && newMembers){
             if(!isChecked){
                 if(this.state.tempMembers.length == 0){
@@ -125,17 +115,8 @@ class Invite extends React.Component<inviteProps, inviteState>{
             }
            
         }else if(checkBoxType == "Dept"){
-            // let deptNum = 0;
-            // if(isChecked){ // 이미 체크되어있었음 -> 체크해제
-            //     this.setState({ 
-            //         participants: this.state.participants - deptNum,
-            //     })
-            // }else{
-            //     this.setState({ 
-            //         participants: this.state.participants + deptNum,
-            //     })
-            // }
-        }// dept코드 받아서 dept숫자 더해야할듯 나중에..
+           
+        }
     }
 
     render(){
@@ -153,7 +134,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
                                         <InfoHeader convoType= {ConvoType.IC} memberCount = {this.state.oldMembers.length} docName = {this.state.docName} tempMembers = {this.state.tempMembers}/>
                                         <div className="group">
                                             <div className="wrapmsgr_organ_tree ng-scope angular-ui-tree" ui-tree="organTreeOptions" data-clone-enabled="true" data-nodrop-enabled="true" data-drag-delay="100" style = {organ_tree_calc_width}>
-                                                <MemberList memberListType = {MemberListType.SELECT} clickCheckBox = {this.clickCheckBox} oldMembers = {this.state.oldMembers} checkoutAuthList = {this.state.checkoutAuthList} checkoutDeptAuthList = {this.state.checkoutDeptAuthList} viewAuthList = {this.state.viewAuthList} viewDeptAuthList = {this.state.viewDeptAuthList} master = {this.state.master} isAllChecked = {this.state.isAllChecked} />
+                                                <MemberList memberListType = {MemberListType.SELECT} clickCheckBox = {this.clickCheckBox} oldMembers = {this.state.oldMembers} checkoutAuthList = {this.state.checkoutAuthList} checkoutDeptAuthList = {this.state.checkoutDeptAuthList} viewAuthList = {this.state.viewAuthList} viewDeptAuthList = {this.state.viewDeptAuthList} master = {this.state.master} isAllChecked = {this.state.isAllChecked} tempMembers = {this.state.tempMembers}/>
                                             </div>    
                                             <div className="wrapmsgr_organ_tree right-list-col ng-scope angular-ui-tree" ui-tree="inviteTreeOptions">
                                                 <MemberList memberListType = {MemberListType.SELECTED} oldMembers = {this.state.oldMembers} tempMembers = {this.state.tempMembers} clickCheckBox = {this.clickCheckBox} master = {this.state.master}/>

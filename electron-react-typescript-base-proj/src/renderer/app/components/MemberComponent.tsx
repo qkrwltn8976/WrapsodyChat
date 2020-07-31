@@ -11,6 +11,7 @@ interface Props{
     oldMembers?: TreeMember[],
     isAllChecked?: boolean,
     type?: string,
+    tempMembers?:TreeMember[],
 }
 interface State{
     isChecked: boolean,
@@ -54,6 +55,7 @@ class MemberComponent extends React.Component<Props, State>{
 
     render() {
         let ownerComponent;
+        let idx;
         if(this.props.userName == this.props.master.userName){
             ownerComponent = <span className="wrapmsgr_master" ng-show="node.value == docInfo.detail.masterUserId">Owner</span>
         }else{
@@ -68,13 +70,17 @@ class MemberComponent extends React.Component<Props, State>{
                 }
             }
         }
+        
         if(this.props.type == "select"){
+            if(this.props.tempMembers){
+                idx = this.props.tempMembers.findIndex( obj => obj.userId === this.props.userId)
+            }
             const checkboxId = "member-"+ this.props.userId+"object:"+ Math.random()
             return(
                 <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className={isParticipants ? "ng-scope angular-ui-tree-node selected" : "ng-scope angular-ui-tree-node"} expand-on-hover="false">
                     <div className="organ_wrapper ng-scope">
                         <span ng-style="node.type === 'dept' &amp;&amp; !node.hasChildren &amp;&amp; {'visibility': 'hidden'}">
-                            <input type="checkbox" id={checkboxId} ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)" checked = {this.state.isChecked}/>
+                            <input type="checkbox" id={checkboxId} ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)" checked = {idx != -1}/>
                             <label htmlFor={checkboxId} data-nodrag="">
                                 <i className={isParticipants? "icon_checkbox disabled" : "icon_checkbox"} ng-class="{disabled: node.disabled}" onClick={this.changeIsChecked}></i>
                             </label>

@@ -65,7 +65,7 @@ class MemberList extends React.Component<Props, State>{
                 this.props.checkoutAuthList.map(member => 
                 {
                     return(
-                        <MemberComponent type = {"select"} clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} />
+                        <MemberComponent type = {"select"} clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked}  tempMembers = {this.props.tempMembers}/>
                     )
                 })    
         }
@@ -75,7 +75,7 @@ class MemberList extends React.Component<Props, State>{
                 {
                     // this.getHasChildren(dept.deptCode)
                     return(
-                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {true} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked}/> 
+                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {true} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} tempMembers = {this.props.tempMembers}/> 
                     )
                 })
         }
@@ -85,7 +85,7 @@ class MemberList extends React.Component<Props, State>{
                 this.props.viewAuthList.map(member => 
                 {
                     return(
-                        <MemberComponent type = {"select"} clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master}  oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} />
+                        <MemberComponent type = {"select"} clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master}  oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} tempMembers = {this.props.tempMembers} />
                     )
                 })
         }
@@ -95,7 +95,7 @@ class MemberList extends React.Component<Props, State>{
                 {   
                     // this.getHasChildren(dept.deptCode)
                     return(
-                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {true} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} /> 
+                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {true} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} tempMembers = {this.props.tempMembers} /> 
                     )
                 })
         }
@@ -125,12 +125,6 @@ class MemberList extends React.Component<Props, State>{
                         <span>Select All</span>
                     </div>
                     <ol ui-tree-nodes="" ng-model="docInfo.organ" ng-show="docInfo.organ.length > 0" className="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-not-empty">  
-                        {/* { this.props.oldMembers.map(member => 
-                        {
-                            return(
-                                <MemberComponent clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master}/>
-                            )
-                        })} */}
                         {checkoutAuthListComponent}
                         {viewAuthListComponent}
                         {checkoutDeptAuthListComponent}
@@ -144,13 +138,13 @@ class MemberList extends React.Component<Props, State>{
                     {this.props.oldMembers.map(member => 
                     {
                         return(
-                           <MemberComponent type = {"selectedOld"}  clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master}/>
+                           <MemberComponent type = {"selectedOld"}  clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} tempMembers = {this.props.tempMembers}/>
                         )
                     })}
                     {
                         this.props.tempMembers.map(member=>{
                             return(
-                            <MemberComponent type = {"selectedTemp"} clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} />
+                            <MemberComponent type = {"selectedTemp"} clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} tempMembers = {this.props.tempMembers} />
                             )
                         })
                     }
