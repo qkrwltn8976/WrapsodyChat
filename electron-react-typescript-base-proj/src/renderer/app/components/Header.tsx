@@ -37,6 +37,7 @@ class Header extends React.Component<Props>{
                 <div className = "wrapmsgr_title_header">
                     <h1 className = "wrapmsgr_title" id = "forHeaderDocTitle">
                         <span className = "ng-binding" title = {docName}>{docName}</span>
+                        <div className="blob"></div>
                     </h1>
                     <div className = "wrapmsgr-header-icon-wrap">
                         <a href = "">
@@ -46,6 +47,7 @@ class Header extends React.Component<Props>{
                             <i className = "icon_times" title = "Close" onClick={this.closeWindow}></i>
                         </a>
                     </div>
+                   
                 </div>
             );
         }else if(headerType === HeaderType.CREATE){
