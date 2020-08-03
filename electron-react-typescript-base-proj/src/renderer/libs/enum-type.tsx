@@ -62,3 +62,8 @@ export enum Attachment {
     SCRAP = 4,
     ACTION = 5,
 }
+
+export enum Command {
+    BOOKMARK_START = 5,
+    BOOKMARK_STOP = 6,
+}

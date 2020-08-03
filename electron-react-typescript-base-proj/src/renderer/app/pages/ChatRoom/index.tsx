@@ -85,7 +85,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
             search: "",
             eom: false,
             prevScrollHeight: 0,
-            topMsgId: 0
+            topMsgId: 0,
         })
 
     }
@@ -158,12 +158,29 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                             msgs: this.state.msgs.concat(obj),
                             topMsgId: obj.messageId
                         });
+
+                        if(obj.messageType == type.Command.BOOKMARK_START) { // command 명령어 시작
+                            this.setState(prevState => ({
+                                convo: {
+                                    ...prevState.convo,
+                                    bookmarkStatus: 1
+                                }
+                            }));
+                            console.log('북마크 시작')
+                        } else if(obj.messageType == type.Command.BOOKMARK_STOP) {
+                            this.setState(prevState => ({
+                                convo: {
+                                    ...prevState.convo,
+                                    bookmarkStatus: 0
+                                }
+                            }))
+                        }
                         document.getElementById(this.state.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
 
-                        if (obj.sendUserId !== store.get("username")) {
-                            console.log('읽어')
-                            // publishApi(client, 'api.conversation.read', 'admin', this.state.uuid, { 'convoId': this.state.convoId });
-                        }
+                        // if (obj.sendUserId !== store.get("username")) {
+                        //     console.log('읽어')
+                        //     // publishApi(client, 'api.conversation.read', 'admin', this.state.uuid, { 'convoId': this.state.convoId });
+                        // }
 
                     }
 
@@ -200,7 +217,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                 <div id="wrapmsgr" className="ng-scope">
                     <div id="wrapmsgr_body" ng-controller="WrapMsgrController" className="wrapmsgr_container ng-scope" data-ws="ws://ecm.dev.fasoo.com:9500/ws" data-vhost="/wrapsody-oracle" data-fpns-enabled="true" data-weboffice-enabled="true">
                         <div className="wrapmsgr_chat wrapmsgr_state_normalize wrapmsgr_viewmode_full" ng-class="[chatroomState, viewModeClass, {false: 'disabled'}[loggedIn]]" ng-show="current.convo">
-                            <Header convoId={this.state.convo.convoId} docName={this.state.convo.name} headerType={HeaderType.CHAT} />
+                            <Header convoId={this.state.convo.convoId} docName={this.state.convo.name} headerType={HeaderType.CHAT} bookmarkStatus={this.state.convo.bookmarkStatus}/>
                             <div className={"wrapmsgr_content  wrapmsgr_viewmode_full " + viewModeClass}>
                                 {aside}
                                 <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass" id="DocumentChat">

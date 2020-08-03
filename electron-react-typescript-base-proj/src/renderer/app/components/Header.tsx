@@ -7,6 +7,7 @@ interface Props{
     docName?: string; // 채팅방 생성 헤더에서만 docName필요 나머지는 null
     headerType: string;
     convoId?: String;
+    bookmarkStatus?: number;
 }
 // header가 받는 Props설정
 // 기존 javascript에서의 react props? 재사용을 위해서 내가 커스텀을 진행할 수 있도록 값을 props로 전달
@@ -17,6 +18,15 @@ class Header extends React.Component<Props>{
         super(props);
     } // 생성자
     
+    getRecordIcon = () => {
+        if(this.props.bookmarkStatus===1) {
+            return(
+            <span className="record-box"><div className="blob"></div>
+            <h6  className="record">RECORDING...</h6></span>
+            )
+        }
+    }
+
     closeWindow = (event:any)=>{
         console.log('bye')
         var win = remote.getCurrentWindow()
@@ -31,13 +41,13 @@ class Header extends React.Component<Props>{
 
     render() {
         const {docName, headerType} = this.props;
-        
+        let record = this.getRecordIcon();
         if(headerType === HeaderType.CHAT){
             return(
                 <div className = "wrapmsgr_title_header">
                     <h1 className = "wrapmsgr_title" id = "forHeaderDocTitle">
                         <span className = "ng-binding" title = {docName}>{docName}</span>
-                        <div className="blob"></div>
+                        {record} 
                     </h1>
                     <div className = "wrapmsgr-header-icon-wrap">
                         <a href = "">

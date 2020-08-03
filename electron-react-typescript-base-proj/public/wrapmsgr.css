@@ -1452,15 +1452,26 @@ div.wrapmsgr_container * {
 }
 
 .blob {
-	display: inline-block;
 	background: rgb(255, 0, 0);
 	border-radius: 50%;
-	margin: 25px;
+	margin: 22px 15px;
 	height: 10px;
 	width: 10px;
 	box-shadow: 0 0 0 0 rgba(255, 0, 0, 1);
 	transform: scale(1);
 	animation: pulse 2s infinite;
+	display: inline-block;
+
+}
+
+.record {
+	color: black;
+    float: right;
+	display: inline-block;
+	margin-top: 0;
+}
+
+.record-box {
 	float: right;
 }
 

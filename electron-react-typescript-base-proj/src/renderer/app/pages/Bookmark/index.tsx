@@ -49,8 +49,8 @@ class BookmarkPage extends React.Component<BookmarkProps, BookmarkState> {
             msgs: [],
             uuid: v4(),
             bookmarks: [{ bookmarkId: '1112', startAt: 1537353662791, stopAt: 1595406890309, convoId: "575278f3d2b044b5878bafa090fda89c", name: "주간회의" },
-            { bookmarkId: '1113', startAt: 1595920236411, stopAt: 1123123, convoId: "04f9520d62fc402da7f2947a285c0abd", name: "주간회의2" },
-            { bookmarkId: '1114', startAt: 1595920241000, stopAt: 1123123, convoId: "831685fc97984932bc3839b73a7c9ae5", name: "주간회의3" }
+            { bookmarkId: '1113', startAt: 1572934291874, stopAt: 1596434666008, convoId: "f190777042544acc8d57e6e186472bbf", name: "주간회의2" },
+            { bookmarkId: '1114', startAt: 1545036452927, stopAt: 1594685339030, convoId: "75884945f8334afeb011dbc9fc374b57", name: "주간회의3" }
             ],
             bookmark: {convoId:this.props.match.params.convo,bookmarkId:"1", startAt:0, stopAt:0}
         })
