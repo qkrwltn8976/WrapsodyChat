@@ -59,9 +59,9 @@ public class CustomMessageListener {
                     if(c.compareTo(Bookmark.Function.START.getName())==0){
                         Date date = new Date();
                         System.out.println("bookmark start");
-                        CustomMessage customMessage = new CustomMessage(message.getCreatedAt(), message.getUpdatedAt(),50000, "@SYS@",message.getRecvConvoId(), "BOOKMARK START",0);
+                        CustomMessage customMessage = new CustomMessage(message.getCreatedAt(), message.getUpdatedAt(),50000, "minji",message.getRecvConvoId(), "BOOKMARK START",0);
                         Runner runner = new Runner(rabbitTemplate);
-                        runner.send("chat","chat.short.convo."+message.getRecvConvoId(),customMessage);
+                        runner.send("chat","chat.short.room."+message.getRecvConvoId(),customMessage);
                     }
                     else if(c.compareTo(Bookmark.Function.STOP.getName())==0){
                         System.out.println("bookmark stop");
