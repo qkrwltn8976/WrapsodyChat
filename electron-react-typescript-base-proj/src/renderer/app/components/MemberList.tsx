@@ -7,6 +7,7 @@ import { client , subscribe, publishApi } from '../../libs/stomp'
 import { v4 } from "uuid";
 import { MemberComponent, Dept } from '../components'
 import { Nodes } from '../../models/Nodes';
+import { Node } from '../../models/Node';
 
 const Store = require('electron-store')
 const store = new Store()
@@ -23,18 +24,16 @@ interface Props {
     members?: Member[];
     treeData?: any;
     clickCheckBox? : any;
+    clickExpandTree?: any;
     viewAuthAllUsers?: boolean;
-    checkoutAuthList?: TreeMember[];
-    checkoutDeptAuthList?: TreeDept[];
-    viewAuthList?: TreeMember[];
-    viewDeptAuthList?: TreeDept[];
     oldMembers?: TreeMember[];
-    tempMembers?: TreeMember[];
     master?: TreeMember;
     isAllChecked?: boolean,
     isMemberChecked?: boolean,
     isDeptChecked?: boolean,
     childNodes?: any,
+    nodeList?: Node[],
+    tempMembers?: TreeMember[],
 }
 
 interface State{
@@ -52,53 +51,7 @@ class MemberList extends React.Component<Props, State>{
     
     render() {
         const { memberListType, convoId} = this.props
-        let ownerComponent;
-        let checkoutAuthListComponent;
-        let checkoutDeptAuthListComponent;
-        let viewAuthListComponent;
-        let viewDeptAuthListComponent;
-        let rootTreeComponent;
 
-        
-        if(this.props.checkoutAuthList){
-            checkoutAuthListComponent = 
-                this.props.checkoutAuthList.map(member => 
-                {
-                    return(
-                        <MemberComponent type = {"select"} clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked}  tempMembers = {this.props.tempMembers}/>
-                    )
-                })    
-        }
-        if(this.props.checkoutDeptAuthList){
-            checkoutDeptAuthListComponent = 
-                this.props.checkoutDeptAuthList.map(dept => 
-                {
-                    // this.getHasChildren(dept.deptCode)
-                    return(
-                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {true} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} tempMembers = {this.props.tempMembers}/> 
-                    )
-                })
-        }
-
-        if(this.props.viewAuthList){
-            viewAuthListComponent =  
-                this.props.viewAuthList.map(member => 
-                {
-                    return(
-                        <MemberComponent type = {"select"} clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master}  oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} tempMembers = {this.props.tempMembers} />
-                    )
-                })
-        }
-        if(this.props.viewDeptAuthList){
-            viewDeptAuthListComponent = 
-                this.props.viewDeptAuthList.map(dept => 
-                {   
-                    // this.getHasChildren(dept.deptCode)
-                    return(
-                        <Dept clickCheckBox = {this.props.clickCheckBox} deptCode = {dept.deptCode} deptName = {dept.deptName} master = {this.props.master} hasChildren = {true} oldMembers = {this.props.oldMembers} isAllChecked = {this.props.isAllChecked} tempMembers = {this.props.tempMembers} /> 
-                    )
-                })
-        }
         if (memberListType == 'chat' || this.props.members) {
             return (
                 <ul id="forMemberList">
@@ -125,10 +78,19 @@ class MemberList extends React.Component<Props, State>{
                         <span>Select All</span>
                     </div>
                     <ol ui-tree-nodes="" ng-model="docInfo.organ" ng-show="docInfo.organ.length > 0" className="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-not-empty">  
-                        {checkoutAuthListComponent}
-                        {viewAuthListComponent}
-                        {checkoutDeptAuthListComponent}
-                        {viewDeptAuthListComponent}
+                        {
+                            this.props.nodeList.map(node=>{
+                                if(node.type == "user" && node.status == "select"){
+                                    return(
+                                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} master = {this.props.master} member = {node} tempMembers = {this.props.tempMembers}/>
+                                    )
+                                }else if(node.type == "dept" && node.status == "select"){
+                                    return(
+                                    <Dept clickCheckBox = {this.props.clickCheckBox} clickExpandTree = {this.props.clickExpandTree} master = {this.props.master} oldMembers = {this.props.oldMembers} dept = {node} />
+                                    )
+                                }
+                            })
+                        }
                     </ol>
                 </React.Fragment>
             );
@@ -138,14 +100,16 @@ class MemberList extends React.Component<Props, State>{
                     {this.props.oldMembers.map(member => 
                     {
                         return(
-                           <MemberComponent type = {"selectedOld"}  clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} tempMembers = {this.props.tempMembers}/>
+                           <MemberComponent oldMember = {member}/>
                         )
                     })}
                     {
-                        this.props.tempMembers.map(member=>{
-                            return(
-                            <MemberComponent type = {"selectedTemp"} clickCheckBox = {this.props.clickCheckBox} userId = {member.userId} userName = {member.userName} master = {this.props.master} tempMembers = {this.props.tempMembers} />
-                            )
+                        this.props.nodeList.map(node=>{
+                            if(node.status == "selected"){
+                                return(
+                                    <MemberComponent clickCheckBox = {this.props.clickCheckBox} master = {this.props.master} member = {node} tempMembers = {this.props.tempMembers}/>
+                                )
+                            }
                         })
                     }
                 </ol>
