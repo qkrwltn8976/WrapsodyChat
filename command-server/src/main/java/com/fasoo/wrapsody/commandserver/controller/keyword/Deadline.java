@@ -13,7 +13,7 @@ public class Deadline {
     Date date;
     long timestamp;
 
-    public Deadline(String[] cmd) throws ParseException {
+    public Deadline(String[] cmd){
         List <String> date = new ArrayList<String>();
         sliceDate(cmd[1], date);
         if(date.size() == 3){
@@ -22,7 +22,7 @@ public class Deadline {
                 date.set(0,"20"+date.get(0));
             }
             String d = date.get(0)+"-"+date.get(1)+"-"+date.get(2);
-            this.date = format.parse(d + " 11:59:59");
+//            this.date = format.parse(d + " 11:59:59");
             timestamp = this.date.getTime();
             System.out.println(this.date);
         }

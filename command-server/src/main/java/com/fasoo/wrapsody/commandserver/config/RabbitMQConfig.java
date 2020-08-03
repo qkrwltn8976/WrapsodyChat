@@ -1,6 +1,5 @@
 package com.fasoo.wrapsody.commandserver.config;
 
-import com.fasoo.wrapsody.commandserver.service.RabbitMQListener;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -14,20 +13,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
-    @Value("${fasoo.wrapsody.rabbitmq.queue}")
-    String queueName;
+    private static final String queueName = "spring-boot";
 
-    @Value("${fasoo.wrapsody.rabbitmq.exchange}")
-    String exchange;
-
-    @Value("${fasoo.wrapsody.rabbitmq.routingkey}")
-    private String routingkey;
-
-    @Value("${spring.rabbitmq.username}")
-    String username;
-
-    @Value("${spring.rabbitmq.password}")
-    private String password;
+    private static final String topicExchangeName = "chat";
 
     @Bean
     Queue queue() {
@@ -36,31 +24,25 @@ public class RabbitMQConfig {
 
     @Bean
     TopicExchange exchange() {
-        return new TopicExchange(exchange);
+        return new TopicExchange(topicExchangeName);
     }
 
     @Bean
     Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(routingkey);
+        return BindingBuilder.bind(queue).to(exchange).with("chat.#");
     }
+
     @Bean
-    public MessageConverter jsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
-    @Bean
-    public AmqpTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(jsonMessageConverter());
+    RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory,
+                                  MessageConverter messageConverter) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(messageConverter);
         return rabbitTemplate;
     }
 
-    //create MessageListenerContainer using default connection factory
     @Bean
-    MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory ) {
-        SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
-        simpleMessageListenerContainer.setConnectionFactory(connectionFactory);
-        simpleMessageListenerContainer.setQueues(queue());
-        simpleMessageListenerContainer.setMessageListener(new RabbitMQListener());
-        return simpleMessageListenerContainer;
+    MessageConverter messageConverter() {
+        return new Jackson2JsonMessageConverter();
     }
+
 }

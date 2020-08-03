@@ -24,8 +24,10 @@ interface Props{
 interface State{
     isExpanded : boolean,
     isChecked: boolean,
+    onlyCheck: boolean,
     uuid: string,
     childNodes: Nodes[],
+    memberIsChecked:boolean,
 }
 
 class Dept extends React.Component<Props, State>{
@@ -34,50 +36,76 @@ class Dept extends React.Component<Props, State>{
         this.state = {
             isExpanded: false,
             isChecked: false,
+            onlyCheck: false,
             uuid: v4(),
             childNodes : [],
+            memberIsChecked: false,
         }
+        this.changeIsChecked = this.changeIsChecked.bind(this);
     }
 
     componentDidMount() {
         subscribe(client, store.get("username"), this.state.uuid, (obj:any) =>{
             let payload = obj.payload;
             if(payload){
-                this.setState({
-                    childNodes: payload.Nodes
-                })
+                if(this.state.onlyCheck){
+                    this.setState({
+                        childNodes: payload.Nodes
+                    },this.changeIsChecked) 
+                }else{
+                    this.setState({
+                        childNodes: payload.Nodes
+                    }) 
+                }
+                
             }
         })
     }
 
     expandTree = (deptCode : any) => {
+        // console.log(e.target)
         publishApi(client, 'api.organ.tree', store.get("username"), this.state.uuid, {"root": "N", "path": deptCode})
         this.setState({
-            isExpanded : !this.state.isExpanded
+            isExpanded : !this.state.isExpanded,
+            onlyCheck: false,
         })
     }
+    ////// 부서 클릭
+    expandTreeAndClick = (deptCode : any)=> {
+        publishApi(client, 'api.organ.tree', store.get("username"), this.state.uuid, {"root": "N", "path": deptCode})
+        this.setState({
+            isChecked: !this.state.isChecked,
+            onlyCheck: true,
+        })
+    }
+    
+    changeIsChecked = () => {
+        let newMembers = [];
+        if(this.state.childNodes){
+            this.state.childNodes.map(node =>{
+                if(node.type == "user"){
+                    console.log("node.type"+ node.type + "node.userName" + node.columnText)
+                    let newMember : TreeMember;
+                    newMember = {userId: node.value, userName : node.columnText, password : "", type: node.type, isChecked:true};
+                    newMembers.push(newMember);
+                    console.log(newMembers)
+                    this.setState({
+                        memberIsChecked: true,
+                    })
+                }
+            })
+        }
+        this.props.clickCheckBox("Dept", this.state.isChecked, newMembers);
+    }
 
-   
-    // changeIsChecked = (e) => {
-    //     e.preventDefault()
-    //     let newMember : TreeMember[];
-        
-    //     this.setState({
-    //         isChecked : !this.state.isChecked
-    //     },this.props.clickCheckBox("Member", this.state.isChecked, newMember,e))
-    // }
-    // deleteFromSelected = (e) => {
-    //     e.preventDefault()
-    //     let newMember : TreeMember[];
-    //     newMember = [{
-    //         userId : this.props.userId,
-    //         userName : this.props.userName,
-    //         password : null,
-    //     }]
-    //     this.setState({
-    //         isChecked : true
-    //     },this.props.clickCheckBox("Member", true, newMember,e))
-    // }
+    deleteFromSelected = (e) => {
+        e.preventDefault()
+        let newMember : TreeMember[];
+
+        this.setState({
+            isChecked : true
+        },this.props.clickCheckBox("Member", true, newMember,e))
+    }
 
     
     render(){
@@ -91,7 +119,7 @@ class Dept extends React.Component<Props, State>{
                 }
                 if(node.parentCode == this.props.deptCode && node.type == "user"){
                     return(
-                        <MemberComponent type = {"select"} clickCheckBox = {this.props.clickCheckBox} userId = {node.value} userName = {node.columnText} master = {this.props.master} oldMembers = {this.props.oldMembers}isAllChecked = {this.props.isAllChecked} tempMembers = {this.props.tempMembers}/>
+                        <MemberComponent type = {"select"} clickCheckBox = {this.props.clickCheckBox} userId = {node.value} userName = {node.columnText} master = {this.props.master} oldMembers = {this.props.oldMembers}isAllChecked = {this.props.isAllChecked} tempMembers = {this.props.tempMembers} memberIsChecked = {this.state.memberIsChecked}/>
                     )
                    
                 }
@@ -108,7 +136,7 @@ class Dept extends React.Component<Props, State>{
                     <span ng-style="node.type === 'dept' &amp;&amp; !node.hasChildren &amp;&amp; {'visibility': 'hidden'}" style = {triangleVisibility}>
                         <input type="checkbox" id={checkboxId} ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)" checked = {this.state.isChecked}/>
                         <label htmlFor={checkboxId} data-nodrag="">
-                            <i className="icon_checkbox" ng-class="{disabled: node.disabled}" onClick={}></i>
+                            <i className="icon_checkbox" ng-class="{disabled: node.disabled}" onClick={(e) => this.expandTreeAndClick(this.props.deptCode)}></i>
                         </label>
                     </span>
                     <span className="wrapmsgr_treeicon ng-scope" data-nodrag="" ng-click="toggleOrgan(this)" ng-if="node.type === 'dept'" ng-style="!node.hasChildren &amp;&amp; {'visibility': 'hidden', 'cursor': 'auto'}" onClick = {(e) => this.expandTree(this.props.deptCode)} style = {triangleVisibility}>

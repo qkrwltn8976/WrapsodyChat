@@ -20,6 +20,7 @@ interface inviteState{
     convoId: string,
     docName: string,
     master: TreeMember,
+    tempDepts: TreeMember[],
     tempMembers: TreeMember[],
     oldMembers: TreeMember[],
     viewAuthAllUsers: boolean,
@@ -47,6 +48,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
             checkoutDeptAuthList: [],
             viewAuthList: [],
             viewDeptAuthList: [],
+            tempDepts:[],
             tempMembers:[],
             oldMembers:[],
             isAllChecked: false,
@@ -88,24 +90,27 @@ class Invite extends React.Component<inviteProps, inviteState>{
         }  
     }
     
-    clickCheckBox = (checkBoxType: string, isChecked:boolean, newMembers: TreeMember[]) =>{
+    clickCheckBox = (checkBoxType: string, isChecked:boolean, newMembers: TreeMember[], ...newDepts: TreeMember[]) =>{
         
         if(checkBoxType == "All"){
             
         }else if(checkBoxType == "Member" && newMembers){
             if(!isChecked){
-                if(this.state.tempMembers.length == 0){
-                    this.setState({
-                        tempMembers: newMembers
-                    })
-                }else{
-                    this.setState({
-                        tempMembers: this.state.tempMembers.concat(newMembers),
-                    })
-                }
+                this.setState({
+                    tempMembers: this.state.tempMembers.concat(newMembers),
+                })
+                this.setState(prevState =>({
+                   checkoutAuthList:{
+                       ...prevState.checkoutAuthList,
+                        isChecked: true
+                   },
+                   viewAuthList:{
+                       ...prevState.viewAuthList,
+                       isChecked: true
+                   } 
+                }))
             }else{
                 const idx = this.state.tempMembers.findIndex( obj => obj.userName === newMembers[0].userName) 
-                
                 if (idx > -1) {
                     this.state.tempMembers.splice(idx,1)
                     this.setState({
@@ -115,11 +120,36 @@ class Invite extends React.Component<inviteProps, inviteState>{
             }
            
         }else if(checkBoxType == "Dept"){
-           
+            console.log("-------------------Dept-------------------")
+            console.log(isChecked)
+            if(isChecked && newDepts && newMembers){
+                this.setState({
+                    tempMembers: this.state.tempMembers.concat(newMembers),
+                    tempDepts : this.state.tempDepts.concat(newDepts),
+                })
+            }else if(isChecked && newMembers){
+                this.setState({
+                    tempMembers: this.state.tempMembers.concat(newMembers),
+                })
+            }
+            else if(!isChecked && newMembers){
+                newMembers.map(member=>{
+                    const idxM = this.state.tempMembers.findIndex( obj => obj.userId === member.userId) 
+                    if (idxM > -1) {
+                        this.state.tempMembers.splice(idxM,1)
+                        this.setState({
+                            tempMembers: this.state.tempMembers
+                        })
+                    }
+                })
+                
+            }
         }
     }
 
     render(){
+        console.log("nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
+        console.log(this.state.tempMembers)
         let aside, viewModeClass;
         var organ_tree_calc_width = { width: 'calc(100% - 300px)' };
         return(

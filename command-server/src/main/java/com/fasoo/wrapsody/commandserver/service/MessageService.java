@@ -10,7 +10,7 @@ public class MessageService {
     public static CustomMessage setMessage(String body) {
         JSONObject obj = new JSONObject(body);
         System.out.println(obj.getString("body"));
-        message = new CustomMessage(obj.getLong("messageId"), obj.getString("sendUserId"), obj.getString("recvConvoId"), obj.getString("body"), obj.getInt("messageType"), obj.getLong("createdAt"), obj.getLong("updatedAt"));
+        message = new CustomMessage(obj.getLong("createdAt"),(obj.getLong("updatedAt")), obj.getLong("messageId"), obj.getString("sendUserId"), obj.getString("recvConvoId"), obj.getString("body"), obj.getInt("messageType"));
         return message;
 
     }
