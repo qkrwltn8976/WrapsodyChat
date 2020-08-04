@@ -1475,6 +1475,20 @@ div.wrapmsgr_container * {
 	float: right;
 }
 
+.icon_delete {
+	position: absolute;
+    top: 15px;
+    right: 30px;
+}
+
+.wrapmsgr_deadline {
+	background-color: #fafbfc;
+	color: #3e3f42;
+	white-space: pre-wrap;
+	float: right;
+    display: inline-block;
+}
+
 @keyframes pulse {
 	0% {
 		transform: scale(0.95);

@@ -10,6 +10,7 @@ import { subscribe, publishApi, publishChat, client } from '../../../libs/stomp'
 import { v4 } from "uuid"
 import * as type from '@/renderer/libs/enum-type';
 import IntentList from '@/renderer/app/components/IntentList';
+import { getDate } from '@/renderer/libs/timestamp-converter';
 
 const Store = require('electron-store')
 const store = new Store()
@@ -30,6 +31,7 @@ interface RoomState {
     eom: boolean; // end of message
     prevScrollHeight: number;
     topMsgId: number;
+    bookmarkStart?: number;
 }
 
 class ChatRoom extends React.Component<RoomProps, RoomState> {
@@ -163,15 +165,27 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                             this.setState(prevState => ({
                                 convo: {
                                     ...prevState.convo,
-                                    bookmarkStatus: 1
-                                }
+                                    bookmark: true,
+                                },
+                                bookmarkStart: Date.now()
                             }));
+                            publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": true});
+                            
                             console.log('북마크 시작')
                         } else if(obj.messageType == type.Command.BOOKMARK_STOP) {
                             this.setState(prevState => ({
                                 convo: {
                                     ...prevState.convo,
-                                    bookmarkStatus: 0
+                                    bookmark: false
+                                }
+                            }));
+                            publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": false});
+                            publishApi(client, 'api.conversation.bookmark.create', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "북마크 "+ getDate(Date.now()), "startAt": this.state.bookmarkStart, "endAt": obj.createdAt-1})
+                        } else if(obj.messageType === type.Command.DEADLINE) {
+                            this.setState(prevState => ({
+                                convo: {
+                                    ...prevState.convo,
+                                    deadline: obj.body
                                 }
                             }))
                         }
@@ -206,9 +220,10 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
         else {
             viewModeClass = 'doc-chatroom'
             aside = <React.Fragment>
-                <InfoHeader convoType={this.state.convo.convoType} convoId={this.state.convo.convoId} docName={this.state.convo.name} memberCount={this.state.convo.memberCount} notificationType={this.state.convo.notificationType} setNotification={this.setNotification} />
+                <InfoHeader convoType={this.state.convo.convoType} convoId={this.state.convo.convoId} docName={this.state.convo.name} memberCount={this.state.convo.memberCount} notificationType={this.state.convo.notificationType} setNotification={this.setNotification} deadline={this.state.convo.deadline} />
                 <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
-                    <SearchBar search={this.state.search} setSearch={this.setSearch} /><MemberList search={this.state.search} convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} members={this.state.members} />
+                    <SearchBar search={this.state.search} setSearch={this.setSearch} />
+                    <MemberList search={this.state.search} convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} members={this.state.members} />
                 </div></React.Fragment>
         }
 
@@ -217,7 +232,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                 <div id="wrapmsgr" className="ng-scope">
                     <div id="wrapmsgr_body" ng-controller="WrapMsgrController" className="wrapmsgr_container ng-scope" data-ws="ws://ecm.dev.fasoo.com:9500/ws" data-vhost="/wrapsody-oracle" data-fpns-enabled="true" data-weboffice-enabled="true">
                         <div className="wrapmsgr_chat wrapmsgr_state_normalize wrapmsgr_viewmode_full" ng-class="[chatroomState, viewModeClass, {false: 'disabled'}[loggedIn]]" ng-show="current.convo">
-                            <Header convoId={this.state.convo.convoId} docName={this.state.convo.name} headerType={HeaderType.CHAT} bookmarkStatus={this.state.convo.bookmarkStatus}/>
+                            <Header convoId={this.state.convo.convoId} docName={this.state.convo.name} headerType={HeaderType.CHAT} bookmark={this.state.convo.bookmark}/>
                             <div className={"wrapmsgr_content  wrapmsgr_viewmode_full " + viewModeClass}>
                                 {aside}
                                 <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass" id="DocumentChat">

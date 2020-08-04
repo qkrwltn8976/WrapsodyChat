@@ -22,11 +22,13 @@ interface Props{
     notificationType?: number;
     setNotification?:any
     tempMembers?: TreeMember[],
+    deadline?: string
 }
 
 interface ShowState{
     isShow: boolean;
-    uuid:string;   
+    uuid:string;  
+    deadline?: string; 
 }
 
 
@@ -39,6 +41,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
         this.state = ({
             isShow: false,
             uuid: v4(),
+            deadline: this.props.deadline
         }); 
         
     }
@@ -152,6 +155,14 @@ class InfoHeader extends React.Component<Props, ShowState>{
             return "icon_bell";
         } 
     }
+
+    getDeadline() {
+        if(this.props.deadline) {
+            return(
+                <div className="wrapmsgr_deadline">마감  {this.props.deadline}</div>
+            )
+        }
+    }
     
     render(){
 
@@ -165,7 +176,9 @@ class InfoHeader extends React.Component<Props, ShowState>{
             pNum = language.ko.pNum
         if(store.get("language") === "en-US")
             pNum = language.en.pNum
-
+        
+        let deadline = this.getDeadline();
+       
         const {convoType} = this.props;
         if( convoType === ConvoType.DOC){
             return (
@@ -175,6 +188,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
                             <i className={getDocType(this.props.docName)}>            <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i>
                         </document-icon>
                         <div className="chatroom-name ng-binding" title="Sample Text .DotInMiddle.txt">{this.props.docName}</div>
+                        {deadline}
                         <div className="chatroom-size ng-binding">3.5KB</div>
                     </div>
                     <div className="chatroom-user">

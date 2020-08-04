@@ -301,9 +301,8 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     componentDidUpdate = () => {
         // 처음 채팅방에 접속했을 경우
         if (this.state.msgs.length <= 20) {
-            if(this.props.isBookmark) {
+            if(this.props.isBookmark && !this.props.eom) {
                 this.scrollView.current.scrollTop = 0;
-                console.log('0000')
             }
                
             else

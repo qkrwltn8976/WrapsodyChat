@@ -7,7 +7,7 @@ interface Props{
     docName?: string; // 채팅방 생성 헤더에서만 docName필요 나머지는 null
     headerType: string;
     convoId?: String;
-    bookmarkStatus?: number;
+    bookmark?: boolean;
 }
 // header가 받는 Props설정
 // 기존 javascript에서의 react props? 재사용을 위해서 내가 커스텀을 진행할 수 있도록 값을 props로 전달
@@ -19,7 +19,7 @@ class Header extends React.Component<Props>{
     } // 생성자
     
     getRecordIcon = () => {
-        if(this.props.bookmarkStatus===1) {
+        if(this.props.bookmark) {
             return(
             <span className="record-box"><div className="blob"></div>
             <h6  className="record">RECORDING...</h6></span>

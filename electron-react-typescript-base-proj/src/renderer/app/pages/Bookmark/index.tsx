@@ -20,12 +20,13 @@ interface BookmarkState {
     msgs: Message[],
     uuid: string,
     bookmark: Bookmark;
+    eom: boolean;
 }
 
 class BookmarkPage extends React.Component<BookmarkProps, BookmarkState> {
 
     getTopMsgs = (bookmark: Bookmark) => {
-        this.setState({bookmark});
+        this.setState({ bookmark });
         publishApi(client, 'api.message.list', store.get("username"), this.state.uuid, {
             convoId: bookmark.convoId,
             afterAt: bookmark.startAt,
@@ -34,12 +35,18 @@ class BookmarkPage extends React.Component<BookmarkProps, BookmarkState> {
     }
 
     getBottomMsgs = () => {
-        
+
         publishApi(client, 'api.message.list', store.get("username"), this.state.uuid, {
             convoId: this.state.bookmark.convoId,
-            afterAt: this.state.msgs[this.state.msgs.length-1].createdAt,
-            beforeAt: this.state.bookmark.stopAt+1,
+            afterAt: this.state.msgs[this.state.msgs.length - 1].createdAt,
+            beforeAt: this.state.bookmark.endAt + 1,
             direction: "forward"
+        });
+    }
+
+    deleteBookmark = (bookmarkId: string) => {
+        publishApi(client, 'api.conversation.bookmark.delete', store.get("username"), this.state.uuid, {
+            bookmarkId
         });
     }
 
@@ -48,12 +55,10 @@ class BookmarkPage extends React.Component<BookmarkProps, BookmarkState> {
         this.state = ({
             msgs: [],
             uuid: v4(),
-            bookmarks: [{ bookmarkId: '1112', startAt: 1537353662791, stopAt: 1595406890309, convoId: "575278f3d2b044b5878bafa090fda89c", name: "주간회의" },
-            { bookmarkId: '1113', startAt: 1572934291874, stopAt: 1596434666008, convoId: "f190777042544acc8d57e6e186472bbf", name: "주간회의2" },
-            { bookmarkId: '1114', startAt: 1545036452927, stopAt: 1594685339030, convoId: "75884945f8334afeb011dbc9fc374b57", name: "주간회의3" }
-            ],
-            bookmark: {convoId:this.props.match.params.convo,bookmarkId:"1", startAt:0, stopAt:0}
-        })
+            bookmarks: [],
+            bookmark: { convoId: this.props.match.params.convo, bookmarkId: "1", startAt: 0, endAt: 0, createdAt: 0, updatedAt: 0 },
+            eom: false
+        });
 
     }
 
@@ -65,16 +70,41 @@ class BookmarkPage extends React.Component<BookmarkProps, BookmarkState> {
                 if (payload) {
                     console.log(payload.Messages)
                     if (payload.Messages && payload.direction === 'forward') {
+                        let eom = false;
+                        if(payload.Messages.length < 20) {
+                            eom = true;
+                        }
                         this.setState({
-                            msgs: (payload.beforeAt ? this.state.msgs.concat(payload.Messages) :  payload.Messages),
+                            msgs: (payload.beforeAt ? this.state.msgs.concat(payload.Messages) : payload.Messages),
+                            eom
+                        });
+                    }
+                    console.log(payload.ConversationBookmarks)
+                    if(payload.ConversationBookmarks) {
+
+                        this.setState({
+                            bookmarks: payload.ConversationBookmarks
+                        });
+                    }
+
+                    if(obj.type && obj.type==='CONVERSATION_BOOKMARK_DELETED') {
+                        let index = this.state.bookmarks.indexOf(payload.messageId);
+                        let bookmarks = this.state.bookmarks.splice(index, 1);
+                        this.setState({
+                            bookmarks
                         });
                     }
                 }
+            });
+
+            publishApi(client, 'api.conversation.bookmark.list', store.get("username"), this.state.uuid, {
+                convoId: this.props.match.params.convo
             });
         }
     }
 
     render() {
+        console.log(this.state.bookmarks)
         return (<React.Fragment>
             <div id="wrapmsgr" className="ng-scope">
                 <div id="wrapmsgr_body" ng-controller="WrapMsgrController" className="wrapmsgr_container ng-scope" data-ws="ws://ecm.dev.fasoo.com:9500/ws" data-vhost="/wrapsody-oracle" data-fpns-enabled="true" data-weboffice-enabled="true">
@@ -82,11 +112,11 @@ class BookmarkPage extends React.Component<BookmarkProps, BookmarkState> {
                         <Header convoId={this.state.bookmark.convoId} docName="북마크" headerType={type.HeaderType.CHAT} />
                         <div className="wrapmsgr_content  wrapmsgr_viewmode_full wrapmsgr_chatbot">
                             <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
-                                <BookmarkList bookmarks={this.state.bookmarks} getMsgs={this.getTopMsgs} />
+                                <BookmarkList bookmarks={this.state.bookmarks} getMsgs={this.getTopMsgs} deleteBookmark={this.deleteBookmark}/>
 
                             </div>
                             <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass" id="DocumentChat">
-                                <MsgList msgs={this.state.msgs} isBookmark={true} getBottomMsgs={this.getBottomMsgs} />
+                                <MsgList msgs={this.state.msgs} isBookmark={true} getBottomMsgs={this.getBottomMsgs} eom={this.state.eom} />
                             </div>
                         </div>
                     </div>
