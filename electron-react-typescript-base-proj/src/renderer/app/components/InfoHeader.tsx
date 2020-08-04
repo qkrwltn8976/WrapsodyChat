@@ -66,7 +66,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
             frame: false,
         })
         bookmarkWindow.loadURL(
-            __dirname + "/index.html#/bookmark/"+this.props.convoId
+            "file://"+ __dirname + "/index.html#/bookmark/"+this.props.convoId
         );
         bookmarkWindow.show();
     }
@@ -132,7 +132,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
             frame: false,
         })
         inviteWindow.loadURL(
-            __dirname + "/index.html#/invite/"+this.props.convoId
+            "file://"+ __dirname + "/index.html#/invite/"+this.props.convoId
         );
         inviteWindow.show();
     }
