@@ -263,9 +263,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
         let height = this.scrollView.current.scrollHeight-this.scrollView.current.clientHeight;
         let scrollTop = this.scrollView.current.scrollTop;
-        console.log(scrollTop)
 
-        console.log(height)
         if (scrollTop === 0 && !this.props.isBookmark) {
             // 메세지 최상단까지 스크롤 할 경우 api 호출
             this.props.getMsgs();
@@ -303,8 +301,11 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     componentDidUpdate = () => {
         // 처음 채팅방에 접속했을 경우
         if (this.state.msgs.length <= 20) {
-            if(this.props.isBookmark) 
+            if(this.props.isBookmark) {
                 this.scrollView.current.scrollTop = 0;
+                console.log('0000')
+            }
+               
             else
                 this.messagesScrollToBottom();
         }
