@@ -122,6 +122,10 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
 
                     if (payload.Conversation && payload.Messages) {
                         // console.log(payload.Conversation)
+                        let eom = false;
+                        if(payload.Messages.length < 20) {
+                            eom = true;
+                        }
                         this.setState({
                             convo: {                
                                 convoId: this.props.match.params.convo,
@@ -137,7 +141,8 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                                 createdAt: payload.Conversation.createdAt,
                                 updatedAt: payload.Conversation.updatedAt,},
                             msgs: payload.Messages,
-                            topMsgId: payload.Messages[payload.Messages.length-1].messageId
+                            topMsgId: payload.Messages[payload.Messages.length-1].messageId,
+                            eom
                         })
                     }
 
