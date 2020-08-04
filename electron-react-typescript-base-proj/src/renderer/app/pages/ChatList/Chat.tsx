@@ -67,7 +67,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
         )
         // // and load the index.html of the app.
         chatWindow.loadURL(
-            __dirname+"/index.html#/chatroom/"+convoId+"/"+unread+"/"+readAt          
+            "file://"+__dirname+"/index.html#/chatroom/"+convoId+"/"+unread+"/"+readAt          
         );
 
         chatWindow.setTitle(name)

@@ -17,7 +17,7 @@ async function handleClick (userinfo: any, uuid:string, lang:string){
 
     client.onConnect=()=>{
         var win  = remote.getCurrentWindow()
-        win.loadURL(__dirname+"/index.html#/chatlist/")
+        win.loadURL("file://"+__dirname+"/index.html#/chatlist/")
     }
 }
 
