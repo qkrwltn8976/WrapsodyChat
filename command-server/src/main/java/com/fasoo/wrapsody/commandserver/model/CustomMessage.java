@@ -27,6 +27,16 @@ public class CustomMessage {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+
+    public CustomMessage(CustomMessage cm, String body, int messageType){
+        this.messageId = cm.getMessageId()+1;
+        this.sendUserId = "@SYS@";
+        this.recvConvoId = cm.getRecvConvoId();
+        this.body = body;
+        this.messageType = messageType;
+        this.createdAt = cm.getCreatedAt();
+        this.updatedAt = cm.getUpdatedAt();
+    }
     @Override
     public String toString() {
         return"{" +
