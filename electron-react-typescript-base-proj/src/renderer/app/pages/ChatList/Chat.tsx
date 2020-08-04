@@ -65,6 +65,8 @@ class Chat extends Component<ChatListProps, ChatListState> {
                 icon: __dirname + './public/icon_bot_wrapsody.png'
             }
         )
+        console.log('===================')
+        console.log(chatWindow.loadURL)
         // // and load the index.html of the app.
         chatWindow.loadURL(
             __dirname+"/index.html#/chatroom/"+convoId+"/"+unread+"/"+readAt          
