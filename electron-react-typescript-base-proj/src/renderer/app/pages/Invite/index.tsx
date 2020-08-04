@@ -109,37 +109,16 @@ class Invite extends React.Component<inviteProps, inviteState>{
         }  
     }
 
-    clickExpandTree = (deptCode : string, isExpanded) => {
-        let newValue = !isExpanded
-        const idx = this.state.nodeList.findIndex( obj => obj.id === deptCode)
-        this.setState({
-            nodeList : update(
-                this.state.nodeList,
-                {
-                    [idx]:{
-                        isExpanded : {$set: newValue}
-                    }
-                }
-            )
-        })
-    }
 
-    clickMember = (isChecked : string, newMembers: TreeMember)=>{
-        if(!isChecked){
+    clickMember = (isChecked : boolean, newMembers: TreeMember[])=>{
+        if(isChecked && newMembers){ // true
             this.setState({
                 tempMembers: this.state.tempMembers.concat(newMembers),
             })
-            this.setState(prevState =>({
-               checkoutAuthList:{
-                   ...prevState.checkoutAuthList,
-                    isChecked: true
-               },
-               viewAuthList:{
-                   ...prevState.viewAuthList,
-                   isChecked: true
-               } 
-            }))
-        }else{
+            console.log("**********************************")
+            console.log(this.state.tempMembers)
+        }else{ // false
+            console.log("설마 여기서 다 잘라버리는건 아니겠지?!")
             const idx = this.state.tempMembers.findIndex( obj => obj.userName === newMembers[0].userName) 
             if (idx > -1) {
                 this.state.tempMembers.splice(idx,1)
@@ -148,34 +127,45 @@ class Invite extends React.Component<inviteProps, inviteState>{
                 })
             }
         }
+        console.log("clickMember호출함!!!!!!!!!!!!!!!!!!!!!" + isChecked)
+        console.log(newMembers)
+        console.log(this.state.tempMembers)
     }
 
-    clickCheckBox = (checkBoxType: string, id: string, status: string, nodes: Node[]) =>{
-        
-        if(checkBoxType == "All"){
-            
-        }else if(checkBoxType == "Member"){
-            
-        }else if(checkBoxType == "Dept"){
-            if(status == "selected"){ //체크해제 
-
-            }else if(status == "select"){ // 체크 -> 멤버는 select -> selected로 바꾸고 / 부서는 클릭
-                // nodes.map(node=>{
-                //     if(node.type == "user"){
-
-                //     }
-                // })
-                // this.setState({
-                //     nodeList : update(
-                //         this.state.nodeList,
-                //         {
-                //             [idx]:{
-                //                 status : {$set: "selected"}
-                //             }
-                //         }
-                //     )
-                // })
+    clickDept = (id: string, isChecked: boolean, nodes: Node[]) =>{
+        console.log("clickDept호출됨" + id + "/" + isChecked)
+        if(isChecked == true){ // 체크 -> 멤버 tempMember에 넣어
+            console.log("-------------------true--------------------")
+            console.log(nodes)
+            var newMembers: TreeMember[];
+            newMembers = [];
+            nodes.map(node=>{
+                console.log("-------------------map--------------------")
+                if(node.type == "user"){
+                    var newMember: TreeMember[];
+                    newMember = [{
+                        userId : node.id,
+                        userName : node.name,
+                        password : null,
+                    }]
+                    newMembers = newMembers.concat(newMember)
+                    console.log("-------------------tempMember--------------------")
+                    console.log(newMembers)
+                }
+            })
+            this.setState({
+                tempMembers: this.state.tempMembers.concat(newMembers)
+            })
+        }else if(isChecked == false){ // 체크해제
+           nodes.map(node=>{
+            const idx = this.state.tempMembers.findIndex( obj => obj.userId === node.id) 
+            if (idx > -1) {
+                this.state.tempMembers.splice(idx,1)
+                this.setState({
+                    tempMembers: this.state.tempMembers
+                })
             }
+           })
         }
     }
 
@@ -184,6 +174,8 @@ class Invite extends React.Component<inviteProps, inviteState>{
         var organ_tree_calc_width = { width: 'calc(100% - 300px)' };
         console.log("............................................nodeList............................................")
         console.log(this.state.nodeList)
+        console.log("tempMembers초기값 뭐가 들어가는지")
+        console.log(this.state.tempMembers)
         return(
             aside = <React.Fragment>
                 <div id="wrapmsgr" className="ng-scope">
@@ -196,10 +188,10 @@ class Invite extends React.Component<inviteProps, inviteState>{
                                         <InfoHeader convoType= {ConvoType.IC} memberCount = {this.state.oldMembers.length} docName = {this.state.docName} tempMembers = {this.state.tempMembers}/>
                                         <div className="group">
                                             <div className="wrapmsgr_organ_tree ng-scope angular-ui-tree" ui-tree="organTreeOptions" data-clone-enabled="true" data-nodrop-enabled="true" data-drag-delay="100" style = {organ_tree_calc_width}>
-                                                <MemberList memberListType = {MemberListType.SELECT} clickCheckBox = {this.clickCheckBox} clickExpandTree = {this.clickExpandTree} oldMembers = {this.state.oldMembers}  master = {this.state.master} nodeList = {this.state.nodeList} tempMembers = {this.state.tempMembers}/>
+                                                <MemberList memberListType = {MemberListType.SELECT} clickMember = {this.clickMember} clickDept = {this.clickDept} oldMembers = {this.state.oldMembers}  master = {this.state.master} nodeList = {this.state.nodeList} tempMembers = {this.state.tempMembers}/>
                                             </div>    
                                             <div className="wrapmsgr_organ_tree right-list-col ng-scope angular-ui-tree" ui-tree="inviteTreeOptions">
-                                                <MemberList memberListType = {MemberListType.SELECTED} clickCheckBox = {this.clickCheckBox} oldMembers = {this.state.oldMembers} master = {this.state.master} nodeList = {this.state.nodeList}/>
+                                                <MemberList memberListType = {MemberListType.SELECTED} clickMember = {this.clickMember} clickDept = {this.clickDept} oldMembers = {this.state.oldMembers} master = {this.state.master} tempMembers = {this.state.tempMembers}/>
                                             </div>
                                         </div>
                                     </div>

@@ -23,8 +23,8 @@ interface Props {
     search?:string;
     members?: Member[];
     treeData?: any;
-    clickCheckBox? : any;
-    clickExpandTree?: any;
+    clickMember?: any;
+    clickDept? : any;
     viewAuthAllUsers?: boolean;
     oldMembers?: TreeMember[];
     master?: TreeMember;
@@ -73,7 +73,7 @@ class MemberList extends React.Component<Props, State>{
                     <div className="wrapmsgr_organ_tree_header">
                         <input type="checkbox" id="manage_doc_room_select_all" ng-disabled="!loggedIn || organTreeOptions.disabled" ng-checked="checkAllMembers()" ng-click="toggleAllMembers($event)" checked = {this.props.isAllChecked}/>
                         <label htmlFor="manage_doc_room_select_all">
-                            <i className="icon_checkbox" ng-class="{disabled: organTreeOptions.disabled}" onClick={this.props.clickCheckBox("All")}></i>
+                            <i className="icon_checkbox" ng-class="{disabled: organTreeOptions.disabled}"></i>
                         </label>
                         <span>Select All</span>
                     </div>
@@ -82,11 +82,11 @@ class MemberList extends React.Component<Props, State>{
                             this.props.nodeList.map(node=>{
                                 if(node.type == "user" && node.status == "select"){
                                     return(
-                                        <MemberComponent clickCheckBox = {this.props.clickCheckBox} master = {this.props.master} member = {node} tempMembers = {this.props.tempMembers}/>
+                                        <MemberComponent clickMember = {this.props.clickMember} master = {this.props.master} member = {node} tempMembers = {this.props.tempMembers}/>
                                     )
                                 }else if(node.type == "dept" && node.status == "select"){
                                     return(
-                                    <Dept clickCheckBox = {this.props.clickCheckBox} clickExpandTree = {this.props.clickExpandTree} master = {this.props.master} oldMembers = {this.props.oldMembers} dept = {node} />
+                                        <Dept clickDept = {this.props.clickDept} clickMember = {this.props.clickMember} master = {this.props.master} oldMembers = {this.props.oldMembers} dept = {node} tempMembers = {this.props.tempMembers}/>
                                     )
                                 }
                             })
@@ -100,16 +100,14 @@ class MemberList extends React.Component<Props, State>{
                     {this.props.oldMembers.map(member => 
                     {
                         return(
-                           <MemberComponent oldMember = {member}/>
+                           <MemberComponent oldMember = {member} selectedMemberType = {"oldMembers"}/>
                         )
                     })}
                     {
-                        this.props.nodeList.map(node=>{
-                            if(node.status == "selected"){
-                                return(
-                                    <MemberComponent clickCheckBox = {this.props.clickCheckBox} master = {this.props.master} member = {node} tempMembers = {this.props.tempMembers}/>
-                                )
-                            }
+                        this.props.tempMembers.map(member=> {
+                            return(
+                                <MemberComponent tempMember = {member} clickMember = {this.props.clickMember} selectedMemberType = {"tempMembers"}/>
+                            )
                         })
                     }
                 </ol>
