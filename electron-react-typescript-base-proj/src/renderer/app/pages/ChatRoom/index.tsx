@@ -192,7 +192,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                                     ...prevState.convo,
                                     deadline: obj.body
                                 }
-                            }))
+                            }));
                         }
                         document.getElementById(this.state.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
 
@@ -216,6 +216,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
     render() {
         let sendMsg = this.sendMsg;
         let aside, viewModeClass;
+        console.log(this.state.convo.deadline)
         if (this.state.convo.convoType === type.ConvoType.BOT) {
             viewModeClass = 'wrapmsgr_chatbot'
             aside = <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
