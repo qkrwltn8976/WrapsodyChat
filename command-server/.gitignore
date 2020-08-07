@@ -1,6 +1,8 @@
 HELP.md
+./java_pid8872.hprof
 .gradle
 build/
+WrapsodyLib(rename to lib)
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -13,6 +15,7 @@ build/
 .settings
 .springBeans
 .sts4-cache
+.hprof
 
 ### IntelliJ IDEA ###
 .idea

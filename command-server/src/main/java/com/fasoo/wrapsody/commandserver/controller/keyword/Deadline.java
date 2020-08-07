@@ -12,6 +12,7 @@ public class Deadline {
 
 
     public String Deadline(String[] cmd){
+        //서버에 데드라인 정보 보낼때 사용
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date dt;
         long timestamp;

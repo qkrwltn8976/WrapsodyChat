@@ -11,7 +11,8 @@ public class Bookmark {
 
     public enum Function{
         START("start"),
-        STOP("stop");
+        STOP("stop"),
+        NAME("name");
 
         final private String name;
         private Function(String name){this.name = name;}
