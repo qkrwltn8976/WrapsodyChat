@@ -64,10 +64,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
     componentDidMount(){
        client.onConnect = () => {
             subscribe(client, store.get("username"), this.state.uuid, (obj:any) => {
-                
                 let payload = obj.payload;
-                console.log(payload)
-                
                 if(payload){
                     if(payload.Room){
                         this.setState({
@@ -101,6 +98,13 @@ class Invite extends React.Component<inviteProps, inviteState>{
                             oldMembers: payload.Members,
                         }) 
                     }
+                    if(payload.Nodes){
+                        console.log("payload!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                        console.log(payload)
+                        this.setState({
+                            childNodes: payload.Nodes,
+                        })
+                    }
                 }else{
                     
                 }// payload없으면...
@@ -112,13 +116,14 @@ class Invite extends React.Component<inviteProps, inviteState>{
 
     clickMember = (isChecked : boolean, newMembers: TreeMember[])=>{
         if(isChecked && newMembers){ // true
-            this.setState({
-                tempMembers: this.state.tempMembers.concat(newMembers),
-            })
-            console.log("**********************************")
-            console.log(this.state.tempMembers)
+            const idx = this.state.tempMembers.findIndex( obj => obj.userId === newMembers[0].userId)
+            const idx2 = this.state.oldMembers.findIndex( obj => obj.userId == newMembers[0].userId) 
+            if(idx == -1 && idx2 == -1){
+                this.setState({
+                    tempMembers: this.state.tempMembers.concat(newMembers),
+                })
+            }
         }else{ // false
-            console.log("설마 여기서 다 잘라버리는건 아니겠지?!")
             const idx = this.state.tempMembers.findIndex( obj => obj.userName === newMembers[0].userName) 
             if (idx > -1) {
                 this.state.tempMembers.splice(idx,1)
@@ -127,21 +132,21 @@ class Invite extends React.Component<inviteProps, inviteState>{
                 })
             }
         }
-        console.log("clickMember호출함!!!!!!!!!!!!!!!!!!!!!" + isChecked)
-        console.log(newMembers)
-        console.log(this.state.tempMembers)
+        
     }
 
     clickDept = (id: string, isChecked: boolean, nodes: Node[]) =>{
-        console.log("clickDept호출됨" + id + "/" + isChecked)
+       
         if(isChecked == true){ // 체크 -> 멤버 tempMember에 넣어
-            console.log("-------------------true--------------------")
-            console.log(nodes)
+           
             var newMembers: TreeMember[];
             newMembers = [];
             nodes.map(node=>{
-                console.log("-------------------map--------------------")
-                if(node.type == "user"){
+                const idx = this.state.tempMembers.findIndex( obj => obj.userId === node.id)
+                const idx2 = this.state.oldMembers.findIndex( obj => obj.userId == node.id)
+                console.log("id" + node.id + "idx" + idx + "idx2" + idx2) 
+                console.log(nodes)
+                if(node.type == "user" && idx == -1 && idx2 == -1){
                     var newMember: TreeMember[];
                     newMember = [{
                         userId : node.id,
@@ -149,8 +154,31 @@ class Invite extends React.Component<inviteProps, inviteState>{
                         password : null,
                     }]
                     newMembers = newMembers.concat(newMember)
-                    console.log("-------------------tempMember--------------------")
-                    console.log(newMembers)
+                }
+                else if(node.type == "dept"){
+                    console.log("하위부서 클릭!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    publishApi(client, 'api.organ.tree', store.get("username"), this.state.uuid, {"root": "N", "path": node.id})
+                    const idx = this.state.tempMembers.findIndex( obj => obj.userId === node.id)
+                    const idx2 = this.state.oldMembers.findIndex( obj => obj.userId == node.id)
+                    if(this.state.childNodes && this.state.childNodes.length > 0){
+                        console.log(this.state.childNodes)
+                        this.state.childNodes.map(node=>{
+                            if(node.type == "user" && idx == -1 && idx2 == -1){
+                                var newMember: TreeMember[];
+                                newMember = [{
+                                    userId : node.value,
+                                    userName : node.columnText,
+                                    password : null,
+                                }]
+                                newMembers = newMembers.concat(newMember)
+                            }
+                        })
+                        this.setState({
+                            tempMembers: this.state.tempMembers.concat(newMembers)
+                        })
+                        console.log("tempMember!!!!!!!!!!!!!!!!!!!!")
+                        console.log(this.state.tempMembers)
+                    }
                 }
             })
             this.setState({
@@ -172,10 +200,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
     render(){
         let aside, viewModeClass;
         var organ_tree_calc_width = { width: 'calc(100% - 300px)' };
-        console.log("............................................nodeList............................................")
-        console.log(this.state.nodeList)
-        console.log("tempMembers초기값 뭐가 들어가는지")
-        console.log(this.state.tempMembers)
+      
         return(
             aside = <React.Fragment>
                 <div id="wrapmsgr" className="ng-scope">
@@ -188,10 +213,10 @@ class Invite extends React.Component<inviteProps, inviteState>{
                                         <InfoHeader convoType= {ConvoType.IC} memberCount = {this.state.oldMembers.length} docName = {this.state.docName} tempMembers = {this.state.tempMembers}/>
                                         <div className="group">
                                             <div className="wrapmsgr_organ_tree ng-scope angular-ui-tree" ui-tree="organTreeOptions" data-clone-enabled="true" data-nodrop-enabled="true" data-drag-delay="100" style = {organ_tree_calc_width}>
-                                                <MemberList memberListType = {MemberListType.SELECT} clickMember = {this.clickMember} clickDept = {this.clickDept} oldMembers = {this.state.oldMembers}  master = {this.state.master} nodeList = {this.state.nodeList} tempMembers = {this.state.tempMembers}/>
+                                                <MemberList memberListType = {MemberListType.SELECT} clickMember = {this.clickMember} clickDept = {this.clickDept} oldMembers = {this.state.oldMembers}  master = {this.state.master} nodeList = {this.state.nodeList} />
                                             </div>    
                                             <div className="wrapmsgr_organ_tree right-list-col ng-scope angular-ui-tree" ui-tree="inviteTreeOptions">
-                                                <MemberList memberListType = {MemberListType.SELECTED} clickMember = {this.clickMember} clickDept = {this.clickDept} oldMembers = {this.state.oldMembers} master = {this.state.master} tempMembers = {this.state.tempMembers}/>
+                                                <MemberList memberListType = {MemberListType.SELECTED} clickMember = {this.clickMember} clickDept = {this.clickDept} oldMembers = {this.state.oldMembers} master = {this.state.master}/>
                                             </div>
                                         </div>
                                     </div>

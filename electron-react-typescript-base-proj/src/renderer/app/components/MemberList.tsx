@@ -4,13 +4,10 @@ import { getShortName } from '../../libs/messengerLoader';
 import { TreeMember } from '../../models/TreeMember';
 import { TreeDept } from '../../models/TreeDept';
 import { client , subscribe, publishApi } from '../../libs/stomp'
-import { v4 } from "uuid";
 import { MemberComponent, Dept } from '../components'
 import { Nodes } from '../../models/Nodes';
 import { Node } from '../../models/Node';
-
-const Store = require('electron-store')
-const store = new Store()
+import store from '../../../store';
 
 interface Group {
     longName: string;
@@ -33,25 +30,35 @@ interface Props {
     isDeptChecked?: boolean,
     childNodes?: any,
     nodeList?: Node[],
-    tempMembers?: TreeMember[],
+    // tempMembers?: TreeMember[],
 }
 
 interface State{
-    uuid: string,
+    tempMembers : TreeMember[]
 }
 
 
 class MemberList extends React.Component<Props, State>{
-    constructor(props: Props, state: State) {
-        super(props, state);
-        this.state = ({
-            uuid: v4(),
-        })
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            tempMembers: store.getState().tempMembers
+        }
+        store.subscribe(function(this:MemberList){
+            this.setState({ tempMembers: store.getState().tempMembers });
+        }.bind(this));
     }
-    
     render() {
+        
         const { memberListType, convoId} = this.props
-
+        let tempMembersComponent;
+        if(this.state.tempMembers && this.state.tempMembers.length > 0){
+            tempMembersComponent = this.state.tempMembers.map(member=> {
+                return(
+                    <MemberComponent tempMember = {member} clickMember = {this.props.clickMember} selectedMemberType = {"tempMembers"}/>
+                )
+            })
+        }
         if (memberListType == 'chat' || this.props.members) {
             return (
                 <ul id="forMemberList">
@@ -82,11 +89,11 @@ class MemberList extends React.Component<Props, State>{
                             this.props.nodeList.map(node=>{
                                 if(node.type == "user" && node.status == "select"){
                                     return(
-                                        <MemberComponent clickMember = {this.props.clickMember} master = {this.props.master} member = {node} tempMembers = {this.props.tempMembers}/>
+                                        <MemberComponent clickMember = {this.props.clickMember} master = {this.props.master} member = {node} oldMembers = {this.props.oldMembers}/>
                                     )
                                 }else if(node.type == "dept" && node.status == "select"){
                                     return(
-                                        <Dept clickDept = {this.props.clickDept} clickMember = {this.props.clickMember} master = {this.props.master} oldMembers = {this.props.oldMembers} dept = {node} tempMembers = {this.props.tempMembers}/>
+                                        <Dept clickDept = {this.props.clickDept} clickMember = {this.props.clickMember} master = {this.props.master} oldMembers = {this.props.oldMembers} dept = {node}/>
                                     )
                                 }
                             })
@@ -103,13 +110,7 @@ class MemberList extends React.Component<Props, State>{
                            <MemberComponent oldMember = {member} selectedMemberType = {"oldMembers"}/>
                         )
                     })}
-                    {
-                        this.props.tempMembers.map(member=> {
-                            return(
-                                <MemberComponent tempMember = {member} clickMember = {this.props.clickMember} selectedMemberType = {"tempMembers"}/>
-                            )
-                        })
-                    }
+                    {tempMembersComponent}
                 </ol>
             );
         }
