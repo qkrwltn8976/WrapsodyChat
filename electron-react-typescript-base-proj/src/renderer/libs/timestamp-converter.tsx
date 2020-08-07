@@ -77,6 +77,22 @@ export function getConvoDate(timestamp: number) {
             return formattedDate;
         }
     }
+}
 
+export function dDayCounter(datestring: string) {
+    let date = new Date(datestring);
+    let now = new Date();
+    let distance = date.getTime()-now.getTime();
+    let d = Math.floor(distance / (1000 * 60 * 60 * 24)) + 1;//일
 
+    let h = Math.floor((distance / (1000*60*60)) % 24);//시간
+    let m = Math.floor((distance / (1000*60)) % 60);//분
+    let s = Math.floor((distance / 1000) % 60);//초
+
+    if (distance <= 0) {//당일넘어섰을때, dday로 변경
+        // return h + ":" + m + ":" + s;
+        return "D-day"
+    } else {
+        return "D-" + d;
+    }
 }

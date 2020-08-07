@@ -36,7 +36,7 @@ class BookmarkList extends React.Component<BookmarkListProps, BookmarkListState>
                 {this.props.bookmarks.map(item => {
                     return (<li className="ng-scope" key={item.bookmarkId}>
                         <div className="ng-binding" onClick={this.getMsgs(item)}>{item.name}</div>
-                        <i className='icon_delete icon_times' onClick={this.deleteBookmark(item.bookmarkId)}></i>
+                        {/* <i className='icon_delete icon_times' onClick={this.deleteBookmark(item.bookmarkId)}></i> */}
                     </li>
                     )
                 })};
