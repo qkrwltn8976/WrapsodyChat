@@ -88,10 +88,15 @@ class BookmarkPage extends React.Component<BookmarkProps, BookmarkState> {
                     }
 
                     if(obj.type && obj.type==='CONVERSATION_BOOKMARK_DELETED') {
-                        let index = this.state.bookmarks.indexOf(payload.messageId);
-                        let bookmarks = this.state.bookmarks.splice(index, 1);
+                        // console.log(payload.bookmarkId)
+
+                        let found = this.state.bookmarks.find(element => element.bookmarkId === payload.bookmarkId);
+            
+                        let index = this.state.bookmarks.indexOf(found);
+                        console.log(index)
+                        this.state.bookmarks.splice(index, 1);
                         this.setState({
-                            bookmarks
+                            bookmarks: this.state.bookmarks
                         });
                     }
                 }

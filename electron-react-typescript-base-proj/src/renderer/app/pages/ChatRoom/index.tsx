@@ -139,7 +139,9 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                                 latestMessage: payload.Conversation.lastestMessage,
                                 latestMessageAt: payload.Conversation.latestMessageAt,
                                 createdAt: payload.Conversation.createdAt,
-                                updatedAt: payload.Conversation.updatedAt,},
+                                updatedAt: payload.Conversation.updatedAt,
+                                bookmark: payload.Conversation.properties.bookmark
+                            },
                             msgs: payload.Messages,
                             topMsgId: payload.Messages[payload.Messages.length-1].messageId,
                             eom
@@ -170,21 +172,21 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                             this.setState(prevState => ({
                                 convo: {
                                     ...prevState.convo,
-                                    bookmark: true,
+                                    bookmark: "Y",
                                 },
                                 bookmarkStart: Date.now()
                             }));
-                            publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": true});
+                            publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": "Y"});
                             
                             console.log('북마크 시작')
                         } else if(obj.messageType == type.Command.BOOKMARK_STOP) {
                             this.setState(prevState => ({
                                 convo: {
                                     ...prevState.convo,
-                                    bookmark: false
+                                    bookmark: "N"
                                 }
                             }));
-                            publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": false});
+                            publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": "N"});
                             publishApi(client, 'api.conversation.bookmark.create', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "북마크 "+ getDate(Date.now()), "startAt": this.state.bookmarkStart, "endAt": obj.createdAt-1})
                         } else if(obj.messageType === type.Command.DEADLINE) {
                             this.setState(prevState => ({
@@ -192,7 +194,8 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                                     ...prevState.convo,
                                     deadline: obj.body
                                 }
-                            }))
+                            }));
+                            publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "deadline", "value": obj.body });
                         }
                         document.getElementById(this.state.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
 
