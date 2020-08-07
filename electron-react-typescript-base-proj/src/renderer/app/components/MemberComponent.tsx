@@ -23,13 +23,16 @@ interface State{
 
 
 class MemberComponent extends React.Component<Props, State>{
-    constructor(props: Props, state: State){
-        super(props);
+
+    constructor(props: Props){
+        super(props)
         this.state = ({
             tempMembers : store.getState().tempMembers
         })
-        store.subscribe(function(this:MemberList){
-            this.setState({ tempMembers : store.getState().tempMemebers})
+        store.subscribe(function(this:MemberComponent){
+            this.setState({ 
+                tempMembers : store.getState().tempMembers
+            })
         }.bind(this));
         this.clickMember = this.clickMember.bind(this);
         this.deleteMember = this.deleteMember.bind(this);
@@ -45,6 +48,7 @@ class MemberComponent extends React.Component<Props, State>{
         }]
         store.dispatch({type: 'clickMember', newMember : newMember})
     }
+
     deleteMember = (e) => {
         e.preventDefault()
         let newMember : TreeMember[];
@@ -56,6 +60,7 @@ class MemberComponent extends React.Component<Props, State>{
         store.dispatch({type: 'clickMember', newMember : newMember})
     }
 
+    
     render() {
         let ownerComponent;
         if(this.props.member && this.props.master && this.props.oldMembers){
@@ -65,27 +70,25 @@ class MemberComponent extends React.Component<Props, State>{
                 ownerComponent = <div></div>
             }
             let idx, idx2;
-            if(this.state.tempMembers != undefined){
-                idx = this.state.tempMembers.findIndex( obj => obj.userId === this.props.member.id) 
-            }
-            if(this.state.tempMembers === undefined){
-                idx = -1;
-            }
+            idx = -1;
             if(this.props.oldMembers != undefined){
                 idx2 = this.props.oldMembers.findIndex( obj => obj.userId === this.props.member.id)
             }
             if(this.props.oldMembers === undefined){
                 idx2 = -1;
             }
+            if(this.state.tempMembers && this.state.tempMembers.length > 0){
+                idx = this.state.tempMembers.findIndex( obj => obj.userId === this.props.member.id)
+            }
             let clickComponent;
-            if(idx2 == -1){ // 둘다 아닌경우에만
+            if(idx2 == -1){ //oldMember 아니면 check할수있음 
                 clickComponent = <i className="icon_checkbox" ng-class="{disabled: node.disabled}" onClick={this.clickMember}></i>
             }else{
                 clickComponent = <i className="icon_checkbox disabled" ng-class="{disabled: node.disabled}"></i>
             }
             const checkboxId = "member-"+ this.props.member.id+"object:"+ Math.random()
             return(
-                <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className={(idx == -1 && idx2 == -1) ?  "ng-scope angular-ui-tree-node":"ng-scope angular-ui-tree-node selected"} expand-on-hover="false">
+                <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className={(idx2 == -1) ?  "ng-scope angular-ui-tree-node":"ng-scope angular-ui-tree-node selected"} expand-on-hover="false">
                     <div className="organ_wrapper ng-scope">
                         <span ng-style="node.type === 'dept' &amp;&amp; !node.hasChildren &amp;&amp; {'visibility': 'hidden'}">
                             <input type="checkbox" id={checkboxId} ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)" checked = {idx != -1}/>
@@ -130,11 +133,6 @@ class MemberComponent extends React.Component<Props, State>{
                         </span>
                     </div>
                 </li>
-            )
-        }
-        else{
-            return(
-                <div></div>
             )
         }
         return(

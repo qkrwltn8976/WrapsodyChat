@@ -8,6 +8,7 @@ import { publishApi, subscribe, client } from '@/renderer/libs/stomp';
 import MemberComponent from './MemberComponent';
 import { Node } from '../../models/Node';
 import store from '../../../store';
+import BookmarkList from './BookmarkList';
 
 const Store = require('electron-store')
 const electronStore = new Store()
@@ -42,15 +43,15 @@ class Dept extends React.Component<Props, State>{
             childNodes : [],
             memberIsChecked: false,
             nodeList: [],
-            tempMembers : store.getState().tempMembers
+            tempMembers : store.getState().tempMembers,
         })
         this.expandTree = this.expandTree.bind(this);
+        this.isChecked = this.isChecked.bind(this);
         store.subscribe(function(this: Dept){
             this.setState({
                 tempMembers : store.getState().tempMembers,
             })
         }.bind(this));   
-        
     }
 
     componentDidMount(){
@@ -106,7 +107,26 @@ class Dept extends React.Component<Props, State>{
             }
         })
     }
-    
+    isChecked = () : boolean =>{
+        let ch : boolean
+        if(this.state.nodeList && this.state.tempMembers && this.state.nodeList.length > 0 && this.state.tempMembers.length > 0 && this.props.oldMembers){
+            ch = true;
+            for(var i = 0; i < this.state.nodeList.length; i++){
+                if(this.state.nodeList[i].type === "user"){
+                    let idx = this.state.tempMembers.findIndex( obj => obj.userId === this.state.nodeList[i].id)
+                    let idx2 = this.props.oldMembers.findIndex( obj => obj.userId === this.state.nodeList[i].id)
+                    console.log("node: " + this.state.nodeList[i].id + "idx" + idx + "idx2" + idx2)
+                    if(idx == -1 && idx2 == -1){
+                        ch  = false;
+                        break;
+                    }
+                }   
+            }
+        }else{
+            ch = false;
+        }
+        return ch;
+    }
     
     render(){
         let nodesComponent;
@@ -124,6 +144,7 @@ class Dept extends React.Component<Props, State>{
                 }
             })
         }
+        
         const checkboxId = "dept-"+ this.props.dept.id+"object:"+ Math.random()
         var triangleVisibility;
         if(!this.props.dept.hasChildren){
@@ -133,7 +154,7 @@ class Dept extends React.Component<Props, State>{
             <li ng-repeat={this.props.dept.hasChildren ? "node in docInfo.organ" : "node in node.subTree" } ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className={this.props.dept.hasChildren ? "ng-scope angular-ui-tree-node" : "ng-scope angular-ui-tree-node selected"} expand-on-hover="false">
                 <div className="organ_wrapper ng-scope">
                     <span ng-style="node.type === 'dept' &amp;&amp; !node.hasChildren &amp;&amp; {'visibility': 'hidden'}" style = {triangleVisibility}>
-                        <input type="checkbox" id={checkboxId} ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)" checked = {this.state.isChecked}/>
+                        <input type="checkbox" id={checkboxId} ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)" checked = {this.isChecked()}/>
                         <label htmlFor={checkboxId} data-nodrag="">
                             <i className="icon_checkbox" ng-class="{disabled: node.disabled}" onClick={(e) => this.clickTree(this.props.dept.id)}></i>
                         </label>
