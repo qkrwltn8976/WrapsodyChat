@@ -6,7 +6,8 @@ const store = new Store()
 
 interface BookmarkListProps {
     bookmarks: Bookmark[],
-    getMsgs: any
+    getMsgs: any,
+    deleteBookmark: any
 }
 
 interface BookmarkListState {
@@ -16,6 +17,10 @@ interface BookmarkListState {
 class BookmarkList extends React.Component<BookmarkListProps, BookmarkListState> {
     getMsgs = (bookmark: Bookmark) => (e) => {
         this.props.getMsgs(bookmark);
+    }
+
+    deleteBookmark = (bookmarkId: string) => (e) => {
+        this.props.deleteBookmark(bookmarkId);
     }
 
     constructor(props: BookmarkListProps, state: {}) {
@@ -31,6 +36,7 @@ class BookmarkList extends React.Component<BookmarkListProps, BookmarkListState>
                 {this.props.bookmarks.map(item => {
                     return (<li className="ng-scope" key={item.bookmarkId}>
                         <div className="ng-binding" onClick={this.getMsgs(item)}>{item.name}</div>
+                        {/* <i className='icon_delete icon_times' onClick={this.deleteBookmark(item.bookmarkId)}></i> */}
                     </li>
                     )
                 })};

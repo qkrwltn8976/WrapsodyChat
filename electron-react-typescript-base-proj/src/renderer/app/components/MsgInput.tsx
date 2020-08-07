@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Message } from '../../models/Message';
 import language from "@/renderer/language/language.json"
-// import { MentionsInput, Mention } from 'react-mentions'
 const Store = require('electron-store')
 const store = new Store()
 
@@ -78,6 +77,7 @@ class MsgInput extends React.Component<MsgInputProps, MsgInputState> {
             inputText = language.ko.input_message
         if (lang === "en-US")
             inputText = language.en.input_message
+
         return (
             <div className="wrapmsgr_footer">
                 <form onSubmit={this.handleSubmit} ng-submit="chat()" className="ng-pristine ng-valid ng-valid-maxlength">
@@ -86,13 +86,6 @@ class MsgInput extends React.Component<MsgInputProps, MsgInputState> {
                             onChange={this.handleChange} value={this.state.message}></textarea>
 
                     </span>
-                    {/* <MentionsInput value={this.state.message} onChange={this.handleChange}>
-                        <Mention
-                            trigger="@"
-                            data={this.state.commands}
-                            // renderSuggestion={this.renderUserSuggestion}
-                        />
-                    </MentionsInput> */}
                     <button type="submit" className="wrapmsgr_submit" value="보내기" title="보내기" ng-disabled="!loggedIn" onClick={this.sendMsg}>
                         <i className="icon_paper_plane"></i>
                     </button>

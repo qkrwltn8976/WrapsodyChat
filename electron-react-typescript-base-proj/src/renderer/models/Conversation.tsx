@@ -13,6 +13,7 @@ export type Conversation = {
     updatedAt: number; // 대화 수정 일시
 
     browserId?: number; // 브라우저 id
-    bookmarkStatus?: number; // 북마크 상태 0 1
+    bookmark?: string; // 북마크 상태 
+    deadline?: string;  // 데드라인
 };
 

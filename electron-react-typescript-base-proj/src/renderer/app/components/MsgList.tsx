@@ -274,7 +274,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
                 document.getElementById(this.props.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
         }
 
-        if(Math.floor(scrollTop) === height) {
+        if(Math.floor(scrollTop) === height && this.props.isBookmark) {
             console.log('botototototo')
             this.props.getBottomMsgs();
         }
@@ -301,13 +301,16 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     componentDidUpdate = () => {
         // 처음 채팅방에 접속했을 경우
         if (this.state.msgs.length <= 20) {
-            if(this.props.isBookmark) {
+            if(this.props.isBookmark && !this.props.eom) {
                 this.scrollView.current.scrollTop = 0;
-                console.log('0000')
+                console.log(this.state.msgs.length)
             }
                
-            else
+            else {
                 this.messagesScrollToBottom();
+                console.log(this.state.msgs.length)
+            }
+               
         }
             
 

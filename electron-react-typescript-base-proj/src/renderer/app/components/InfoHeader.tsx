@@ -1,46 +1,50 @@
 import * as React from 'react';
-import { ConvoType, InfoHeaderType} from "../../libs/enum-type"
+import { ConvoType, InfoHeaderType } from "../../libs/enum-type"
 import { getDocType } from '../../libs/messengerLoader'
-import {client} from "@/renderer/libs/stomp"
-import {v4} from "uuid"
+import { client } from "@/renderer/libs/stomp"
+import { v4 } from "uuid"
 import language from "@/renderer/language/language.json"
 import { publishApi } from '@/renderer/libs/stomp';
 import { TreeMember } from '../../models/TreeMember';
+import { dDayCounter } from '@/renderer/libs/timestamp-converter';
 
 const Store = require('electron-store')
 const store = new Store()
 
-const { remote, ipcRenderer }  = require('electron')
+const { remote, ipcRenderer } = require('electron')
 const { BrowserWindow } = remote
 
-interface Props{ 
+interface Props {
     convoType: number;
-    convoId?:string;
+    convoId?: string;
     // infoheaderType: string;
     memberCount: number;
     docName: string;
     notificationType?: number;
-    setNotification?:any
+    setNotification?: any
     tempMembers?: TreeMember[],
+    deadline?: string
 }
 
-interface ShowState{
+interface ShowState {
     isShow: boolean;
-    uuid:string;   
+    uuid: string;
+    deadline?: string;
 }
 
 
 class InfoHeader extends React.Component<Props, ShowState>{
     payload: any;
     convoId: string;
-    
-    constructor(props: Props, state: {}){
+
+    constructor(props: Props, state: {}) {
         super(props, state);
         this.state = ({
             isShow: false,
             uuid: v4(),
-        }); 
-        
+            deadline: this.props.deadline
+        });
+
     }
 
     showBookmarks = (e) => {
@@ -63,20 +67,20 @@ class InfoHeader extends React.Component<Props, ShowState>{
             frame: false,
         })
         bookmarkWindow.loadURL(
-            __dirname + "/index.html#/bookmark/"+this.props.convoId
+            "file://" + __dirname + "/index.html#/bookmark/" + this.props.convoId
         );
         bookmarkWindow.show();
     }
 
-    showPreview = (e) =>{
+    showPreview = (e) => {
         e.preventDefault();
         var win = new BrowserWindow()
-        win.loadURL("http://ecm.dev.fasoo.com:9099/filesync/document/preview.do?id="+this.convoId)
+        win.loadURL("http://ecm.dev.fasoo.com:9099/filesync/document/preview.do?id=" + this.convoId)
     }
 
     //실제로 사용되어야할 주소
     //downloadFile ="http://ecm.dev.fasoo.com:9099/filesync/down.do?id="+ this.props.convoId
-    downloadFile = (e) =>{
+    downloadFile = (e) => {
         e.preventDefault()
         var win = new BrowserWindow()
         win.loadURL("http://wrapsody.fasoo.com:7066/filesync/document/download.do?syncId=20161123064228b6a713b403d7495eb7909a74eb2f9733")
@@ -89,17 +93,17 @@ class InfoHeader extends React.Component<Props, ShowState>{
 
     showClick = (e) => {
         e.preventDefault();
-        if(this.state.isShow == false){
-            var i, l:string
-            if(store.get("language")==="ko-KR"){
+        if (this.state.isShow == false) {
+            var i, l: string
+            if (store.get("language") === "ko-KR") {
                 i = language.ko.invite
                 l = language.ko.exit
             }
-            
-            if(store.get("language")==="en-US"){
+
+            if (store.get("language") === "en-US") {
                 i = language.en.invite
                 l = language.
-                en.exit
+                    en.exit
             }
         }
         this.setState({
@@ -129,52 +133,66 @@ class InfoHeader extends React.Component<Props, ShowState>{
             frame: false,
         })
         inviteWindow.loadURL(
-            __dirname + "/index.html#/invite/"+this.props.convoId
+            "file://" + __dirname + "/index.html#/invite/" + this.props.convoId
         );
         inviteWindow.show();
     }
 
-    leaveRoom = (e)=>{
+    leaveRoom = (e) => {
         e.preventDefault();
-        publishApi(client, "api.room.leave", store.get("username"), this.state.uuid, {convoId: this.props.convoId})
+        publishApi(client, "api.room.leave", store.get("username"), this.state.uuid, { convoId: this.props.convoId })
         console.log("나가?")
         var win = remote.getCurrentWindow()
         win.close()
     }
 
     //notificationType 에 따라 icon_bell 아이콘의 모양 결정
-    getBellIcon(){
-        if(this.props.notificationType===0){
+    getBellIcon() {
+        if (this.props.notificationType === 0) {
             return "icon_bell_off";
         }
-            
+
         else {
             return "icon_bell";
-        } 
+        }
     }
-    
-    render(){
 
+    getDeadline() {
+        if (this.props.deadline) {
+            return (
+                <div className="wrapmsgr_deadline">
+                    <div className="sign">
+                        <span className="fast-flicker">{dDayCounter(this.props.deadline)}</span><span className="flicker"></span>
+    </div></div>
+            )
+        }
+    }
+
+    render() {
         ipcRenderer.on("download progress", (event, progress) => {
             console.log(progress); // Progress in fraction, between 0 and 1
             const progressInPercentages = progress * 100; // With decimal point and a bunch of numbers
             const cleanProgressInPercentages = Math.floor(progress * 100); // Without decimal point
         });
-        var pNum:string;
-        if(store.get("language") === "ko-KR")
+        var pNum: string;
+        if (store.get("language") === "ko-KR")
             pNum = language.ko.pNum
-        if(store.get("language") === "en-US")
+        if (store.get("language") === "en-US")
             pNum = language.en.pNum
 
-        const {convoType} = this.props;
-        if( convoType === ConvoType.DOC){
+        let deadline = this.getDeadline();
+        console.log(this.props.deadline)
+
+        const { convoType } = this.props;
+        if (convoType === ConvoType.DOC) {
             return (
                 <div className="wrapmsgr_header">
-                    <div className="wrapmsgr_header_title ng-scope" id = "forDocIcon">
+                    <div className="wrapmsgr_header_title ng-scope" id="forDocIcon">
                         <document-icon name="current.convo.name" className="ng-isolate-scope">
                             <i className={getDocType(this.props.docName)}>            <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i>
                         </document-icon>
                         <div className="chatroom-name ng-binding" title="Sample Text .DotInMiddle.txt">{this.props.docName}</div>
+                        {deadline}
                         <div className="chatroom-size ng-binding">3.5KB</div>
                     </div>
                     <div className="chatroom-user">
@@ -189,19 +207,20 @@ class InfoHeader extends React.Component<Props, ShowState>{
                         </div>
                     </div> */}
                     <div className="wrapmsgr_right">
-                        <a href=""><i className="icon_bookmark" title="북마크" onClick = {this.showBookmarks}></i></a>
-                        <a href=""><i className="icon_eye" title="미리보기" onClick = {this.showPreview}></i></a>
-                        <a href= "" ><i className="icon_download" title="다운로드" onClick = {this.downloadFile}></i></a>
-                        <a href=""><i className={this.getBellIcon()} onClick= {(e) =>{
+                        <a href=""><i className="icon_bookmark" title="북마크" onClick={this.showBookmarks}></i></a>
+                        <a href=""><i className="icon_eye" title="미리보기" onClick={this.showPreview}></i></a>
+                        <a href="" ><i className="icon_download" title="다운로드" onClick={this.downloadFile}></i></a>
+                        <a href=""><i className={this.getBellIcon()} onClick={(e) => {
                             e.preventDefault();
-                            this.props.setNotification(this.props.notificationType)}}></i></a>
+                            this.props.setNotification(this.props.notificationType)
+                        }}></i></a>
                         <div className="ng-isolate-scope">
-                            <a href=""><i className="icon_ellipsis_h" title="더 보기" onClick = {this.showClick}></i></a>
-                             <div className={ this.state.isShow ? 'wrapmsgr_dropdown_menu' : 'wrapmsgr_dropdown_menu hidden'} style={{position: "absolute"}}>
-                                <div title= "대화 상대 초대" className= "ng-scope" onClick = {this.showInvite}>
-                                    <i className= "icon_plus"></i>Invite
+                            <a href=""><i className="icon_ellipsis_h" title="더 보기" onClick={this.showClick}></i></a>
+                            <div className={this.state.isShow ? 'wrapmsgr_dropdown_menu' : 'wrapmsgr_dropdown_menu hidden'} style={{ position: "absolute" }}>
+                                <div title="대화 상대 초대" className="ng-scope" onClick={this.showInvite}>
+                                    <i className="icon_plus"></i>Invite
                                 </div>
-                                <div title="나가기" className="ng-scope ng-enter-prepare" onClick= {this.leaveRoom}>
+                                <div title="나가기" className="ng-scope ng-enter-prepare" onClick={this.leaveRoom}>
                                     <i className="icon_log_out"></i>Leave
                                 </div>
                             </div>
@@ -210,10 +229,10 @@ class InfoHeader extends React.Component<Props, ShowState>{
                 </div>
             );
         }
-        if(convoType === ConvoType.DEP){
+        if (convoType === ConvoType.DEP) {
             return (
                 <div className="wrapmsgr_header">
-                        {/* <div className="wrapmsgr_header_title ng-scope">
+                    {/* <div className="wrapmsgr_header_title ng-scope">
                         <span className="user-photo ng-binding ng-isolate-scope group no-photo red">랩소</span>
                             <div>
                                 <div className="chatroom-name ng-binding" title="Sample Text .DotInMiddle.txt">Sample Text .DotInMiddle.txt</div>
@@ -234,10 +253,10 @@ class InfoHeader extends React.Component<Props, ShowState>{
                         <div className="wrapmsgr_right">
                             <a href=""><i className="icon_bell"></i></a>
                         </div> */}
-                    </div>
+                </div>
             );
         }
-        if(convoType === ConvoType.BOT){
+        if (convoType === ConvoType.BOT) {
             return (<React.Fragment></React.Fragment>)
         }
         //     return (
@@ -258,13 +277,13 @@ class InfoHeader extends React.Component<Props, ShowState>{
         //         </div>
         //     )
         // }
-        if(convoType === ConvoType.IC){
+        if (convoType === ConvoType.IC) {
             return (
                 <div className="doc-chatroom-info_div">
                     <document-icon name="docInfo.detail.contentName" class="ng-isolate-scope"><i className="icon_txt">          <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i></document-icon>
                     <div className="doc-name ng-binding">{this.props.docName}</div>
                     <div>
-                        <span className="ng-binding">문서 권한 보유자 {this.props.memberCount} 명 / 대화 상대 {this.props.memberCount + this.props.tempMembers.length} 명</span>                       
+                        <span className="ng-binding">문서 권한 보유자 {this.props.memberCount} 명 / 대화 상대 {this.props.memberCount + this.props.tempMembers.length} 명</span>
                     </div>
                 </div>
             )
