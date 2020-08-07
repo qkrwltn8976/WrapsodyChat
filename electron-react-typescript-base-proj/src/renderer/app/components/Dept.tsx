@@ -81,9 +81,6 @@ class Dept extends React.Component<Props, State>{
         })
     }
 
-    // shouldComponentUpdate(newProps, newState){
-    //     return this.state.isExpanded
-    // }
 
     expandTree = (id) => {
         this.setState({
@@ -101,11 +98,8 @@ class Dept extends React.Component<Props, State>{
     afterClick = () =>{
         store.dispatch({type: 'clickDept', childNodes : this.state.childNodes})
         this.state.childNodes.map(node=>{
-            console.log("afterClick!!!!!!!!!!!!!!!!!!!!!!!!!")
-            console.log(node)
             let that = this;
             if(node.type === "dept" && node.hasChildren){
-                console.log("여기 왜 실행안되는건지 진짜 모르겠네?!!!!!!!!!!!")
                 this.setState({
                     isChecked : false
                 }, ()=> that.clickTree(node.value))
@@ -114,19 +108,7 @@ class Dept extends React.Component<Props, State>{
     }
     
     
-    // deleteFromSelected = (e) => {
-    //     e.preventDefault()
-    //     let newMember : TreeMember[];
-
-    //     this.setState({
-    //         isChecked : true
-    //     },this.props.click("Member", true, newMember,e))
-    // }
-
-    
     render(){
-        console.log("render얼마나 되는지 알아보자")
-        console.log(this.state.nodeList)
         let nodesComponent;
         if(this.state.nodeList){
             nodesComponent = this.state.nodeList.map(node=>{

@@ -83,8 +83,6 @@ class MemberComponent extends React.Component<Props, State>{
             }else{
                 clickComponent = <i className="icon_checkbox disabled" ng-class="{disabled: node.disabled}"></i>
             }
-            console.log("왜 선택안되는지 궁금")
-            console.log(this.props.member.name + "//////////" + idx + "///////" + idx2)
             const checkboxId = "member-"+ this.props.member.id+"object:"+ Math.random()
             return(
                 <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className={(idx == -1 && idx2 == -1) ?  "ng-scope angular-ui-tree-node":"ng-scope angular-ui-tree-node selected"} expand-on-hover="false">
