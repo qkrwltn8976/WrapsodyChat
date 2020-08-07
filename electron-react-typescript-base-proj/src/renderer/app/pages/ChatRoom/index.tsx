@@ -167,37 +167,42 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                             msgs: this.state.msgs.concat(obj),
                             topMsgId: obj.messageId
                         });
-
-                        if(obj.messageType == type.Command.BOOKMARK_START) { // command 명령어 시작
-                            this.setState(prevState => ({
-                                convo: {
-                                    ...prevState.convo,
-                                    bookmark: "Y",
-                                },
-                                bookmarkStart: Date.now()
-                            }));
-                            publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": "Y"});
-                            
-                            console.log('북마크 시작')
-                        } else if(obj.messageType == type.Command.BOOKMARK_STOP) {
-                            this.setState(prevState => ({
-                                convo: {
-                                    ...prevState.convo,
-                                    bookmark: "N"
-                                }
-                            }));
-                            publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": "N"});
-                            publishApi(client, 'api.conversation.bookmark.create', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "북마크 "+ getDate(Date.now()), "startAt": this.state.bookmarkStart, "endAt": obj.createdAt-1})
-                        } else if(obj.messageType === type.Command.DEADLINE) {
-                            this.setState(prevState => ({
-                                convo: {
-                                    ...prevState.convo,
-                                    deadline: obj.body
-                                }
-                            }));
-                            publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "deadline", "value": obj.body });
+                        
+                        if(obj.messageType === 240) {
+                            let body = JSON.parse(obj.body);
+                            if(body.cmdType === type.Command.BOOKMARK_START) { // command 명령어 시작
+                                this.setState(prevState => ({
+                                    convo: {
+                                        ...prevState.convo,
+                                        bookmark: "Y",
+                                    },
+                                    bookmarkStart: Date.now()
+                                }));
+                                publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": "Y"});
+                                
+                                console.log('북마크 시작')
+                            } else if(body.cmdType === type.Command.BOOKMARK_STOP) {
+                                this.setState(prevState => ({
+                                    convo: {
+                                        ...prevState.convo,
+                                        bookmark: "N"
+                                    }
+                                }));
+                                console.log(this.state.bookmarkStart)
+                                publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": "N"});
+                                publishApi(client, 'api.conversation.bookmark.create', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "북마크 "+ getDate(Date.now()), "startAt": this.state.bookmarkStart, "endAt": obj.createdAt-1})
+                            } else if(body.cmdType === type.Command.DEADLINE) {
+                                this.setState(prevState => ({
+                                    convo: {
+                                        ...prevState.convo,
+                                        deadline: body.body
+                                    }
+                                }));
+                                publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "deadline", "value": obj.body });
+                            }
+                            document.getElementById(this.state.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
                         }
-                        document.getElementById(this.state.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
+                        
 
                         // if (obj.sendUserId !== store.get("username")) {
                         //     console.log('읽어')
