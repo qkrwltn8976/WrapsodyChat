@@ -7,9 +7,10 @@ import language from "@/renderer/language/language.json"
 import { publishApi } from '@/renderer/libs/stomp';
 import { TreeMember } from '../../models/TreeMember';
 import { dDayCounter } from '@/renderer/libs/timestamp-converter';
+import store from '../../../store'
 
 const Store = require('electron-store')
-const store = new Store()
+const electronStore = new Store()
 
 const { remote, ipcRenderer } = require('electron')
 const { BrowserWindow } = remote
@@ -28,7 +29,8 @@ interface Props {
 
 interface ShowState {
     isShow: boolean;
-    uuid: string;
+    uuid:string; 
+    tempMembers : TreeMember[];  
     deadline?: string;
 }
 
@@ -42,14 +44,16 @@ class InfoHeader extends React.Component<Props, ShowState>{
         this.state = ({
             isShow: false,
             uuid: v4(),
+            tempMembers : store.getState().tempMembers,
             deadline: this.props.deadline
-        });
-
+        }); 
+        store.subscribe(function(this: InfoHeader){
+            this.setState({ tempMembers : store.getState().tempMembers})
+        }.bind(this));
     }
 
     showBookmarks = (e) => {
         e.preventDefault();
-
         var currentWindow = remote.getCurrentWindow()
         var size = currentWindow.getSize()
         // var width = size[0] * 0.9;
@@ -95,12 +99,12 @@ class InfoHeader extends React.Component<Props, ShowState>{
         e.preventDefault();
         if (this.state.isShow == false) {
             var i, l: string
-            if (store.get("language") === "ko-KR") {
+            if (electronStore.get("language") === "ko-KR") {
                 i = language.ko.invite
                 l = language.ko.exit
             }
 
-            if (store.get("language") === "en-US") {
+            if (electronStore.get("language") === "en-US") {
                 i = language.en.invite
                 l = language.
                     en.exit
@@ -140,7 +144,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
 
     leaveRoom = (e) => {
         e.preventDefault();
-        publishApi(client, "api.room.leave", store.get("username"), this.state.uuid, { convoId: this.props.convoId })
+        publishApi(client, "api.room.leave", electronStore.get("username"), this.state.uuid, {convoId: this.props.convoId})
         console.log("나가?")
         var win = remote.getCurrentWindow()
         win.close()
@@ -175,9 +179,9 @@ class InfoHeader extends React.Component<Props, ShowState>{
             const cleanProgressInPercentages = Math.floor(progress * 100); // Without decimal point
         });
         var pNum: string;
-        if (store.get("language") === "ko-KR")
+        if (electronStore.get("language") === "ko-KR")
             pNum = language.ko.pNum
-        if (store.get("language") === "en-US")
+        if (electronStore.get("language") === "en-US")
             pNum = language.en.pNum
 
         let deadline = this.getDeadline();
@@ -283,7 +287,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
                     <document-icon name="docInfo.detail.contentName" class="ng-isolate-scope"><i className="icon_txt">          <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i></document-icon>
                     <div className="doc-name ng-binding">{this.props.docName}</div>
                     <div>
-                        <span className="ng-binding">문서 권한 보유자 {this.props.memberCount} 명 / 대화 상대 {this.props.memberCount + this.props.tempMembers.length} 명</span>
+                        <span className="ng-binding">문서 권한 보유자 {this.props.memberCount} 명 / 대화 상대 {this.props.memberCount + this.state.tempMembers.length} 명</span>                       
                     </div>
                 </div>
             )

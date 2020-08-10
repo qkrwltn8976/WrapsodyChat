@@ -259,7 +259,6 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                         </div>
                     </div>
                 </div>
-
             </React.Fragment>
         )
     }
