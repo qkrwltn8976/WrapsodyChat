@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { ConvoType, InfoHeaderType } from "../../libs/enum-type"
 import { getDocType } from '../../libs/messengerLoader'
-import { client } from "@/renderer/libs/stomp"
 import { v4 } from "uuid"
 import language from "@/renderer/language/language.json"
-import { publishApi } from '@/renderer/libs/stomp';
+import { publishApi, client } from '@/renderer/libs/stomp';
 import { TreeMember } from '../../models/TreeMember';
 import { dDayCounter } from '@/renderer/libs/timestamp-converter';
 import store from '../../../store'

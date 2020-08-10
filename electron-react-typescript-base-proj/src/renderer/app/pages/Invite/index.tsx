@@ -135,7 +135,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
                                             </div>
                                         </div>
                                     </div>
-                                    <Footer />
+                                    <Footer convoId = {this.state.convoId}/>
                                 </form>
                             </div>
                         {/* </div> */}
