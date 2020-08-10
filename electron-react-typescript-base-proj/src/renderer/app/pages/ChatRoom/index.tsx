@@ -11,9 +11,10 @@ import { v4 } from "uuid"
 import * as type from '@/renderer/libs/enum-type';
 import IntentList from '@/renderer/app/components/IntentList';
 import { getDate} from '@/renderer/libs/timestamp-converter';
+import store from '../../../../store';
 
 const Store = require('electron-store')
-const store = new Store()
+const electronStore = new Store()
 
 interface RoomProps {
     match: any,
@@ -37,7 +38,7 @@ interface RoomState {
 class ChatRoom extends React.Component<RoomProps, RoomState> {
 
     getMsgs = (payload: any) => {
-        publishApi(client, 'api.message.list', store.get("username"), this.state.uuid, {
+        publishApi(client, 'api.message.list', electronStore.get("username"), this.state.uuid, {
             convoId: this.state.convo.convoId,
             beforeAt: this.state.msgs[0].createdAt,
             direction: "backward"
@@ -45,7 +46,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
     }
 
     sendMsg = (msg: Message, api: string) => {
-        publishChat(client, api, store.get("username"),this.state.uuid, msg);
+        publishChat(client, api, electronStore.get("username"),this.state.uuid, msg);
     }
 
     setSearch = (search: string) => {
@@ -57,7 +58,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
             state.convo.notificationType = type === 0 ? 1 : 0
             return {}
         })
-        publishApi(client, "api.conversation.notification", store.get("username"), this.state.uuid, { "convoId": this.state.convo.convoId, "type": type === 0 ? 1 : 0 })
+        publishApi(client, "api.conversation.notification", electronStore.get("username"), this.state.uuid, { "convoId": this.state.convo.convoId, "type": type === 0 ? 1 : 0 })
         return false;
     }
 
@@ -69,7 +70,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
         this.state = ({
             uuid: v4(),
             msgs: [],
-            members: [],
+            members: store.getState().members,
             convo: {
                 convoId: this.props.match.params.convo,
                 convoType: 0,
@@ -89,6 +90,11 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
             prevScrollHeight: 0,
             topMsgId: 0,
         })
+        store.subscribe(function(this: ChatRoom){
+            this.setState({
+                members : store.getState().members,
+            })
+        }.bind(this));
 
     }
 
@@ -96,7 +102,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
         client.onConnect = () => {
             console.log(client);
             console.log(this.state.convo.convoId);
-            subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
+            subscribe(client, electronStore.get("username"), this.state.uuid, (obj: any) => {
                 let payload = obj.payload;
                 if (payload) {
                     console.log(payload)
@@ -113,13 +119,11 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                             topMsgId: payload.Messages[payload.Messages.length-1].messageId
                         });
                     }
-
                     if (payload.Members) {
                         this.setState({
                             members: payload.Members
-                        })
+                        },() => store.dispatch({type : 'setMembers', members: this.state.members}))
                     }
-
                     if (payload.Conversation && payload.Messages) {
                         // console.log(payload.Conversation)
                         let eom = false;
@@ -179,7 +183,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                                     },
                                     bookmarkStart: Date.now()
                                 }));
-                                publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": "Y"});
+                                publishApi(client, 'api.conversation.property.update', electronStore.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": "Y"});
                                 
                                 console.log('북마크 시작')
                             } else if(body.cmdType === type.Command.BOOKMARK_STOP) {
@@ -190,8 +194,8 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                                     }
                                 }));
                                 console.log(this.state.bookmarkStart)
-                                publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": "N"});
-                                publishApi(client, 'api.conversation.bookmark.create', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "북마크 "+ getDate(Date.now()), "startAt": this.state.bookmarkStart, "endAt": obj.createdAt-1})
+                                publishApi(client, 'api.conversation.property.update', electronStore.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": "N"});
+                                publishApi(client, 'api.conversation.bookmark.create', electronStore.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "북마크 "+ getDate(Date.now()), "startAt": this.state.bookmarkStart, "endAt": obj.createdAt-1})
                             } else if(body.cmdType === type.Command.DEADLINE) {
                                 this.setState(prevState => ({
                                     convo: {
@@ -200,7 +204,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                                     }
                                 }));
 
-                                publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "deadline", "value": body.body });
+                                publishApi(client, 'api.conversation.property.update', electronStore.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "deadline", "value": body.body });
                             }
                             document.getElementById(this.state.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
                         }
@@ -219,14 +223,15 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                 }
             });
 
-            publishApi(client, 'api.conversation.view', store.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
+            publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
         }
     }
 
     render() {
         let sendMsg = this.sendMsg;
         let aside, viewModeClass;
-
+        console.log("--------------------members----------------------")
+        console.log(this.state.members)
         if (this.state.convo.convoType === type.ConvoType.BOT) {
             viewModeClass = 'wrapmsgr_chatbot'
             aside = <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">

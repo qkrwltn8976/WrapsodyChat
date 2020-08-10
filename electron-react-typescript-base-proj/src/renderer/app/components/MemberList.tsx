@@ -66,8 +66,6 @@ class MemberList extends React.Component<Props, State>{
     getChildNode = () => {   
         subscribe(client, electronStore.get("username"), this.state.uuid, (obj:any) => {
             let payload = obj.payload;
-            console.log("----------------------------------------------")
-            console.log(payload)
             if(payload){
                 if(payload.Nodes){
                     this.setState({
@@ -109,14 +107,12 @@ class MemberList extends React.Component<Props, State>{
                 store.dispatch({type: 'clickMember', newMember : newMember})
             }
             if(node.type == "dept"){
-               console.log("------------------------"+ node.name + "-----------------------")
                this.clickTree(node.id)
             }
         })
     }
 
     render() {
-        console.log("-----------------------------render-------------------------")
         const { memberListType, convoId} = this.props
         let tempMembersComponent;
         if(this.state.tempMembers && this.state.tempMembers.length > 0){
@@ -126,7 +122,7 @@ class MemberList extends React.Component<Props, State>{
                 )
             })
         }
-        if (memberListType == 'chat' || this.props.members) {
+        if (memberListType == 'chat' && this.props.members && this.props.members.length > 0) {
             return (
                 <ul id="forMemberList">
                     {this.props.members.map(member => 
@@ -182,6 +178,9 @@ class MemberList extends React.Component<Props, State>{
                 </ol>
             );
         }
+        return(
+            <></>
+        );
     }
 }
 

@@ -115,7 +115,6 @@ class Dept extends React.Component<Props, State>{
                 if(this.state.nodeList[i].type === "user"){
                     let idx = this.state.tempMembers.findIndex( obj => obj.userId === this.state.nodeList[i].id)
                     let idx2 = this.props.oldMembers.findIndex( obj => obj.userId === this.state.nodeList[i].id)
-                    console.log("node: " + this.state.nodeList[i].id + "idx" + idx + "idx2" + idx2)
                     if(idx == -1 && idx2 == -1){
                         ch  = false;
                         break;

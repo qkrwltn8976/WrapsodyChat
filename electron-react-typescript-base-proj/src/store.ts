@@ -1,7 +1,7 @@
 import {createStore} from 'redux';
 
 export default createStore(function(state:any, action:any){
-    console.log("store................................")
+    console.log("---------------store----------------")
     console.log(state)
     console.log(action)
     if(state=== undefined && action.type != "selectedList"){
@@ -37,6 +37,9 @@ export default createStore(function(state:any, action:any){
             }
         })
         return {...state, tempMembers: state.tempMembers}
+    }
+    if(action.type === 'setMembers' && action.members != undefined && action.members.length > 0){
+        return {...state, members: action.members}
     }
     return state;
 })
