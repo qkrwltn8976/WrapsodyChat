@@ -30,6 +30,7 @@ export enum HeaderType{
     CREATE = 'Create Document Chat Room',
     INVITE = 'Invite',
     LIST = 'Wrapsody Chat',
+    BOOKMARK = 'Bookmark'
 }
 export enum MemberListType{
     CHAT = 'chat',
