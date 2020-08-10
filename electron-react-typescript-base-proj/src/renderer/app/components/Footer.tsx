@@ -41,7 +41,7 @@ class Footer extends React.Component<Props, State>{
         let userIds = [];
         this.state.tempMembers.map(member=>{
             userIds = userIds.concat([member.userId])
-        })f
+        })
         publishApi(client, "api.room.invite", electronStore.get("username"), this.state.uuid, {convoId: this.props.convoId, userIds:userIds})
         this.closeWindow()
     }
