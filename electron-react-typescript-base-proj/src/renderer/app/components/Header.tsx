@@ -67,7 +67,9 @@ class Header extends React.Component<Props>{
         let record = this.getRecordIcon();
         let btns = this.getRightBtns();
         console.log(headerType)
-        let headerText = (this.isMac) ? "wrapmsgr_title_header center-text" : "wrapmsgr_title_header";
+        console.log(this.isMac())
+        let headerText = (this.isMac()) ? "wrapmsgr_title_header center-text" : "wrapmsgr_title_header";
+        console.log(headerText)
         if (headerType === HeaderType.CHAT) {
             return (
                 <div className={headerText}>
@@ -75,7 +77,7 @@ class Header extends React.Component<Props>{
                         <span className="ng-binding" title={docName}>{docName}</span>
                         {record}
                     </h1>
-                    {(this.isMac) ? null: btns}
+                    {(this.isMac()) ? null: btns}
                 </div>
             );
         } else if (headerType === HeaderType.CREATE) {
@@ -91,7 +93,7 @@ class Header extends React.Component<Props>{
                 </div>
             );
         }
-        else if (headerType === HeaderType.INVITE || HeaderType.BOOKMARK) {
+        else if ((headerType === HeaderType.INVITE) || (headerType === HeaderType.BOOKMARK)) {
             return (
                 <div className="wrapmsgr_popup_header">
                     <h2 className="title_h2">
@@ -105,7 +107,7 @@ class Header extends React.Component<Props>{
             return (
                 <div className={headerText}>
                     <h1 className="wrapmsgr_title">Wrapsody Chat</h1>
-                    {(this.isMac) ? null: btns}
+                    {(this.isMac()) ? null: btns}
                 </div>
             )
         }
@@ -113,7 +115,7 @@ class Header extends React.Component<Props>{
             return (
                 <div className={headerText}>
                     <h1 className="wrapmsgr_title">{headerType}</h1>
-                    {(this.isMac) ? null: btns}
+                    {(this.isMac()) ? null: btns}
                 </div>
             );
         } // Wrapsody Chat Bot, Wrapsody Chat, invite
