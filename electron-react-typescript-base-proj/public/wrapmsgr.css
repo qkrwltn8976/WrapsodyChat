@@ -283,8 +283,8 @@ h2 {
 
 .wrapmsgr_container .wrapmsgr_title {
     box-sizing: border-box;
-    padding-left: 25px;
-    width: calc(100% - 80px);
+    padding: 0 25px 0 25px;
+    /* width: calc(100% - 80px); */
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
