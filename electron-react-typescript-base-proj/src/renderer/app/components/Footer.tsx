@@ -34,19 +34,20 @@ class Footer extends React.Component<Props, State>{
         this.invite = this.invite.bind(this);
     }
 
-    componentDidMount(){
-        client.onConnect = () => {
-            subscribe(client, electronStore.get("username"), this.state.uuid, (obj: any) => {
-                let payload = obj.payload;
-                if (payload) {
-                    if (payload.Members) {
-                        this.setState({
-                            members: payload.Members
-                        },() => store.dispatch({type : 'setMembers', members: this.state.members}))
-                    }
+    getMembers = () => {
+        console.log("Footer에서 설정이 지금 안되고 있다1.")
+        subscribe(client, electronStore.get("username"), this.state.uuid, (obj: any) => {
+            let payload = obj.payload;
+            console.log("Footer에서 설정이 지금 안되고 있다3.")
+            console.log(payload)
+            if (payload) {
+                if (payload.Members) {
+                    this.setState({
+                        members: payload.Members
+                    },() => store.dispatch({type : 'setMembers', members: this.state.members}))
                 }
-            });
-        }  
+            }
+        });
     }
 
     closeWindow = () => {
@@ -62,6 +63,7 @@ class Footer extends React.Component<Props, State>{
         })
         publishApi(client, "api.room.invite", electronStore.get("username"), this.state.uuid, {convoId: this.props.convoId, userIds:userIds})
         publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.props.convoId });
+        this.getMembers()
         // this.closeWindow()
     }
 

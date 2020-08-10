@@ -24,6 +24,7 @@ interface RoomState {
     uuid: string;
     msgs: Message[];
     members: Member[];
+    tmembers: Member[];
     convo: Conversation;
     bot?: Bot;
     botIntent?: BotIntent[];
@@ -71,6 +72,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
             uuid: v4(),
             msgs: [],
             members: store.getState().members,
+            tmembers: [],
             convo: {
                 convoId: this.props.match.params.convo,
                 convoType: 0,
@@ -121,8 +123,8 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                     }
                     if (payload.Members) {
                         this.setState({
-                            members: payload.Members
-                        },() => store.dispatch({type : 'setMembers', members: this.state.members}))
+                            tmembers: payload.Members
+                        },() => store.dispatch({type : 'setMembers', members: this.state.tmembers}))
                     }
                     if (payload.Conversation && payload.Messages) {
                         // console.log(payload.Conversation)
@@ -222,7 +224,6 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                     // }
                 }
             });
-
             publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
         }
     }

@@ -39,6 +39,8 @@ export default createStore(function(state:any, action:any){
         return {...state, tempMembers: state.tempMembers}
     }
     if(action.type === 'setMembers' && action.members != undefined && action.members.length > 0){
+        console.log({...state, members: action.members})
+        console.log("..................................")
         return {...state, members: action.members}
     }
     return state;
