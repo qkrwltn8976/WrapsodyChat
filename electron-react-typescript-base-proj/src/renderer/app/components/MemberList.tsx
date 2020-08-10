@@ -63,8 +63,8 @@ class MemberList extends React.Component<Props, State>{
         }.bind(this));
     }
 
-    getChildNode = (uuid: string) => {   
-        subscribe(client, electronStore.get("username"), uuid, (obj:any) => {
+    getChildNode = () => {   
+        subscribe(client, electronStore.get("username"), this.state.uuid, (obj:any) => {
             let payload = obj.payload;
             console.log("----------------------------------------------")
             console.log(payload)
@@ -82,8 +82,8 @@ class MemberList extends React.Component<Props, State>{
     clickTree = (id) => {
         let uuid: string;
         uuid = v4()
-        publishApi(client, 'api.organ.tree', electronStore.get("username"), uuid , {"root": "N", "path": id})
-        this.getChildNode(uuid)
+        publishApi(client, 'api.organ.tree', electronStore.get("username"), this.state.uuid , {"root": "N", "path": id})
+        this.getChildNode()
     }
 
     afterClick = () =>{
