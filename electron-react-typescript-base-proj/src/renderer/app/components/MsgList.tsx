@@ -79,6 +79,8 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
     getSystemMsg(body: string, type: string) {
         let msgspan;
+        if(body[0] === "{") 
+            body = JSON.parse(body).body;
 
         msgspan = <span className="ng-binding">{body}<a href="" className="wrapmsgr_right"></a></span>;
 
@@ -206,7 +208,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         let msgbody;
 
         if (msg.sendUserId === "@SYS@")
-            msgbubble = this.getSystemMsg(msg.body, 'sys');
+            msgbubble = this.getSystemMsg(msg.body, 'system');
         else {
             msgbubble = this.getUserMsg(msg, index);
         }
@@ -300,18 +302,22 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
     componentDidUpdate = () => {
         // 처음 채팅방에 접속했을 경우
-        console.log(this.props.eom)
         if (this.state.msgs.length <= 20) {
             if(this.props.isBookmark && !this.props.eom) {
                 this.scrollView.current.scrollTop = 0;
                 console.log(this.state.msgs.length)
             } 
-            else if(!this.props.isBookmark){
+            // else {
+            //     this.messagesScrollToBottom();
+            //     console.log('down')
+            // // }
+            if(!this.props.isBookmark && !this.props.eom){
                 this.messagesScrollToBottom();
                 console.log(this.state.msgs.length)
+                console.log('down')
             }
                
-        }
+        } 
         
          // 안 읽은 메세지가 있는 경우
         if(this.state.unreadExists && document.getElementById('read'))
