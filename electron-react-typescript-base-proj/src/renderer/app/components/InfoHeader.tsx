@@ -144,7 +144,6 @@ class InfoHeader extends React.Component<Props, ShowState>{
     leaveRoom = (e) => {
         e.preventDefault();
         publishApi(client, "api.room.leave", electronStore.get("username"), this.state.uuid, {convoId: this.props.convoId})
-        console.log("나가?")
         var win = remote.getCurrentWindow()
         win.close()
     }

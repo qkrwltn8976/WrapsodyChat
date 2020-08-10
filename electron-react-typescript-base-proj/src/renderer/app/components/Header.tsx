@@ -29,17 +29,25 @@ class Header extends React.Component<Props>{
     }
 
     getRightBtns = () => {
-        return (<React.Fragment>{(os.platform() === "darwin") ?
-            null
-            : <div className="wrapmsgr-header-icon-wrap">
+        // if((os.platform() === "darwin")) {
+        //     return(null)
+        // } else {
+            return(<div className="wrapmsgr-header-icon-wrap">
                 <a href="">
                     <i style={{ fontSize: 30 }} onClick={this.minimizeWindow}>-</i>
                 </a>
                 <a href="">
                     <i className="icon_times" title="Close" onClick={this.closeWindow}></i>
                 </a>
-            </div>}
-        </React.Fragment>)
+            </div>)
+        // }
+    }
+
+    isMac = () => {
+        if((os.platform() === "darwin")) 
+            return true;
+        else
+            return false;
     }
 
     closeWindow = (event: any) => {
@@ -57,8 +65,9 @@ class Header extends React.Component<Props>{
     render() {
         const { docName, headerType } = this.props;
         let record = this.getRecordIcon();
-        console.log(os.platform())
-        let headerText = (os.platform() === "darwin") ? "wrapmsgr_title_header center-text" : "wrapmsgr_title_header";
+        let btns = this.getRightBtns();
+        console.log(headerType)
+        let headerText = (this.isMac) ? "wrapmsgr_title_header center-text" : "wrapmsgr_title_header";
         if (headerType === HeaderType.CHAT) {
             return (
                 <div className={headerText}>
@@ -66,9 +75,7 @@ class Header extends React.Component<Props>{
                         <span className="ng-binding" title={docName}>{docName}</span>
                         {record}
                     </h1>
-                    {this.getRightBtns}
-
-
+                    {(this.isMac) ? null: btns}
                 </div>
             );
         } else if (headerType === HeaderType.CREATE) {
@@ -84,13 +91,13 @@ class Header extends React.Component<Props>{
                 </div>
             );
         }
-        else if (headerType === HeaderType.INVITE) {
+        else if (headerType === HeaderType.INVITE || HeaderType.BOOKMARK) {
             return (
                 <div className="wrapmsgr_popup_header">
                     <h2 className="title_h2">
                         <span>{headerType}</span>
                     </h2>
-                    {this.getRightBtns}
+                    {btns}
                 </div>
             );
         }
@@ -98,7 +105,7 @@ class Header extends React.Component<Props>{
             return (
                 <div className={headerText}>
                     <h1 className="wrapmsgr_title">Wrapsody Chat</h1>
-                    {this.getRightBtns}
+                    {(this.isMac) ? null: btns}
                 </div>
             )
         }
@@ -106,7 +113,7 @@ class Header extends React.Component<Props>{
             return (
                 <div className={headerText}>
                     <h1 className="wrapmsgr_title">{headerType}</h1>
-                    {this.getRightBtns}
+                    {(this.isMac) ? null: btns}
                 </div>
             );
         } // Wrapsody Chat Bot, Wrapsody Chat, invite

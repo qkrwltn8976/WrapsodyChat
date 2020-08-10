@@ -1,4 +1,5 @@
 package com.fasoo.wrapsody.commandserver.service;
+import com.fasoo.wrapsody.commandserver.model.ConversationViewMessage;
 import com.fasoo.wrapsody.commandserver.model.CustomMessage;
 import com.fasoo.wrapsody.commandserver.model.SystemMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -25,10 +26,18 @@ public class Runner{
         rabbitTemplate.convertAndSend(exchange, routingKey, message, m->{
             m.getMessageProperties().setUserId("wrapsody");
             m.getMessageProperties().getHeaders().put("__TypeId__", "com.wrapsody.messaging.model.Message");
-//            m.getMessageProperties().getHeaders().put("user-id","@SYS@");
+            return m;
+        });
+    }
 
-
-//            m.getMessageProperties().getHeaders().put("destination","/exchange/request/chat.short.convo."+message.getRecvConvoId());
+    public void send (String exchange, String routingKey, ConversationViewMessage message, String uuid){
+        System.out.println("Sending message... conversation view");
+        rabbitTemplate.convertAndSend(exchange, routingKey, message, m->{
+            System.out.println("Sending message... conversation view");
+            m.getMessageProperties().setUserId("wrapsody");
+            m.getMessageProperties().getHeaders().put("correlation_id", "api.conversation.view");
+            m.getMessageProperties().setReplyTo("module-command");
+            m.getMessageProperties().getHeaders().put("__TypeId__", "");
             return m;
         });
     }
