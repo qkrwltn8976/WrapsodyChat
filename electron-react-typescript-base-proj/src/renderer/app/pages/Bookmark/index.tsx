@@ -114,7 +114,7 @@ class BookmarkPage extends React.Component<BookmarkProps, BookmarkState> {
             <div id="wrapmsgr" className="ng-scope">
                 <div id="wrapmsgr_body" ng-controller="WrapMsgrController" className="wrapmsgr_container ng-scope" data-ws="ws://ecm.dev.fasoo.com:9500/ws" data-vhost="/wrapsody-oracle" data-fpns-enabled="true" data-weboffice-enabled="true">
                     <div className="wrapmsgr_chat wrapmsgr_state_normalize wrapmsgr_viewmode_full" ng-class="[chatroomState, viewModeClass, {false: 'disabled'}[loggedIn]]" ng-show="current.convo">
-                        <Header convoId={this.state.bookmark.convoId} docName="북마크" headerType={type.HeaderType.CHAT} />
+                        <Header convoId={this.state.bookmark.convoId} docName="북마크" headerType={type.HeaderType.BOOKMARK} />
                         <div className="wrapmsgr_content  wrapmsgr_viewmode_full wrapmsgr_chatbot">
                             <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
                                 <BookmarkList bookmarks={this.state.bookmarks} getMsgs={this.getTopMsgs} deleteBookmark={this.deleteBookmark}/>

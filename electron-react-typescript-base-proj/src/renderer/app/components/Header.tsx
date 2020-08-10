@@ -1,9 +1,10 @@
 import * as React from 'react';
-import {HeaderType} from '@/renderer/libs/enum-type';
+import { HeaderType } from '@/renderer/libs/enum-type';
 
-const remote = require('electron').remote
+const remote = require('electron').remote;
+const os = require('os');
 
-interface Props{
+interface Props {
     docName?: string; // 채팅방 생성 헤더에서만 docName필요 나머지는 null
     headerType: string;
     convoId?: String;
@@ -14,105 +15,105 @@ interface Props{
 // typescript에서는 PropTypes를 통해서 런터임에서 props검증
 // 타입, 문서제목 필요
 class Header extends React.Component<Props>{
-    constructor(props: Props){
+    constructor(props: Props) {
         super(props);
     } // 생성자
-    
+
     getRecordIcon = () => {
-        if(this.props.bookmark === "Y") {
-            return(
-            <span className="record-box"><div className="blob"></div>
-            <h6  className="record">RECORDING...</h6></span>
+        if (this.props.bookmark === "Y") {
+            return (
+                <span className="record-box"><div className="blob"></div>
+                    <h6 className="record">RECORDING...</h6></span>
             )
         }
     }
 
-    closeWindow = (event:any)=>{
+    getRightBtns = () => {
+        // if((os.platform() === "darwin")) {
+        //     return(null)
+        // } else {
+            return(<div className="wrapmsgr-header-icon-wrap">
+                <a href="">
+                    <i style={{ fontSize: 30 }} onClick={this.minimizeWindow}>-</i>
+                </a>
+                <a href="">
+                    <i className="icon_times" title="Close" onClick={this.closeWindow}></i>
+                </a>
+            </div>)
+        // }
+    }
+
+    isMac = () => {
+        if((os.platform() === "darwin")) 
+            return true;
+        else
+            return false;
+    }
+
+    closeWindow = (event: any) => {
         console.log('bye')
         var win = remote.getCurrentWindow()
         win.close()
     }
 
-    minimizeWindow = (event:any)=>{
+    minimizeWindow = (event: any) => {
         event.preventDefault()
         var win = remote.getCurrentWindow()
         win.minimize()
     }
 
     render() {
-        const {docName, headerType} = this.props;
+        const { docName, headerType } = this.props;
         let record = this.getRecordIcon();
-        if(headerType === HeaderType.CHAT){
-            return(
-                <div className = "wrapmsgr_title_header">
-                    <h1 className = "wrapmsgr_title" id = "forHeaderDocTitle">
-                        <span className = "ng-binding" title = {docName}>{docName}</span>
-                        {record} 
+        let btns = this.getRightBtns();
+        console.log(headerType)
+        let headerText = (this.isMac) ? "wrapmsgr_title_header center-text" : "wrapmsgr_title_header";
+        if (headerType === HeaderType.CHAT) {
+            return (
+                <div className={headerText}>
+                    <h1 className="wrapmsgr_title" id="forHeaderDocTitle">
+                        <span className="ng-binding" title={docName}>{docName}</span>
+                        {record}
                     </h1>
-                    <div className = "wrapmsgr-header-icon-wrap">
-                        <a href = "">
-                            <i style = {{fontSize:30}} onClick = {this.minimizeWindow}>-</i>
-                        </a>
-                        <a href = "">
-                            <i className = "icon_times" title = "Close" onClick={this.closeWindow}></i>
-                        </a>
-                    </div>
-                   
+                    {(this.isMac) ? null: btns}
                 </div>
             );
-        }else if(headerType === HeaderType.CREATE){
-            return(
+        } else if (headerType === HeaderType.CREATE) {
+            return (
                 <div className="wrapmsgr_popup_header">
                     <h2 className="title_h2">
                         <span ng-if="manageMethod == 'create'" className="ng-scope">{headerType}</span>
                     </h2>
-                        <a href = "">
-                            <i style = {{fontSize:30}} onClick = {this.minimizeWindow}>-</i>
-                        </a>
+                    <a href="">
+                        <i style={{ fontSize: 30 }} onClick={this.minimizeWindow}>-</i>
+                    </a>
                     <a href=""><i className="icon_times" onClick={this.closeWindow}></i></a>
                 </div>
-            );    
+            );
         }
-        else if(headerType === HeaderType.INVITE){
-            return(
-                <div className = "wrapmsgr_popup_header">
-                    <h2 className = "title_h2">
+        else if (headerType === HeaderType.INVITE || HeaderType.BOOKMARK) {
+            return (
+                <div className="wrapmsgr_popup_header">
+                    <h2 className="title_h2">
                         <span>{headerType}</span>
                     </h2>
-                    <div className = "wrapmsgr-header-icon-wrap">
-                        <a href = "">
-                            <i style = {{fontSize:30}} onClick = {this.minimizeWindow}>-</i>
-                        </a>
-                        <a href ="">
-                            <i className = "icon_times" title = "Close" onClick={this.closeWindow}></i>
-                        </a>
-                    </div>    
+                    {btns}
                 </div>
-            );    
+            );
         }
-        else if(headerType === HeaderType.LIST){
-            return(
-                <div className="wrapmsgr_title_header">
-				    <h1 className="wrapmsgr_title">Wrapsody Chat</h1>
-				        <div className="wrapmsgr-header-icon-wrap">
-                        <a href = "">
-                            <i style = {{fontSize:30}} onClick = {this.minimizeWindow}>-</i>
-                        </a>
-			 		        <a href=""><i className="icon_times" title="닫기" onClick={this.closeWindow}></i></a>
-			 	    </div>
-			</div>
+        else if (headerType === HeaderType.LIST) {
+            return (
+                <div className={headerText}>
+                    <h1 className="wrapmsgr_title">Wrapsody Chat</h1>
+                    {(this.isMac) ? null: btns}
+                </div>
             )
         }
-        else{
-            return(
-                <div className = "wrapmsgr_title_header">
-                    <h1 className = "wrapmsgr_title">{headerType}</h1>
-                    <div className = "wrapmsgr-header-icon-wrap">
-                        <a href = "">
-                            <i style = {{fontSize:30}} onClick = {this.minimizeWindow}>-</i>
-                        </a>
-                        <a href = ""><i className = "icon_times" title = "Close" onClick={this.closeWindow}></i></a>
-                    </div>
+        else {
+            return (
+                <div className={headerText}>
+                    <h1 className="wrapmsgr_title">{headerType}</h1>
+                    {(this.isMac) ? null: btns}
                 </div>
             );
         } // Wrapsody Chat Bot, Wrapsody Chat, invite
