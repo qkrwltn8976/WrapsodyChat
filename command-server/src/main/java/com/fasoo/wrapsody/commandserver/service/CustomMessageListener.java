@@ -1,6 +1,7 @@
 package com.fasoo.wrapsody.commandserver.service;
 
 import com.fasoo.wrapsody.commandserver.controller.keyword.Bookmark;
+import com.fasoo.wrapsody.commandserver.model.ConversationViewMessage;
 import com.fasoo.wrapsody.commandserver.model.CustomMessage;
 import com.fasoo.wrapsody.commandserver.model.SystemMessage;
 import org.json.simple.parser.ParseException;
@@ -11,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 @Service
 public class CustomMessageListener {
@@ -36,10 +34,12 @@ public class CustomMessageListener {
         }
     }
 
+    String uuid = UUID.randomUUID().toString();
     String body, exchange, routingKey;
     String []cmd;
     Command type;
     boolean iscommand = false;
+
 
     @RabbitListener(queues = "spring-boot")
     @RabbitHandler
@@ -141,7 +141,13 @@ public class CustomMessageListener {
 
 
                 //REVISION
+                if(type == Command.REVISION){
+                    System.out.println("test");
+                    ConversationViewMessage tm = new ConversationViewMessage(message.getSendUserId(), "ko-KR", message.getRecvConvoId());
+                    System.out.print(tm);
+                    runner.send("request", "api.conversation.view", tm, uuid);
 
+                }
         }
 
     }
