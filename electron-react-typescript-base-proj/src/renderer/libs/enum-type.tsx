@@ -66,4 +66,6 @@ export enum Attachment {
 export enum Command {
     BOOKMARK_START = 5,
     BOOKMARK_STOP = 6,
+    BOOKMARK_NAME = 7,
+    DEADLINE = 10
 }

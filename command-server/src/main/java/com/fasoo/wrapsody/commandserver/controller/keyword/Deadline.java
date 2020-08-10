@@ -9,11 +9,14 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public class Deadline {
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    Date date;
-    long timestamp;
 
-    public Deadline(String[] cmd){
+
+    public String Deadline(String[] cmd){
+        //서버에 데드라인 정보 보낼때 사용
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date dt;
+        long timestamp;
+
         List <String> date = new ArrayList<String>();
         sliceDate(cmd[1], date);
         if(date.size() == 3){
@@ -22,13 +25,11 @@ public class Deadline {
                 date.set(0,"20"+date.get(0));
             }
             String d = date.get(0)+"-"+date.get(1)+"-"+date.get(2);
-//            this.date = format.parse(d + " 11:59:59");
-            timestamp = this.date.getTime();
-            System.out.println(this.date);
+
+            return(d);
         }
         else {
-            System.out.println("Please enter deadline YYYY-MM-DD or YY-MM-DD");
-            System.out.println("You can select delimiter among {. , / - _}");
+            return(null);
         }
     }
 

@@ -37,6 +37,7 @@ public class RabbitMQConfig {
                                   MessageConverter messageConverter) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(messageConverter);
+        //rabbitTemplate.setUserIdExpressionString("'wrapsody'");
         return rabbitTemplate;
     }
 

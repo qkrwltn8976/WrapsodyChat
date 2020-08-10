@@ -1,7 +1,9 @@
 export type Bookmark = {
     bookmarkId: string,
     startAt: number,
-    stopAt: number,
+    endAt: number,
     convoId: string,
-    name?: string
+    name?: string,
+    createdAt: number,
+    updatedAt: number
 }

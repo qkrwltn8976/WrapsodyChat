@@ -2,12 +2,19 @@ package com.fasoo.wrapsody.commandserver.service;
 
 import com.fasoo.wrapsody.commandserver.controller.keyword.Bookmark;
 import com.fasoo.wrapsody.commandserver.model.CustomMessage;
+import com.fasoo.wrapsody.commandserver.model.SystemMessage;
+import org.json.simple.parser.ParseException;
+import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
 
 @Service
 public class CustomMessageListener {
@@ -29,20 +36,24 @@ public class CustomMessageListener {
         }
     }
 
-    CustomMessage message;
-    String body;
+    String body, exchange, routingKey;
     String []cmd;
     Command type;
     boolean iscommand = false;
 
     @RabbitListener(queues = "spring-boot")
-    public void receiveMessage(final CustomMessage message) {
+    @RabbitHandler
+    public void receiveMessage(final CustomMessage message) throws ParseException {
         System.out.println(message.getBody());
-
         body = message.getBody();
-        if(body.charAt(0)=='@'){
+
+
+        if(body.length() !=0 &&body.charAt(0)=='@'){
             body = body.substring(1);
             cmd = body.split(" ");
+            Runner runner = new Runner(rabbitTemplate);
+            exchange = "request";
+            routingKey = "chat.short.convo.";
 
             //첫번째 단어가 Command 열거형에 있는 name 중 하나와 일치하면 type에 명령어를 저장하고 iscommand를 참으로 반환한다
             for (Command command : Command.values()) {
@@ -57,45 +68,82 @@ public class CustomMessageListener {
             if(type==Command.BOOKMARK && cmd.length!=1){
                     String c = cmd[1].toLowerCase();
                     if(c.compareTo(Bookmark.Function.START.getName())==0){
-                        Date date = new Date();
-                        System.out.println("bookmark start");
-                        CustomMessage customMessage = new CustomMessage(message.getCreatedAt(), message.getUpdatedAt(),50000, "minji",message.getRecvConvoId(), "BOOKMARK START",0);
-                        Runner runner = new Runner(rabbitTemplate);
-                        runner.send("chat","chat.short.room."+message.getRecvConvoId(),customMessage);
+                        SystemMessage sm = new SystemMessage(message.getRecvConvoId(),"북마크를 시작합니다", 5);
+                        runner.send(exchange,routingKey+message.getRecvConvoId(),sm);
                     }
                     else if(c.compareTo(Bookmark.Function.STOP.getName())==0){
-                        System.out.println("bookmark stop");
-                        Runner runner = new Runner(rabbitTemplate);
-//                        SystemMessage systemMessage = new SystemMessage(1,"me",message.getRecvConvoId(),message.getCreatedAt(),0);
-//                        runner.send("spring-boot-exchange","bookmark",systemMessage);
+                        SystemMessage sm = new SystemMessage(message.getRecvConvoId(),"북마크를 끝냅니다", 6);
+                        runner.send(exchange,routingKey+message.getRecvConvoId(),sm);
+                    }
+                    else if(c.compareTo(Bookmark.Function.NAME.getName())==0 && cmd.length>=3){
+                            String cmdName="";
+                            for(int i = 2;i <cmd.length;i++)
+                                cmdName+= cmd[i];
+                            SystemMessage sm = new SystemMessage(message.getRecvConvoId(), "북마크 이름을 "+cmdName+"(으)로 설정했습니다",7);
+                            runner.send(exchange,routingKey+message.getRecvConvoId(),sm);
+
                     }
                     else{
-                        System.out.println("You can enter start / stop");
+                        SystemMessage sm = new SystemMessage(message.getRecvConvoId(), "커맨드 형식: @BOOKMARK START / @BOOKMARK STOP / @BOOKMARK NAME name",100);
+                        runner.send(exchange,routingKey+message.getRecvConvoId(),sm);
                     }
                 }
 
                 if(type==Command.BOOKMARK && cmd.length==1){
-                    System.out.println("You can enter start / stop");
+                    SystemMessage sm = new SystemMessage(message.getRecvConvoId(), "커맨드 형식: @BOOKMARK START / @BOOKMARK STOP",100);
+                    runner.send(exchange,routingKey+message.getRecvConvoId(),sm);
                 }
 
+
                 //DEADLINE
+            if(type==Command.DEADLINE && cmd.length!=1) {
+                int cmdType=10;
+                if(cmd.length!= 1){
+                    String msg="";
+
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date dt;
+                    long timestamp;
+
+                    List <String> date = new ArrayList<String>();
+
+                    StringTokenizer st = new StringTokenizer(cmd[1], ".|,|-|_|/| ");
+                    while(st.hasMoreTokens()){
+                        //숫자만 추출하여 저장
+                        date.add(st.nextToken().replaceAll("[^0-9]",""));
+                    }
+
+                    //연도 예외처리 yyyy || yy || mm || m || dd || d 형식 확인
+                    if(date.size() == 3 && (date.get(0).length()==4 || date.get(0).length()==2) && (date.get(1).length()==1 || date.get(1).length()==2) && (date.get(2).length()==1 || date.get(2).length()==2)){
+                        //연도를 두자리로 적었으면 앞에 20을 붙여준다.
+                        if(Integer.parseInt(date.get(0))<100){
+                            date.set(0,"20"+date.get(0));
+                        }
+                        String d = date.get(0)+"-"+date.get(1)+"-"+date.get(2);
+
+                        msg = d;
+                    }
+                    else {
+                        msg = "Please enter deadline YYYY-MM-DD or YY-MM-DD \n You can select delimiter among {. , / - _}";
+                        cmdType=100;
+                    }
+
+                    SystemMessage sm = new SystemMessage(message.getRecvConvoId(), msg,cmdType);
+                    runner.send(exchange,routingKey+message.getRecvConvoId(), sm);
+                }
+
+                }
+                else if(type==Command.DEADLINE && cmd.length==1) {
+                    String msg = "Please enter deadline YYYY-MM-DD or YY-MM-DD \n You can select delimiter among {. , / - _}";
+                    SystemMessage sm = new SystemMessage(message.getRecvConvoId(), msg,100);
+                    runner.send(exchange,routingKey+message.getRecvConvoId(),sm);
+                }
+
 
                 //REVISION
 
         }
 
-//        CustomMessage customMessage = new CustomMessage(1,"2","","ddd",1,0,0);
-//
-//
-//        Runner runner = new Runner(rabbitTemplate);
-//        runner.send("spring-boot-exchange","bookmark",customMessage);
-
-//        try {
-//            SyntaxAnalyzer sa = new SyntaxAnalyzer(message);
-//
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
     }
 
 }
