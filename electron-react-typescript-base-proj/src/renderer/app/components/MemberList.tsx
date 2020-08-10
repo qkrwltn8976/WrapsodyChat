@@ -3,7 +3,7 @@ import { Member } from '../../models/Member';
 import { getShortName } from '../../libs/messengerLoader';
 import { TreeMember } from '../../models/TreeMember';
 import { TreeDept } from '../../models/TreeDept';
-import { client , subscribe, publishApi } from '../../libs/stomp'
+import {client, publishApi, subscribe} from '@/renderer/libs/stomp'
 import { MemberComponent, Dept } from '../components'
 import { Nodes } from '../../models/Nodes';
 import { Node } from '../../models/Node';
@@ -57,42 +57,33 @@ class MemberList extends React.Component<Props, State>{
         this.clickTree = this.clickTree.bind(this);
         this.afterClick = this.afterClick.bind(this);
         this.clickAll = this.clickAll.bind(this);
-        this.getNodes = this.getNodes.bind(this);
+        this.getChildNode = this.getChildNode.bind(this);
         store.subscribe(function(this:MemberList){
             this.setState({ tempMembers: store.getState().tempMembers });
         }.bind(this));
     }
 
-    getNodes = ()=> {
-        console.log("?????????????????????????????")
-        client.onConnect = () => {
-            subscribe(client, electronStore.get("username"), this.state.uuid, (obj:any) => {
-                let payload = obj.payload;
-                console.log("----------------------------------------------")
-                console.log(payload)
-                if(payload){
-                    if(payload.Nodes){
-                        this.setState({
-                            childNodes : payload.Nodes,
-                        })
-                        let newNodeList : Node[];
-                        newNodeList = [];
-                        this.state.childNodes.map(node =>{
-                            newNodeList =  newNodeList.concat([{"name": node.columnText , "id" : node.value, "hasChildren" : node.hasChildren, "isExpanded": false, "status": "select", "type": node.type, parentCode : node.parentCode}])   
-                        })
-                        this.setState({
-                            nodeList:newNodeList
-                        }, () => this.afterClick())
-                        
-                    }
+    getChildNode = (uuid: string) => {   
+        subscribe(client, electronStore.get("username"), uuid, (obj:any) => {
+            let payload = obj.payload;
+            console.log("----------------------------------------------")
+            console.log(payload)
+            if(payload){
+                if(payload.Nodes){
+                    this.setState({
+                        childNodes : payload.Nodes,
+                    }, () => this.afterClick()) 
                 }
-            });
-        }
+            }
+        }); 
     }
+ 
 
     clickTree = (id) => {
-        publishApi(client, 'api.organ.tree', electronStore.get("username"), this.state.uuid , {"root": "N", "path": id});
-        this.getNodes();
+        let uuid: string;
+        uuid = v4()
+        publishApi(client, 'api.organ.tree', electronStore.get("username"), uuid , {"root": "N", "path": id})
+        this.getChildNode(uuid)
     }
 
     afterClick = () =>{
@@ -117,7 +108,7 @@ class MemberList extends React.Component<Props, State>{
                 }]
                 store.dispatch({type: 'clickMember', newMember : newMember})
             }
-            if(node.type == "dept" ){
+            if(node.type == "dept"){
                console.log("------------------------"+ node.name + "-----------------------")
                this.clickTree(node.id)
             }
@@ -125,6 +116,7 @@ class MemberList extends React.Component<Props, State>{
     }
 
     render() {
+        console.log("-----------------------------render-------------------------")
         const { memberListType, convoId} = this.props
         let tempMembersComponent;
         if(this.state.tempMembers && this.state.tempMembers.length > 0){
