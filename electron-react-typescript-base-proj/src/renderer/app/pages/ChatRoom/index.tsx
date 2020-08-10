@@ -10,7 +10,7 @@ import { subscribe, publishApi, publishChat, client } from '../../../libs/stomp'
 import { v4 } from "uuid"
 import * as type from '@/renderer/libs/enum-type';
 import IntentList from '@/renderer/app/components/IntentList';
-import { getDate } from '@/renderer/libs/timestamp-converter';
+import { getDate} from '@/renderer/libs/timestamp-converter';
 
 const Store = require('electron-store')
 const store = new Store()
@@ -140,7 +140,8 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                                 latestMessageAt: payload.Conversation.latestMessageAt,
                                 createdAt: payload.Conversation.createdAt,
                                 updatedAt: payload.Conversation.updatedAt,
-                                bookmark: payload.Conversation.properties.bookmark
+                                bookmark: payload.Conversation.properties.bookmark,
+                                deadline: payload.Conversation.properties.deadline
                             },
                             msgs: payload.Messages,
                             topMsgId: payload.Messages[payload.Messages.length-1].messageId,
@@ -198,7 +199,8 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                                         deadline: body.body
                                     }
                                 }));
-                                publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "deadline", "value": obj.body });
+
+                                publishApi(client, 'api.conversation.property.update', store.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "deadline", "value": body.body });
                             }
                             document.getElementById(this.state.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
                         }
@@ -224,7 +226,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
     render() {
         let sendMsg = this.sendMsg;
         let aside, viewModeClass;
-        console.log(this.state.convo.deadline)
+
         if (this.state.convo.convoType === type.ConvoType.BOT) {
             viewModeClass = 'wrapmsgr_chatbot'
             aside = <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
@@ -250,14 +252,13 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                             <div className={"wrapmsgr_content  wrapmsgr_viewmode_full " + viewModeClass}>
                                 {aside}
                                 <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass" id="DocumentChat">
-                                    <MsgList msgs={this.state.msgs} convo={this.state.convo} sendMsg={this.sendMsg} getMsgs={this.getMsgs} eom={this.state.eom} topMsgId={this.state.topMsgId} />
+                                    <MsgList msgs={this.state.msgs} convo={this.state.convo} sendMsg={this.sendMsg} getMsgs={this.getMsgs} eom={this.state.eom} topMsgId={this.state.topMsgId} isBookmark={false} />
                                     <MsgInput convoId={this.state.convo.convoId} uuid={this.state.uuid} sendMsg={sendMsg.bind(this)} />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </React.Fragment>
         )
     }

@@ -2,92 +2,103 @@ import * as React from 'react';
 import { getShortName } from '../../libs/messengerLoader';
 import { TreeMember } from '../../models/TreeMember';
 import MemberList from './MemberList';
+import { Node } from '../../models/Node';
+import store from '../../../store'
 
 interface Props{
-    clickCheckBox?: any,
-    userId: string,
-    userName: string,
+    clickMember?: any,
     master?: TreeMember,
-    oldMembers?: TreeMember[],
+    oldMember?: TreeMember,
+    oldMembers?:TreeMember[],
     isAllChecked?: boolean,
-    type?: string,
-    tempMembers?:TreeMember[],
+    memberIsChecked?: boolean,
+    member?: Node,
+    tempMember ?: TreeMember,
+    selectedMember?: TreeMember,
+    selectedMemberType?: string,
 }
 interface State{
-    isChecked: boolean,
+    tempMembers: TreeMember[],
 }
 
 
 class MemberComponent extends React.Component<Props, State>{
-    constructor(props: Props, state: State){
-        super(props);
+
+    constructor(props: Props){
+        super(props)
         this.state = ({
-            isChecked : false
+            tempMembers : store.getState().tempMembers
         })
-        this.changeIsChecked = this.changeIsChecked.bind(this);
+        store.subscribe(function(this:MemberComponent){
+            this.setState({ 
+                tempMembers : store.getState().tempMembers
+            })
+        }.bind(this));
+        this.clickMember = this.clickMember.bind(this);
+        this.deleteMember = this.deleteMember.bind(this);
     }
 
-    changeIsChecked = (e) => {
+    clickMember = (e) => {
         e.preventDefault()
         let newMember : TreeMember[];
         newMember = [{
-            userId : this.props.userId,
-            userName : this.props.userName,
+            userId : this.props.member.id,
+            userName : this.props.member.name,
             password : null,
         }]
-        this.setState({
-            isChecked : !this.state.isChecked
-        },this.props.clickCheckBox("Member", this.state.isChecked, newMember,e))
+        store.dispatch({type: 'clickMember', newMember : newMember})
     }
-    deleteFromSelected = (e) => {
+
+    deleteMember = (e) => {
         e.preventDefault()
         let newMember : TreeMember[];
         newMember = [{
-            userId : this.props.userId,
-            userName : this.props.userName,
+            userId : this.props.tempMember.userId,
+            userName : this.props.tempMember.userName,
             password : null,
         }]
-        this.setState({
-            isChecked : true
-        },this.props.clickCheckBox("Member", true, newMember,e))
+        store.dispatch({type: 'clickMember', newMember : newMember})
     }
 
-
+    
     render() {
         let ownerComponent;
-        let idx;
-        if(this.props.userName == this.props.master.userName){
-            ownerComponent = <span className="wrapmsgr_master" ng-show="node.value == docInfo.detail.masterUserId">Owner</span>
-        }else{
-            ownerComponent = <div></div>
-        }
-        let isParticipants = false;
-        if(this.props.oldMembers){
-            for(var old of this.props.oldMembers){
-                if(old.userId == this.props.userId){
-                    isParticipants = true;
-                    break;
-                }
+        if(this.props.member && this.props.master && this.props.oldMembers){
+            if(this.props.member.name == this.props.master.userName){
+                ownerComponent = <span className="wrapmsgr_master" ng-show="node.value == docInfo.detail.masterUserId">Owner</span>
+            }else{
+                ownerComponent = <div></div>
             }
-        }
-        
-        if(this.props.type == "select"){
-            if(this.props.tempMembers){
-                idx = this.props.tempMembers.findIndex( obj => obj.userId === this.props.userId)
+            let idx, idx2;
+            idx = -1;
+            if(this.props.oldMembers != undefined){
+                idx2 = this.props.oldMembers.findIndex( obj => obj.userId === this.props.member.id)
             }
-            const checkboxId = "member-"+ this.props.userId+"object:"+ Math.random()
+            if(this.props.oldMembers === undefined){
+                idx2 = -1;
+            }
+            if(this.state.tempMembers && this.state.tempMembers.length > 0){
+                idx = this.state.tempMembers.findIndex( obj => obj.userId === this.props.member.id)
+            }
+            let clickComponent;
+            if(idx2 == -1){ //oldMember 아니면 check할수있음 
+                clickComponent = <i className="icon_checkbox" ng-class="{disabled: node.disabled}" onClick={this.clickMember}></i>
+            }else{
+                clickComponent = <i className="icon_checkbox disabled" ng-class="{disabled: node.disabled}"></i>
+            }
+            const checkboxId = "member-"+ this.props.member.id+"object:"+ Math.random()
             return(
-                <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className={isParticipants ? "ng-scope angular-ui-tree-node selected" : "ng-scope angular-ui-tree-node"} expand-on-hover="false">
+                <li ng-repeat="node in docInfo.organ" ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className={(idx2 == -1) ?  "ng-scope angular-ui-tree-node":"ng-scope angular-ui-tree-node selected"} expand-on-hover="false">
                     <div className="organ_wrapper ng-scope">
                         <span ng-style="node.type === 'dept' &amp;&amp; !node.hasChildren &amp;&amp; {'visibility': 'hidden'}">
                             <input type="checkbox" id={checkboxId} ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)" checked = {idx != -1}/>
                             <label htmlFor={checkboxId} data-nodrag="">
-                                <i className={isParticipants? "icon_checkbox disabled" : "icon_checkbox"} ng-class="{disabled: node.disabled}" onClick={this.changeIsChecked}></i>
+                                {clickComponent}
                             </label>
                         </span>
                         <div wrapmsgr-user-profile="users[node.value] || node.value" user-profile-disabled="node.type === 'dept'" className="ng-isolate-scope">
-                            <span className="user-photo ng-binding ng-isolate-scope no-photo cyan">{getShortName(this.props.userName)}</span>
-                            <span className="wrapmsgr_member ng-binding">{this.props.userName}</span>
+                            <span className="user-photo ng-binding ng-isolate-scope no-photo cyan">{getShortName(this.props.member.name)}</span>
+                            <span className="wrapmsgr_member ng-binding">{this.props.member.name}</span>
                         </div>
                         {ownerComponent}
                         <ol ui-tree-nodes="" ng-model="node.subTree" ng-class="{expanded: !collapsed}" className="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-empty">
@@ -95,34 +106,38 @@ class MemberComponent extends React.Component<Props, State>{
                     </div>
                 </li>
             );
-        }else if(this.props.type == "selectedOld"){
+        }
+        if(this.props.selectedMemberType == "oldMembers" && this.props.oldMember){
             return(
                 <li ng-repeat="member in inviteMembers | orderBy:['-disabled', 'userName']" ui-tree-node="" data-collapsed="true" className="ng-scope angular-ui-tree-node" expand-on-hover="false">
                     <div wrapmsgr-user-profile="users[member.userId] || member.userId" className="ng-isolate-scope">
-                        <span className="user-photo ng-binding ng-isolate-scope no-photo green">{getShortName(this.props.userName)}</span>
+                        <span className="user-photo ng-binding ng-isolate-scope no-photo green">{getShortName(this.props.oldMember.userName)}</span>
                         <span className="wrapmsgr_member ng-binding">
-                            {this.props.userName}
+                            {this.props.oldMember.userName}
                             <a href=""></a>
                         </span>
                     </div>
                 </li>
             )
-        }else if(this.props.type == "selectedTemp"){
+        }
+        if(this.props.selectedMemberType == "tempMembers" && this.props.tempMember){
             return(
                 <li ng-repeat="member in inviteMembers | orderBy:['-disabled', 'userName']" ui-tree-node="" data-collapsed="true" className="ng-scope angular-ui-tree-node" expand-on-hover="false" >
                     <div wrapmsgr-user-profile="users[member.userId] || member.userId" className="ng-isolate-scope">
-                        <span className="user-photo ng-binding ng-isolate-scope no-photo red">{getShortName(this.props.userName)}</span>
+                        <span className="user-photo ng-binding ng-isolate-scope no-photo red">{getShortName(this.props.tempMember.userName)}</span>
                         <span className="wrapmsgr_member ng-binding">
-                            {this.props.userName}
+                            {this.props.tempMember.userName}
                             <a href="">
-                                <i className="icon_times ng-scope" ng-if="member.userId != user.id &amp;&amp; !member.disabled" ng-click="removeInviteMember(member, $event)" onClick = {this.deleteFromSelected}></i>
+                                <i className="icon_times ng-scope" ng-if="member.userId != user.id &amp;&amp; !member.disabled" ng-click="removeInviteMember(member, $event)" onClick = {this.deleteMember}></i>
                             </a>
                         </span>
                     </div>
                 </li>
             )
-
         }
+        return(
+            <div></div>
+        )
         
     }
 }
