@@ -36,7 +36,7 @@ class Create extends React.Component<createProps>{
                                             </div>
                                         </div>
                                     </div>
-                                    <Footer />
+                                    <Footer convoId = {"ddd"}/>
                                 </form>
                             </div>
                         </div>
