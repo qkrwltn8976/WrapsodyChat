@@ -22,13 +22,11 @@ async function handleClick (userinfo: any, uuid:string, lang:string){
 }
 
 const minimizeWindow = (event:any)=>{
-    console.log('bye')
     var win = remote.getCurrentWindow()
     win.minimize()
 }
 
 const closeWindow = (event:any)=>{
-    console.log('bye')
     var win = remote.getCurrentWindow()
     win.close()
 }
