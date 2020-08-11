@@ -223,7 +223,6 @@ class Chat extends Component<ChatListProps, ChatListState> {
     
     render() {
         let convos = this.state.convos;
-        
         if (convos != undefined) {
             return (
                 <Fragment>

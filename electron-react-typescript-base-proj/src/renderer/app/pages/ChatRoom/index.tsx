@@ -13,6 +13,8 @@ import IntentList from '@/renderer/app/components/IntentList';
 import { getDate} from '@/renderer/libs/timestamp-converter';
 import store from '../../../../store';
 
+const remote = require('electron').remote
+
 const Store = require('electron-store')
 const electronStore = new Store()
 
@@ -24,7 +26,6 @@ interface RoomState {
     uuid: string;
     msgs: Message[];
     members: Member[];
-    tmembers: Member[];
     convo: Conversation;
     bot?: Bot;
     botIntent?: BotIntent[];
@@ -71,8 +72,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
         this.state = ({
             uuid: v4(),
             msgs: [],
-            members: store.getState().members,
-            tmembers: [],
+            members: [],
             convo: {
                 convoId: this.props.match.params.convo,
                 convoType: 0,
@@ -92,12 +92,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
             prevScrollHeight: 0,
             topMsgId: 0,
         })
-        store.subscribe(function(this: ChatRoom){
-            this.setState({
-                members : store.getState().members,
-            })
-        }.bind(this));
-
+        this.updateMembers = this.updateMembers.bind(this);
     }
 
     componentDidMount() {
@@ -121,10 +116,10 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                             topMsgId: payload.Messages[payload.Messages.length-1].messageId
                         });
                     }
-                    if (payload.Members) {
+                    if(payload.Members) {
                         this.setState({
-                            tmembers: payload.Members
-                        },() => store.dispatch({type : 'setMembers', members: this.state.tmembers}))
+                            members: payload.Members
+                        },() => store.dispatch({type : "setMembers", members: this.state.members}))
                     }
                     if (payload.Conversation && payload.Messages) {
                         // console.log(payload.Conversation)
@@ -227,8 +222,20 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
             publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
         }
     }
+    updateMembers = () => {
+        publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
+    }
 
     render() {
+        // var win = remote.getCurrentWindow()
+        // var inviteWin = win.getChildWindows()
+        // inviteWin[0].on('close', function() { 
+        //    win.reload()
+        // });
+        var currentWindow = remote.getCurrentWindow()
+        var childWindow = currentWindow.getChildWindows()
+        console.log("-------------------ChatRoom에서 childWindow를 가져오는지 확인---------")
+        console.log(childWindow)
         let sendMsg = this.sendMsg;
         let aside, viewModeClass;
         console.log("--------------------members----------------------")
@@ -245,7 +252,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                 <InfoHeader convoType={this.state.convo.convoType} convoId={this.state.convo.convoId} docName={this.state.convo.name} memberCount={this.state.convo.memberCount} notificationType={this.state.convo.notificationType} setNotification={this.setNotification} deadline={this.state.convo.deadline} />
                 <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
                     <SearchBar search={this.state.search} setSearch={this.setSearch} />
-                    <MemberList search={this.state.search} convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} members={this.state.members} />
+                    <MemberList search={this.state.search} convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} />
                 </div></React.Fragment>
         }
 

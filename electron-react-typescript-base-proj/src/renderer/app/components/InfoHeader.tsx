@@ -130,7 +130,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
             minHeight: 370,
             // maxWidth: 700,
             // maxHeight: 585,
-            // parent: currentWindow,
+            parent: currentWindow,
             modal: true,
             show: false,
             frame: false,
