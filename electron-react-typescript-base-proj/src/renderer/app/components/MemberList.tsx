@@ -39,6 +39,7 @@ interface Props {
 
 interface State{
     tempMembers : TreeMember[]
+    members: Member[];
     childNodes: Nodes[],
     nodeList: Node[],
     uuid: string,
@@ -50,6 +51,7 @@ class MemberList extends React.Component<Props, State>{
         super(props);
         this.state = ({
             tempMembers: store.getState().tempMembers,
+            members: store.getState().members,
             childNodes : [],
             nodeList : [],
             uuid: v4(),
@@ -59,15 +61,16 @@ class MemberList extends React.Component<Props, State>{
         this.clickAll = this.clickAll.bind(this);
         this.getChildNode = this.getChildNode.bind(this);
         store.subscribe(function(this:MemberList){
-            this.setState({ tempMembers: store.getState().tempMembers });
+            this.setState({ 
+                tempMembers: store.getState().tempMembers,
+                members: store.getState().members, 
+            });
         }.bind(this));
     }
 
     getChildNode = () => {   
         subscribe(client, electronStore.get("username"), this.state.uuid, (obj:any) => {
             let payload = obj.payload;
-            console.log("----------------------------------------------")
-            console.log(payload)
             if(payload){
                 if(payload.Nodes){
                     this.setState({
@@ -109,14 +112,12 @@ class MemberList extends React.Component<Props, State>{
                 store.dispatch({type: 'clickMember', newMember : newMember})
             }
             if(node.type == "dept"){
-               console.log("------------------------"+ node.name + "-----------------------")
                this.clickTree(node.id)
             }
         })
     }
 
     render() {
-        console.log("-----------------------------render-------------------------")
         const { memberListType, convoId} = this.props
         let tempMembersComponent;
         if(this.state.tempMembers && this.state.tempMembers.length > 0){
@@ -126,10 +127,12 @@ class MemberList extends React.Component<Props, State>{
                 )
             })
         }
-        if (memberListType == 'chat' || this.props.members) {
+        if (memberListType == 'chat' && this.state.members && this.state.members.length > 0) {
+            console.log("그만할래ㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜ")
+            console.log(this.state.members)
             return (
                 <ul id="forMemberList">
-                    {this.props.members.map(member => 
+                    {this.state.members.map(member => 
                     {
                         if(member.userName && (this.props.search === null || member.userName.toLowerCase().includes(this.props.search.toLowerCase()) || member.userId.toLowerCase().includes(this.props.search.toLowerCase()))) {
                         return(
@@ -182,6 +185,9 @@ class MemberList extends React.Component<Props, State>{
                 </ol>
             );
         }
+        return(
+            <></>
+        );
     }
 }
 
