@@ -47,6 +47,7 @@ export function setClient(){
 export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
     let obj : any;
     client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {
+        console.log(message)
         if (message.body || message.isBinaryBody || message.command) {
             obj = JSON.parse(message.body);
             callback(obj); 

@@ -44,14 +44,9 @@ export default createStore(function(state:any, action:any){
         return {...state, members: action.members}
     }
     if(action.type === 'addMembers'){
-        console.log("-----------------store에서 addMembers----------------------------")
-        console.log(state)
-        if(state.members != undefined && state.members.length > 0){
-            state.members = state.members.concat(action.members)
-            console.log(state.members)
-        }
-        console.log("..................................")
-        return {...state, members: state.oldMembers.concat()}
+        console.log(state.members)
+        console.log(state.action)
+        return {...state, members: state.members.concat(action.newMembers)}
     }
     return state;
 })

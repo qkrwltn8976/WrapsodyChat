@@ -102,11 +102,9 @@ class InfoHeader extends React.Component<Props, ShowState>{
                 i = language.ko.invite
                 l = language.ko.exit
             }
-
             if (electronStore.get("language") === "en-US") {
                 i = language.en.invite
-                l = language.
-                    en.exit
+                l = language.en.exit
             }
         }
         this.setState({
@@ -130,7 +128,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
             minHeight: 370,
             // maxWidth: 700,
             // maxHeight: 585,
-            parent: currentWindow,
+            // parent: currentWindow,
             modal: true,
             show: false,
             frame: false,

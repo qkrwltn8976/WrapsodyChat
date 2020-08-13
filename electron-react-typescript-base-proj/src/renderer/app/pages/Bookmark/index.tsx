@@ -6,9 +6,10 @@ import { Message } from '../../../models/Message';
 import { subscribe, publishApi, publishChat, client } from '../../../libs/stomp';
 import { Bookmark } from '@/renderer/models/Bookmark';
 import { v4 } from 'uuid';
+import store from '../../../../store';
 
 const Store = require('electron-store')
-const store = new Store()
+const electronStore = new Store()
 
 interface BookmarkProps {
     match: any,
@@ -27,7 +28,7 @@ class BookmarkPage extends React.Component<BookmarkProps, BookmarkState> {
 
     getTopMsgs = (bookmark: Bookmark) => {
         this.setState({ bookmark });
-        publishApi(client, 'api.message.list', store.get("username"), this.state.uuid, {
+        publishApi(client, 'api.message.list', electronStore.get("username"), this.state.uuid, {
             convoId: bookmark.convoId,
             afterAt: bookmark.startAt,
             direction: "forward"
@@ -35,8 +36,7 @@ class BookmarkPage extends React.Component<BookmarkProps, BookmarkState> {
     }
 
     getBottomMsgs = () => {
-
-        publishApi(client, 'api.message.list', store.get("username"), this.state.uuid, {
+        publishApi(client, 'api.message.list', electronStore.get("username"), this.state.uuid, {
             convoId: this.state.bookmark.convoId,
             afterAt: this.state.msgs[this.state.msgs.length - 1].createdAt,
             beforeAt: this.state.bookmark.endAt + 1,
@@ -45,7 +45,7 @@ class BookmarkPage extends React.Component<BookmarkProps, BookmarkState> {
     }
 
     deleteBookmark = (bookmarkId: string) => {
-        publishApi(client, 'api.conversation.bookmark.delete', store.get("username"), this.state.uuid, {
+        publishApi(client, 'api.conversation.bookmark.delete', electronStore.get("username"), this.state.uuid, {
             bookmarkId
         });
     }
@@ -64,45 +64,7 @@ class BookmarkPage extends React.Component<BookmarkProps, BookmarkState> {
 
     componentDidMount() {
         client.onConnect = () => {
-            subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
-                console.log(obj);
-                let payload = obj.payload;
-                if (payload) {
-                    console.log(payload.Messages)
-                    if (payload.Messages && payload.direction === 'forward') {
-                        let eom = false;
-                        if(payload.Messages.length < 20) {
-                            eom = true;
-                        }
-                        this.setState({
-                            msgs: (payload.beforeAt ? this.state.msgs.concat(payload.Messages) : payload.Messages),
-                            eom
-                        });
-                    }
-                    console.log(payload.ConversationBookmarks)
-                    if(payload.ConversationBookmarks) {
-
-                        this.setState({
-                            bookmarks: payload.ConversationBookmarks
-                        });
-                    }
-
-                    if(obj.type && obj.type==='CONVERSATION_BOOKMARK_DELETED') {
-                        // console.log(payload.bookmarkId)
-
-                        let found = this.state.bookmarks.find(element => element.bookmarkId === payload.bookmarkId);
-            
-                        let index = this.state.bookmarks.indexOf(found);
-                        console.log(index)
-                        this.state.bookmarks.splice(index, 1);
-                        this.setState({
-                            bookmarks: this.state.bookmarks
-                        });
-                    }
-                }
-            });
-
-            publishApi(client, 'api.conversation.bookmark.list', store.get("username"), this.state.uuid, {
+            publishApi(client, 'api.conversation.bookmark.list', electronStore.get("username"), this.state.uuid, {
                 convoId: this.props.match.params.convo
             });
         }

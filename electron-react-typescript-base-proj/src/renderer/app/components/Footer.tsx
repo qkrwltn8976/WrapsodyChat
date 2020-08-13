@@ -76,7 +76,7 @@ class Footer extends React.Component<Props, State>{
             userIds = userIds.concat([member.userId])
         })
         publishApi(client, "api.room.invite", electronStore.get("username"), this.state.uuid, {convoId: this.props.convoId, userIds:userIds})
-        this.closeWindowAndUpdate()
+        // this.closeWindowAndUpdate()
     }
 
     render(){
