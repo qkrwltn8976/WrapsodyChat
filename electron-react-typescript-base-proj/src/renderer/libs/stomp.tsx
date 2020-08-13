@@ -1,6 +1,7 @@
 import { Stomp } from "@stomp/stompjs";
 import { Client, IMessage } from "@stomp/stompjs";
 import { v4 } from "uuid";
+import * as stompData from "@/renderer/libs/stompData"
 const Store = require('electron-store')
 const store = new Store()
 
@@ -45,15 +46,45 @@ export function setClient(){
 }
 
 export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
-    let obj : any;
+    let response : any;
+    let sub: any;
+    let apis: any;
     client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {
-        if (message.body || message.isBinaryBody || message.command) {
-            obj = JSON.parse(message.body);
-            callback(obj); 
+        if(message.headers['correlation-id']) {
+            sub = message.headers['correlation-id'];
+            apis = sub.split('.');
+            if (message.body || message.isBinaryBody || message.command) {
+                response = JSON.parse(message.body);
+                switch(apis[1]) {
+                    case 'user':
+                        stompData.userHandler(apis, response);
+                        break;
+                    case 'conversation':
+                        stompData.conversationHandler(apis, response);
+                        break;
+                    case 'room':
+                        stompData.roomHandler(apis, response);
+                        break;
+                    case 'oneToOne':
+                        stompData.oneToOneHandler(apis, response);
+                        break;
+                    case 'message':
+                        stompData.messageHandler(apis, response);
+                        break;
+                    case 'bot':
+                        stompData.botHandler(apis, response);
+                        break;
+                }
+                callback(response); 
+            }
+            else {
+                console.log("got empty message");
+            }
+            
+
         }
-        else {
-            console.log("got empty message");
-        }
+        
+        
 
     }, {
         "x-queue-name": `user-${userId}-${uuid}`
@@ -83,7 +114,7 @@ export function publishApi(client: Client, api: string, userId: string, uuid: st
         body: JSON.stringify({
             senderId: userId, locale: store.get("language"), payload,
         }),
-        headers: { "user-id": userId, "reply-to": "user-"+userId+"-"+uuid, "content-type": "application/json", "correlation_id ": api }
+        headers: { "user-id": userId, "reply-to": "user-"+userId+"-"+uuid, "content-type": "application/json", "correlation-id": api }
     });
     console.log(JSON.stringify({
         senderId: userId, locale: store.get("language"), payload,
