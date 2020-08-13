@@ -7,10 +7,10 @@ import {getDocType} from '@/renderer/libs/messengerLoader'
 import { Conversation } from '@/renderer/models/Conversation';
 import { sortConvos } from '@/renderer/libs/sort';
 import { sendNotification } from '@/renderer/libs/notification';
-
+import store from '@/store';
 const {remote, webContents} = require('electron')
 const Store = require('electron-store')
-const store = new Store()
+const electronStore = new Store()
 const {BrowserWindow} = remote
 
 interface ChatListState {
@@ -105,7 +105,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
     
         let obj = {};
         client.onConnect = () => {
-            subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
+            subscribe(client, electronStore.get("username"), this.state.uuid, (obj: any) => {
                 let payload = obj.payload;
                 console.log(obj)
                 if (payload) {
@@ -148,7 +148,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
                         const index = this.state.convos.findIndex(convo => convo.convoId === obj.recvConvoId),
                             convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call
                             convos[index].latestMessage = obj.body;
-                            if(obj.sendUserId!==store.get("username")){ 
+                            if(obj.sendUserId!==electronStore.get("username")){ 
                                 if(this.isBrowserOpened(convos[index].browserId)) {
                                     // 윈도우 창이 열려있는 경우
                                     convos[index].unread = 0;
@@ -178,7 +178,8 @@ class Chat extends Component<ChatListProps, ChatListState> {
             //     console.log(obj)
             // })
 
-            publishApi(client, 'api.conversation.list', store.get("username"), this.state.uuid, {});
+            publishApi(client, 'api.conversation.list', electronStore.get("username"), this.state.uuid, {});
+            // console.log(store.getState())
         }
         client.activate();
     }
@@ -192,10 +193,15 @@ class Chat extends Component<ChatListProps, ChatListState> {
         })
 
     }
+    
 
     componentDidMount() {
         this.stompConnection();
         this._isMounted = true;
+        store.subscribe(function(this: any){
+            this.setState({ convos : store.getState().convos })
+        }.bind(this));
+        console.log(store.getState())
     }
 
     componentWillUnmount() {
@@ -222,6 +228,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
 
     
     render() {
+        
         let convos = this.state.convos;
         if (convos != undefined) {
             return (

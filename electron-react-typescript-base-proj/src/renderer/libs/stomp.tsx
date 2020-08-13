@@ -75,7 +75,7 @@ export function subscribe(client: Client, userId: string, uuid: string, callback
                         stompData.botHandler(apis, response);
                         break;
                 }
-                callback(response); 
+                // callback(response); 
             }
             else {
                 console.log("got empty message");

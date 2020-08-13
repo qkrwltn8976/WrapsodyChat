@@ -53,6 +53,10 @@ export default createStore(function(state:any, action:any){
         console.log("..................................")
         return {...state, members: state.oldMembers.concat()}
     }
+
+    if(action.type === 'setConvoList') {
+        return {...state, convos: action.convos}
+    }
     return state;
 })
 
