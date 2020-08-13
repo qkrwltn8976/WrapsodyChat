@@ -96,7 +96,8 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
 
     componentDidMount() {
         client.onConnect = () => {
-            publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
+            publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': "406a4fe5b14d4abcb5f9bfd08aa42c2f" });
+            publishApi(client, 'api.conversation.list', electronStore.get("username"), this.state.uuid, { 'convoId': "406a4fe5b14d4abcb5f9bfd08aa42c2f" });
         }
     }
     updateMembers = () => {
