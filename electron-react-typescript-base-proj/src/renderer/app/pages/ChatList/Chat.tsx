@@ -102,84 +102,9 @@ class Chat extends Component<ChatListProps, ChatListState> {
     }
 
     stompConnection = () => {
-    
-        let obj = {};
         client.onConnect = () => {
-            subscribe(client, electronStore.get("username"), this.state.uuid, (obj: any) => {
-                let payload = obj.payload;
-                console.log(obj)
-                if (payload) {
-                    if (payload.Conversations) {
-                        //채팅방 시간순 정렬
-                        this.setState(
-                            {
-                                convos: sortConvos(payload.Conversations),
-                                len: payload.Conversations.length
-                            },
-                        )
-
-                    }
-                    if(obj.type === "NOTIFICATION_UPDATED"){
-                        console.log("알람알람")
-                        const index = this.state.convos.findIndex(convo => convo.convoId === payload.convoId)
-                        this.setState(state => {
-                            state.convos[index].notificationType = payload.type
-                            return{}
-                        })
-                    }
-                    if(obj.type === "ROOM_LEFT"){
-                        const index = this.state.convos.findIndex(convo => convo.convoId === payload.convoId)
-                        console.log("나가요")
-                        console.log(index)
-                        this.setState(state => {
-                            state.convos.splice(index, 1)
-                            return{}
-                        })
-                    }
-                } else {
-                    if (obj.body || obj.messageId) {
-                        console.log(obj.sendUserId + ' ' + obj.notificationType)
-                        // if(obj.sendUserId !==  store.get("username"))
-                        //     sendNotification('새로운 메세지가 도착했습니다',obj.sendUserId, obj.body||obj.messageId);
-                        // if((obj.sendUserId !==  store.get("username")) && (obj.notificationType === 1)) {
-                            
-                        //     sendNotification('새로운 메세지가 도착했습니다', obj.sendUserId, obj.body||obj.messageId);                 
-                        // }
-                        const index = this.state.convos.findIndex(convo => convo.convoId === obj.recvConvoId),
-                            convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call
-                            convos[index].latestMessage = obj.body;
-                            if(obj.sendUserId!==electronStore.get("username")){ 
-                                if(this.isBrowserOpened(convos[index].browserId)) {
-                                    // 윈도우 창이 열려있는 경우
-                                    convos[index].unread = 0;
-                                }
-                                else {
-                                    // 윈도우 창이 닫혀있는 경우
-                                    convos[index].unread += 1;
-                                    if(convos[index].notificationType === 1){
-                                        var win = remote.getCurrentWindow()
-                                        sendNotification('새로운 메세지가 도착했습니다', obj.sendUserId, obj.body||obj.messageId);
-                                        win.once('focus', () => win.flashFrame(false))
-                                        win.flashFrame(true)
-                                    }
-                                                         
-                                }
-                            }
-                            convos[index].latestMessageAt = obj.updatedAt;
-                            this.setState({ convos:sortConvos(convos) });
-                            // convos[index].isOpened ? convos[index].unread = 0 : convos[index].unread += 1;}
-                    }
-                    
-                }
-            });
-
-            // subscribeCmd(client, (obj:any)=>{
-            //     console.log("command test")
-            //     console.log(obj)
-            // })
-
+            subscribe(client, electronStore.get("username"), this.state.uuid);
             publishApi(client, 'api.conversation.list', electronStore.get("username"), this.state.uuid, {});
-            // console.log(store.getState())
         }
         client.activate();
     }
@@ -198,8 +123,13 @@ class Chat extends Component<ChatListProps, ChatListState> {
     componentDidMount() {
         this.stompConnection();
         this._isMounted = true;
+        store.dispatch({ type: "setElectron", electron: this });
         store.subscribe(function(this: any){
-            this.setState({ convos : store.getState().convos })
+            this.setState({ 
+            electron: store.getState().electron,
+            convos : sortConvos(store.getState().convos),
+            msg: store.getState().msg });
+
         }.bind(this));
         console.log(store.getState())
     }

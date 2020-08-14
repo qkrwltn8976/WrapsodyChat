@@ -64,43 +64,43 @@ class BookmarkPage extends React.Component<BookmarkProps, BookmarkState> {
 
     componentDidMount() {
         client.onConnect = () => {
-            subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
-                console.log(obj);
-                let payload = obj.payload;
-                if (payload) {
-                    console.log(payload.Messages)
-                    if (payload.Messages && payload.direction === 'forward') {
-                        let eom = false;
-                        if(payload.Messages.length < 20) {
-                            eom = true;
-                        }
-                        this.setState({
-                            msgs: (payload.beforeAt ? this.state.msgs.concat(payload.Messages) : payload.Messages),
-                            eom
-                        });
-                    }
-                    console.log(payload.ConversationBookmarks)
-                    if(payload.ConversationBookmarks) {
+            // subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
+            //     console.log(obj);
+            //     let payload = obj.payload;
+            //     if (payload) {
+            //         console.log(payload.Messages)
+            //         if (payload.Messages && payload.direction === 'forward') {
+            //             let eom = false;
+            //             if(payload.Messages.length < 20) {
+            //                 eom = true;
+            //             }
+            //             this.setState({
+            //                 msgs: (payload.beforeAt ? this.state.msgs.concat(payload.Messages) : payload.Messages),
+            //                 eom
+            //             });
+            //         }
+            //         console.log(payload.ConversationBookmarks)
+            //         if(payload.ConversationBookmarks) {
 
-                        this.setState({
-                            bookmarks: payload.ConversationBookmarks
-                        });
-                    }
+            //             this.setState({
+            //                 bookmarks: payload.ConversationBookmarks
+            //             });
+            //         }
 
-                    if(obj.type && obj.type==='CONVERSATION_BOOKMARK_DELETED') {
-                        // console.log(payload.bookmarkId)
+            //         if(obj.type && obj.type==='CONVERSATION_BOOKMARK_DELETED') {
+            //             // console.log(payload.bookmarkId)
 
-                        let found = this.state.bookmarks.find(element => element.bookmarkId === payload.bookmarkId);
+            //             let found = this.state.bookmarks.find(element => element.bookmarkId === payload.bookmarkId);
             
-                        let index = this.state.bookmarks.indexOf(found);
-                        console.log(index)
-                        this.state.bookmarks.splice(index, 1);
-                        this.setState({
-                            bookmarks: this.state.bookmarks
-                        });
-                    }
-                }
-            });
+            //             let index = this.state.bookmarks.indexOf(found);
+            //             console.log(index)
+            //             this.state.bookmarks.splice(index, 1);
+            //             this.setState({
+            //                 bookmarks: this.state.bookmarks
+            //             });
+            //         }
+            //     }
+            // });
 
             publishApi(client, 'api.conversation.bookmark.list', store.get("username"), this.state.uuid, {
                 convoId: this.props.match.params.convo

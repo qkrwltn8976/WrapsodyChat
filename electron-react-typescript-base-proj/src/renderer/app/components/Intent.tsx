@@ -65,17 +65,17 @@ class Intent extends React.Component<IntentProps, IntentState>{
 
 
     componentDidMount() {
-        subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
-            let payload = obj.payload;
-            console.log(obj)
-            if (payload) {
-                if (payload.BotCommands) {
-                    this.setState({
-                        commands: payload.BotCommands 
-                    })
-                }
-            }
-        });
+        // subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
+        //     let payload = obj.payload;
+        //     console.log(obj)
+        //     if (payload) {
+        //         if (payload.BotCommands) {
+        //             this.setState({
+        //                 commands: payload.BotCommands 
+        //             })
+        //         }
+        //     }
+        // });
     }
 
 

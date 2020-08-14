@@ -69,16 +69,16 @@ class MemberList extends React.Component<Props, State>{
     }
 
     getChildNode = () => {   
-        subscribe(client, electronStore.get("username"), this.state.uuid, (obj:any) => {
-            let payload = obj.payload;
-            if(payload){
-                if(payload.Nodes){
-                    this.setState({
-                        childNodes : payload.Nodes,
-                    }, () => this.afterClick()) 
-                }
-            }
-        }); 
+        // subscribe(client, electronStore.get("username"), this.state.uuid, (obj:any) => {
+        //     let payload = obj.payload;
+        //     if(payload){
+        //         if(payload.Nodes){
+        //             this.setState({
+        //                 childNodes : payload.Nodes,
+        //             }, () => this.afterClick()) 
+        //         }
+        //     }
+        // }); 
     }
  
 

@@ -302,7 +302,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
     componentDidUpdate = () => {
         // 처음 채팅방에 접속했을 경우
-        if (this.state.msgs.length <= 20) {
+        if (this.state.msgs && this.state.msgs.length <= 20) {
             if(this.props.isBookmark && !this.props.eom) {
                 this.scrollView.current.scrollTop = 0;
                 console.log(this.state.msgs.length)
@@ -332,9 +332,9 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
             <div className="wrapmsgr_content">
                 <div className="wrapmsgr_messages" in-view-container="" ref={this.scrollView} id="scrollView">
                     <ul>
-                        {this.state.msgs.map((msg: Message, index: number) =>
+                        {(this.state.msgs)?this.state.msgs.map((msg: Message, index: number) =>
                             this.getMsgBody(msg, index)
-                        )}
+                        ):null}
                     </ul>
                     <div className="wrapmsgr_latest_message ng-hide" ng-show="current.latestMessage" onClick={this.messagesScrollToBottom}>
                         <i className="icon_arrow_down"></i>

@@ -64,50 +64,50 @@ class Invite extends React.Component<inviteProps, inviteState>{
 
     componentDidMount(){
        client.onConnect = () => {
-            subscribe(client, electronStore.get("username"), this.state.uuid, (obj:any) => {
-                let payload = obj.payload;
-                if(payload){
-                    if(payload.Room){
-                        this.setState({
-                            docName: payload.Room.name
-                        })
-                    }
-                    if(payload.SyncInfo){
-                        this.setState({
-                            master : payload.SyncInfo.master,
-                            viewAuthAllUsers: payload.SyncInfo.viewAuthAllUsers,
-                            checkoutAuthList : payload.SyncInfo.checkoutAuthList.user,
-                            checkoutDeptAuthList : payload.SyncInfo.checkoutDeptAuthList.dept,
-                            viewAuthList : payload.SyncInfo.viewAuthList.user,
-                            viewDeptAuthList : payload.SyncInfo.viewDeptAuthList.dept,
-                        })
-                        this.state.checkoutAuthList.map(member =>{
-                            this.state.nodeList.push({"name": member.userName, "id" : member.userId, "status": "select", "type": "user"})
-                        })
-                        this.state.viewAuthList.map(member => {
-                            this.state.nodeList.push({"name": member.userName, "id" : member.userId, "status": "select", "type": "user"})
-                        })
-                        this.state.checkoutDeptAuthList.map(dept=>{
-                            this.state.nodeList.push({"name": dept.deptName, "id": dept.deptCode, "hasChildren": true, "isExpanded": false, "status": "select", "type":"dept"})
-                        })
-                        this.state.viewDeptAuthList.map(dept=>{
-                            this.state.nodeList.push({"name": dept.deptName, "id": dept.deptCode, "hasChildren": true, "isExpanded": false, "status": "select", "type":"dept"})
-                        })
-                    }
-                    if(payload.Members){
-                        this.setState({
-                            oldMembers: payload.Members,
-                        }, () => store.dispatch({type: "setOldMembers", oldMembers:this.state.oldMembers})) 
-                    }
-                    if(payload.Nodes){
-                        this.setState({
-                            childNodes: payload.Nodes,
-                        })
-                    }
-                }else{
+            // subscribe(client, electronStore.get("username"), this.state.uuid, (obj:any) => {
+            //     let payload = obj.payload;
+            //     if(payload){
+            //         if(payload.Room){
+            //             this.setState({
+            //                 docName: payload.Room.name
+            //             })
+            //         }
+            //         if(payload.SyncInfo){
+            //             this.setState({
+            //                 master : payload.SyncInfo.master,
+            //                 viewAuthAllUsers: payload.SyncInfo.viewAuthAllUsers,
+            //                 checkoutAuthList : payload.SyncInfo.checkoutAuthList.user,
+            //                 checkoutDeptAuthList : payload.SyncInfo.checkoutDeptAuthList.dept,
+            //                 viewAuthList : payload.SyncInfo.viewAuthList.user,
+            //                 viewDeptAuthList : payload.SyncInfo.viewDeptAuthList.dept,
+            //             })
+            //             this.state.checkoutAuthList.map(member =>{
+            //                 this.state.nodeList.push({"name": member.userName, "id" : member.userId, "status": "select", "type": "user"})
+            //             })
+            //             this.state.viewAuthList.map(member => {
+            //                 this.state.nodeList.push({"name": member.userName, "id" : member.userId, "status": "select", "type": "user"})
+            //             })
+            //             this.state.checkoutDeptAuthList.map(dept=>{
+            //                 this.state.nodeList.push({"name": dept.deptName, "id": dept.deptCode, "hasChildren": true, "isExpanded": false, "status": "select", "type":"dept"})
+            //             })
+            //             this.state.viewDeptAuthList.map(dept=>{
+            //                 this.state.nodeList.push({"name": dept.deptName, "id": dept.deptCode, "hasChildren": true, "isExpanded": false, "status": "select", "type":"dept"})
+            //             })
+            //         }
+            //         if(payload.Members){
+            //             this.setState({
+            //                 oldMembers: payload.Members,
+            //             }, () => store.dispatch({type: "setOldMembers", oldMembers:this.state.oldMembers})) 
+            //         }
+            //         if(payload.Nodes){
+            //             this.setState({
+            //                 childNodes: payload.Nodes,
+            //             })
+            //         }
+            //     }else{
                     
-                }// payload없으면...
-            });
+            //     }// payload없으면...
+            // });
             publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convoId });
         }  
     }
