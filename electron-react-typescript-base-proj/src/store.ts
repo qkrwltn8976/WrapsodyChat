@@ -11,8 +11,6 @@ export default createStore(function(state:any, action:any){
         return {...state, oldMembers: action.oldMembers}
     }
     if(action.type === "clickMember"){
-        console.log("member는 왜 저장이 안되는거야 ㅍㅍㅍㅍㅍㅍㅍㅍㅍㅍㅍㅍ")
-        console.log(state.members)
         let idx, idx2;
         idx = state.tempMembers.findIndex( obj => obj.userId === action.newMember[0].userId)
         idx2 = state.oldMembers.findIndex( obj => obj.userId === action.newMember[0].userId)
@@ -47,6 +45,10 @@ export default createStore(function(state:any, action:any){
         console.log(state.members)
         console.log(state.action)
         return {...state, members: state.members.concat(action.newMembers)}
+    }
+
+    if(action.type === 'setConvoList') {
+        return {...state, convos: action.convos}
     }
     return state;
 })

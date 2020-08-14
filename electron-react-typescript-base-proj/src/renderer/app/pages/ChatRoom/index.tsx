@@ -95,9 +95,50 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
     }
 
     componentDidMount() {
+        // if ((obj.body || obj.messageId) && obj.recvConvoId === this.state.convo.convoId) { // 받은 메세지 처리
+        //     this.setState({
+        //         msgs: this.state.msgs.concat(obj),
+        //         topMsgId: obj.messageId
+        //     });
+            
+        //     if(obj.messageType === 240) {
+        //         let body = JSON.parse(obj.body);
+        //         if(body.cmdType === type.Command.BOOKMARK_START) { // command 명령어 시작
+        //             this.setState(prevState => ({
+        //                 convo: {
+        //                     ...prevState.convo,
+        //                     bookmark: "Y",
+        //                 },
+        //                 bookmarkStart: Date.now()
+        //             }));
+        //             publishApi(client, 'api.conversation.property.update', electronStore.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": "Y"});
+                    
+        //             console.log('북마크 시작')
+        //         } else if(body.cmdType === type.Command.BOOKMARK_STOP) {
+        //             this.setState(prevState => ({
+        //                 convo: {
+        //                     ...prevState.convo,
+        //                     bookmark: "N"
+        //                 }
+        //             }));
+        //             console.log(this.state.bookmarkStart)
+        //             publishApi(client, 'api.conversation.property.update', electronStore.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": "N"});
+        //             publishApi(client, 'api.conversation.bookmark.create', electronStore.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "북마크 "+ getDate(Date.now()), "startAt": this.state.bookmarkStart, "endAt": obj.createdAt-1})
+        //         } else if(body.cmdType === type.Command.DEADLINE) {
+        //             this.setState(prevState => ({
+        //                 convo: {
+        //                     ...prevState.convo,
+        //                     deadline: body.body
+        //                 }
+        //             }));
+
+        //             publishApi(client, 'api.conversation.property.update', electronStore.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "deadline", "value": body.body });
+        //         }
+        //         document.getElementById(this.state.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
+        //     }
+        // }
         client.onConnect = () => {
-            publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': "406a4fe5b14d4abcb5f9bfd08aa42c2f" });
-            publishApi(client, 'api.conversation.list', electronStore.get("username"), this.state.uuid, { 'convoId': "406a4fe5b14d4abcb5f9bfd08aa42c2f" });
+            publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
         }
     }
     updateMembers = () => {

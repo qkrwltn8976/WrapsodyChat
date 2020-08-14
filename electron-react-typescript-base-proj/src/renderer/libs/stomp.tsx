@@ -65,23 +65,23 @@ export function subscribe(client: Client, userId: string, uuid: string, callback
                     case 'conversation':
                         stompData.conversationHandler(apis, response);
                         break;
-                    case 'room':
-                        stompData.roomHandler(apis, response);
-                        break;
-                    case 'oneToOne':
-                        stompData.oneToOneHandler(apis, response);
-                        break;
-                    case 'message':
-                        stompData.messageHandler(apis, response);
-                        break;
-                    case 'bot':
-                        stompData.botHandler(apis, response);
-                        break;
-                    case 'organ':
-                        stompData.organHandler(apis, response);
-                        break;    
+                    // case 'room':
+                    //     stompData.roomHandler(apis, response);
+                    //     break;
+                    // case 'oneToOne':
+                    //     stompData.oneToOneHandler(apis, response);
+                    //     break;
+                    // case 'message':
+                    //     stompData.messageHandler(apis, response);
+                    //     break;
+                    // case 'bot':
+                    //     stompData.botHandler(apis, response);
+                    //     break;
+                    // case 'organ':
+                    //     stompData.organHandler(apis, response);
+                    //     break;    
                 }
-                callback(response); 
+                // callback(response); 
             }
             else {
                 console.log("got empty message");
