@@ -1,11 +1,12 @@
 package com.fasoo.wrapsody.commandserver.service;
 
 import com.fasoo.wrapsody.commandserver.controller.keyword.Bookmark;
-import com.fasoo.wrapsody.commandserver.model.ConversationViewMessage;
+import com.fasoo.wrapsody.commandserver.controller.keyword.Command;
+import com.fasoo.wrapsody.commandserver.model.BookmarkCreateMessage;
 import com.fasoo.wrapsody.commandserver.model.CustomMessage;
+import com.fasoo.wrapsody.commandserver.model.PropertyGetMessage;
 import com.fasoo.wrapsody.commandserver.model.SystemMessage;
 import org.json.simple.parser.ParseException;
-import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,20 +20,7 @@ public class CustomMessageListener {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public enum Command{
-        REVISION("revision"),
-        BOOKMARK("bookmark"),
-        DEADLINE("deadline");
 
-        final private String name;
-
-        private Command(String name){
-            this.name = name;
-        }
-        public String getName(){
-            return name;
-        }
-    }
 
     String uuid = UUID.randomUUID().toString();
     String body, exchange, routingKey;
@@ -40,9 +28,7 @@ public class CustomMessageListener {
     Command type;
     boolean iscommand = false;
 
-
     @RabbitListener(queues = "spring-boot")
-    @RabbitHandler
     public void receiveMessage(final CustomMessage message) throws ParseException {
         System.out.println(message.getBody());
         body = message.getBody();
@@ -67,15 +53,18 @@ public class CustomMessageListener {
             //BOOKMARK
             if(type==Command.BOOKMARK && cmd.length!=1){
                     String c = cmd[1].toLowerCase();
-                    if(c.compareTo(Bookmark.Function.START.getName())==0){
-                        SystemMessage sm = new SystemMessage(message.getRecvConvoId(),"북마크를 시작합니다", 5);
-                        runner.send(exchange,routingKey+message.getRecvConvoId(),sm);
+                    if(c.compareTo(Bookmark.START.getKey())==0){
+                        PropertyGetMessage tm = new PropertyGetMessage("wrapsody", "ko-KR", message.getRecvConvoId());
+                        System.out.print(tm);
+//                        runner.send("request", "api.conversation.property.get", tm, message.getRecvConvoId());
+                        BookmarkCreateMessage bcm = new BookmarkCreateMessage(message.getRecvConvoId(), "null", message.getCreatedAt(), message.getUpdatedAt());
+                        runner.send("request", "api.conversation.bookmark.create", bcm, message.getRecvConvoId());
                     }
-                    else if(c.compareTo(Bookmark.Function.STOP.getName())==0){
+                    else if(c.compareTo(Bookmark.STOP.getKey())==0){
                         SystemMessage sm = new SystemMessage(message.getRecvConvoId(),"북마크를 끝냅니다", 6);
                         runner.send(exchange,routingKey+message.getRecvConvoId(),sm);
                     }
-                    else if(c.compareTo(Bookmark.Function.NAME.getName())==0 && cmd.length>=3){
+                    else if(c.compareTo(Bookmark.NAME.getKey())==0 && cmd.length>=3){
                             String cmdName="";
                             for(int i = 2;i <cmd.length;i++)
                                 cmdName+= cmd[i];
@@ -105,7 +94,7 @@ public class CustomMessageListener {
                     Date dt;
                     long timestamp;
 
-                    List <String> date = new ArrayList<String>();
+                    List<String> date = new ArrayList<String>();
 
                     StringTokenizer st = new StringTokenizer(cmd[1], ".|,|-|_|/| ");
                     while(st.hasMoreTokens()){
@@ -143,9 +132,9 @@ public class CustomMessageListener {
                 //REVISION
                 if(type == Command.REVISION){
                     System.out.println("test");
-                    ConversationViewMessage tm = new ConversationViewMessage(message.getSendUserId(), "ko-KR", message.getRecvConvoId());
+                    PropertyGetMessage tm = new PropertyGetMessage("wrapsody", "ko-KR", message.getRecvConvoId());
                     System.out.print(tm);
-                    runner.send("request", "api.conversation.view", tm, uuid);
+                    runner.send("request", "api.conversation.property.get", tm, uuid);
 
                 }
         }
