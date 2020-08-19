@@ -12,9 +12,6 @@ public class SystemMessage {
     private int cmdType;
     private Object oBody;
 
-
-
-
     protected SystemMessage(){}
 
     public SystemMessage(String recvConvoId, String body, int cmdType) throws ParseException {
