@@ -296,29 +296,23 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     componentDidUpdate = () => {
         if (this.state.msgs && this.state.msgs.length <= 20) {
             if (this.props.isBookmark) {
-                console.log('+++++++++bm+++++')
                 if(!this.props.eom) {
                     // 처음 북마크 메세지를 로딩하는 경우
                     this.scrollView.current.scrollTop = 0;
                 } 
-                console.log(this.state.msgs.length)
             } else {
-                console.log('---------normal--------')
                 if(!this.props.eom) {
                     document.getElementById(this.props.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
                 } else {
-
                     this.scrollView.current.scrollTop = 0;
                 }
             }
-
-
         }
         else if (this.state.unreadExists && document.getElementById('read')) {
             // 안 읽은 메세지가 있는 경우
             document.getElementById('read').scrollIntoView({ behavior: 'auto', inline: 'start' });
         } else {
-            
+            this.messagesScrollToBottom();
         }
     }
 
