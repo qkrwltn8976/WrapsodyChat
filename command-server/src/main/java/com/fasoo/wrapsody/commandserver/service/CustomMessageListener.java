@@ -4,6 +4,7 @@ import com.fasoo.wrapsody.commandserver.controller.keyword.Bookmark;
 import com.fasoo.wrapsody.commandserver.controller.keyword.Command;
 import com.fasoo.wrapsody.commandserver.model.BookmarkStartMessage;
 import com.fasoo.wrapsody.commandserver.model.CustomMessage;
+import com.fasoo.wrapsody.commandserver.model.PropertyUpdateMessage;
 import com.fasoo.wrapsody.commandserver.model.SystemMessage;
 import org.json.simple.parser.ParseException;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -11,9 +12,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -75,8 +75,13 @@ public class CustomMessageListener {
 
                         //SUCCESS
                         if(result ==0){
+                            //채팅방에 보내는 시스템 메세지
                             SystemMessage sm = new SystemMessage(message.getRecvConvoId(),"북마크를 시작합니다", 5);
                             runner.send(exchange,routingKey+message.getRecvConvoId(),sm);
+                            //bookmark property를 Y로 바꿈
+                            PropertyUpdateMessage pum = new PropertyUpdateMessage(message.getRecvConvoId(), "bookmark", "Y");
+                            runner.send(exchange, "api.conversation.property.update",pum);
+
                             if(cmdName!=""){
                                 SystemMessage sm1 = new SystemMessage(message.getRecvConvoId(), "북마크 이름을 "+cmdName+"(으)로 설정했습니다",7);
                                 runner.send(exchange,routingKey+message.getRecvConvoId(),sm1);
@@ -103,6 +108,9 @@ public class CustomMessageListener {
                         if(result ==0){
                             SystemMessage sm = new SystemMessage(message.getRecvConvoId(),"북마크를 끝냅니다", 6);
                             runner.send(exchange,routingKey+message.getRecvConvoId(),sm);
+                            //bookmark property를 N으로 바꿈
+                            PropertyUpdateMessage pum = new PropertyUpdateMessage(message.getRecvConvoId(), "bookmark", "N");
+                            runner.send(exchange, "api.conversation.property.update",pum);
                             if(cmdName!=""){
                                 SystemMessage sm1 = new SystemMessage(message.getRecvConvoId(), "북마크 이름을 "+cmdName+"(으)로 설정했습니다",7);
                                 runner.send(exchange,routingKey+message.getRecvConvoId(),sm1);
@@ -137,10 +145,6 @@ public class CustomMessageListener {
                     if(cmd.length!= 1){
                         String msg="";
 
-                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        Date dt;
-                        long timestamp;
-
                         List<String> date = new ArrayList<String>();
 
                         StringTokenizer st = new StringTokenizer(cmd[1], ".|,|-|_|/| ");
@@ -156,6 +160,11 @@ public class CustomMessageListener {
                                 date.set(0,"20"+date.get(0));
                             }
                             msg = date.get(0)+"-"+date.get(1)+"-"+date.get(2);
+
+                            Timestamp ts = Timestamp.valueOf(msg+ " 11:59:59");
+
+                            PropertyUpdateMessage pum = new PropertyUpdateMessage(message.getRecvConvoId(), "deadline", ts);
+                            runner.send(exchange, "api.conversation.property.update", pum);
 
                             SystemMessage sm = new SystemMessage(message.getRecvConvoId(), msg,cmdType);
                             runner.send(exchange,routingKey+message.getRecvConvoId(), sm);
