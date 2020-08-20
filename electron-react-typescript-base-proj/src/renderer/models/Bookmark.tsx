@@ -5,5 +5,6 @@ export type Bookmark = {
     convoId: string,
     name?: string,
     createdAt: number,
-    updatedAt: number
+    updatedAt: number,
+    status: string
 }

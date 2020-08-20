@@ -183,7 +183,6 @@ class InfoHeader extends React.Component<Props, ShowState>{
             pNum = language.en.pNum
 
         let deadline = this.getDeadline();
-        console.log(this.props.deadline)
 
         const { convoType } = this.props;
         if (convoType === ConvoType.DOC) {

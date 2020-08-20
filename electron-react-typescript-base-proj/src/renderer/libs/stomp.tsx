@@ -28,8 +28,76 @@ export function createClient(login: string, passcode: string) {
     });
 
     client.onConnect = () => {
-        console.log("connected to Stomp");
-        subscribe(client, login, v4());
+        let response: any;
+        let sub: any;
+        let apis: any;
+        let uuid: string = store.get("uuid");
+        let userId: string = store.get("username");
+        client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {
+            if (message.headers['correlation-id']) {
+                console.log(message)
+                sub = message.headers['correlation-id'];
+                apis = sub.split('.');
+                if (message.body || message.isBinaryBody || message.command) {
+                    response = JSON.parse(message.body);
+                    switch (apis[1]) {
+                        case 'user':
+                            stompData.userHandler(apis, response);
+                            break;
+                        case 'conversation':
+                            stompData.conversationHandler(apis, response);
+                            break;
+                        case 'room':
+                            stompData.roomHandler(apis, response);
+                            break;
+                        case 'oneToOne':
+                            stompData.oneToOneHandler(apis, response);
+                            break;
+                        case 'message':
+                            stompData.messageHandler(apis, response);
+                            break;
+                        case 'bot':
+                            stompData.botHandler(apis, response);
+                            break;
+                        case 'event':
+                            stompData.eventHandler(apis, response);
+                    }
+                    // callback(response); 
+                }
+                else {
+                    console.log("got empty message");
+                }
+                // sub = 
+                // dest/exchange/chat.short.room.8954b0fc574d4423adc422b0017cfc3e
+
+            } else {
+                if (message.headers['destination']) {
+                    sub = message.headers['destination'];
+                    let routes = sub.split('/');
+                    console.log(routes);
+                    let api = routes[2];
+                    // let api = routes[2].substring(sub.indexOf('/chat.') + 1);
+                    console.log(api)
+
+                    console.log(sub.indexOf('/') + 1)
+                    apis = api.split('.');
+                    if (message.body || message.isBinaryBody || message.command) {
+                        response = JSON.parse(message.body);
+                        console.log(response)
+                        console.log(apis)
+                        switch (apis[0]) {
+                            case 'chat':
+                                stompData.chatHandler(apis, response);
+                            case 'event':
+                                stompData.eventHandler(apis, response);
+                        }
+                    }
+                }
+            }
+        }, {
+            "x-queue-name": `user-${userId}-${uuid}`
+        });
+
     }
 
     client.activate();
@@ -38,22 +106,22 @@ export function createClient(login: string, passcode: string) {
 
 export var client = createClient(store.get("username"), store.get("password"))
 
-export function setClient(){
+export function setClient() {
     client = createClient(store.get("username"), store.get("password"))
 }
 
 export function subscribe(client: Client, userId: string, uuid: string) {
-    let response : any;
+    let response: any;
     let sub: any;
     let apis: any;
     client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {
         console.log(message)
-        if(message.headers['correlation-id']) {
+        if (message.headers['correlation-id']) {
             sub = message.headers['correlation-id'];
             apis = sub.split('.');
             if (message.body || message.isBinaryBody || message.command) {
                 response = JSON.parse(message.body);
-                switch(apis[1]) {
+                switch (apis[1]) {
                     case 'user':
                         stompData.userHandler(apis, response);
                         break;
@@ -82,27 +150,31 @@ export function subscribe(client: Client, userId: string, uuid: string) {
             // dest/exchange/chat.short.room.8954b0fc574d4423adc422b0017cfc3e
 
         } else {
-            if(message.headers['destination']) {
+            if (message.headers['destination']) {
                 sub = message.headers['destination'];
-                let api = sub.substring(sub.indexOf('/chat.')+1);
+                let routes = sub.split('/');
+                console.log(routes);
+                let api = routes[3];
+                // let api = routes[2].substring(sub.indexOf('/chat.') + 1);
                 console.log(api)
-                
-                console.log(sub.indexOf('/chat.')+1)
+
+                console.log(sub.indexOf('/') + 1)
                 apis = api.split('.');
                 if (message.body || message.isBinaryBody || message.command) {
                     response = JSON.parse(message.body);
                     console.log(response)
                     console.log(apis)
-                    switch(apis[0]) {
+                    switch (apis[0]) {
                         case 'chat':
                             stompData.chatHandler(apis, response);
-
+                        case 'event':
+                            stompData.eventHandler(apis, response);
                     }
                 }
             }
         }
-        
-        
+
+
 
     }, {
         "x-queue-name": `user-${userId}-${uuid}`
@@ -110,12 +182,12 @@ export function subscribe(client: Client, userId: string, uuid: string) {
     // return obj;
 }
 
-export function subscribeCmd(client:Client,callback:any){
-    let obj : any;
+export function subscribeCmd(client: Client, callback: any) {
+    let obj: any;
     client.subscribe(`/exchange/chat`, (message: IMessage) => {
         if (message.body || message.isBinaryBody || message.command) {
             obj = JSON.parse(message.body);
-            callback(obj); 
+            callback(obj);
         }
         else {
             console.log("got empty message");
@@ -132,7 +204,7 @@ export function publishApi(client: Client, api: string, userId: string, uuid: st
         body: JSON.stringify({
             senderId: userId, locale: store.get("language"), payload,
         }),
-        headers: { "user-id": userId, "reply-to": "user-"+userId+"-"+uuid, "content-type": "application/json", "correlation-id": api }
+        headers: { "user-id": userId, "reply-to": "user-" + userId + "-" + uuid, "content-type": "application/json", "correlation-id": api }
     });
     console.log(JSON.stringify({
         senderId: userId, locale: store.get("language"), payload,
@@ -145,7 +217,7 @@ export function publishChat(client: Client, api: string, userId: string, uuid: s
         body: JSON.stringify({
             sendUserId: payload.sendUserId, recvConvoId: payload.recvConvoId, body: payload.body, messageType: payload.messageType
         }),
-        headers: { __TypeId__: `com.wrapsody.messaging.model.Message`,"content-type": "application/json", "user-id": userId}
+        headers: { __TypeId__: `com.wrapsody.messaging.model.Message`, "content-type": "application/json", "user-id": userId }
     });
     console.log(JSON.stringify({
         sendUserId: payload.sendUserId, recvConvoId: payload.recvConvoId, body: payload.body, messageType: payload.messageType

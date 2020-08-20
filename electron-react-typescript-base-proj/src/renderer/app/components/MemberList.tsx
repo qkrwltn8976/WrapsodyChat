@@ -128,8 +128,6 @@ class MemberList extends React.Component<Props, State>{
             })
         }
         if (memberListType == 'chat' && this.state.members && this.state.members.length > 0) {
-            console.log("그만할래ㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜ")
-            console.log(this.state.members)
             return (
                 <ul id="forMemberList">
                     {this.state.members.map(member => 

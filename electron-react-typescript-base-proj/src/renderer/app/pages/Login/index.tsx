@@ -1,24 +1,32 @@
 import React, { Fragment, useState, createContext, useContext } from 'react'
 import { client ,subscribe,publishApi, setClient} from '@/renderer/libs/stomp';
 import { v4 } from 'uuid';
+import store from '@/store';
 const remote = require('electron').remote
 
 //electron-store 라이브러리 사용하여 id / pw 저장
 const Store = require('electron-store')
-const store = new Store()
+const electronStore = new Store()
 
 async function handleClick (userinfo: any, uuid:string, lang:string){
-    store.set("username", userinfo.username)
-    store.set("password", userinfo.password)
-    store.set("language", lang)
+    electronStore.set("username", userinfo.username)
+    electronStore.set("password", userinfo.password)
+    electronStore.set("uuid", uuid)
+    electronStore.set("language", lang)
+    
+
     setClient()
 
     console.log(client.connected)
-
+    electronStore.set("stmp", JSON.stringify(client))
     client.onConnect=()=>{
-        var win  = remote.getCurrentWindow()
+        console.log('hihiihi')
+        let win  = remote.getCurrentWindow();
+        
+        store.dispatch({ type: "setClient" , client });
         win.loadURL("file://"+__dirname+"/index.html#/chatlist/")
     }
+
 }
 
 const minimizeWindow = (event:any)=>{
@@ -36,7 +44,7 @@ function Login(){
     const [lang, setLang] = useState("ko-KR")
     const uuid = v4()
 
-    store.clear()
+    electronStore.clear()
     
     return (
         <Fragment>

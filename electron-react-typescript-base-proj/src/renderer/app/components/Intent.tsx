@@ -4,9 +4,10 @@ import { publishApi, publishChat, subscribe, client } from '@/renderer/libs/stom
 import { v4 } from 'uuid';
 import { BotCommand } from '@/renderer/models/BotCommand';
 import { Message } from '@/renderer/models/Message';
+import store from '@/store';
 
 const Store = require('electron-store')
-const store = new Store()
+const electronStore = new Store()
 
 interface IntentProps {
     intent: BotIntent,
@@ -24,7 +25,7 @@ class Intent extends React.Component<IntentProps, IntentState>{
     sendBotCommand = (command: string) => (e: any) => {
         let msg : Message = {
             messageId: 0,
-            sendUserId: store.get("username"),
+            sendUserId: electronStore.get("username"),
             recvConvoId: this.props.convoId,
             body: command,
             createdAt: Date.now(),
@@ -33,7 +34,6 @@ class Intent extends React.Component<IntentProps, IntentState>{
         }
 
         this.props.sendMsg(msg, 'chat.short.command.convo');
-        // publishChat(client, , this.state.uuid, msg);
     }
 
     getCommand = (command: BotCommand) => {
@@ -43,39 +43,34 @@ class Intent extends React.Component<IntentProps, IntentState>{
     }
 
     toggleIntentGroup = (e: BotIntent) => {
-        console.log("toggle--------------------------")
-        console.log(this.state.active)
-        console.log(this.state.commands)
         if (this.state.active) {
             this.setState({ active: false })
         } else {
             this.setState({ active: true });
-            publishApi(client, 'api.bot.command.list', store.get("username"), this.state.uuid, { 'botUserId': e.botUserId, 'groupId': e.groupId });
+            publishApi(client, 'api.bot.command.list', electronStore.get("username"), this.state.uuid, { 'botUserId': e.botUserId, 'groupId': e.groupId });
         }
     }
 
+
     constructor(props: IntentProps) {
         super(props);
+
         this.state = {
             active: false,
             uuid: v4(),
             commands: []
         }
+
     }
 
 
     componentDidMount() {
-        // subscribe(client, store.get("username"), this.state.uuid, (obj: any) => {
-        //     let payload = obj.payload;
-        //     console.log(obj)
-        //     if (payload) {
-        //         if (payload.BotCommands) {
-        //             this.setState({
-        //                 commands: payload.BotCommands 
-        //             })
-        //         }
-        //     }
-        // });
+        subscribe(client, electronStore.get("username"), this.state.uuid);
+        store.subscribe(function (this:any) {
+            this.setState({
+                commands: store.getState().commands
+            })
+        }.bind(this));
     }
 
 

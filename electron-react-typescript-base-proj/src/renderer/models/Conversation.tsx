@@ -1,3 +1,5 @@
+import { CommandProperty } from "./CommandProperty";
+
 export type Conversation = {
     convoId: string; // 대화방 ID
     convoType: number; // 대화 유형
@@ -13,7 +15,6 @@ export type Conversation = {
     updatedAt: number; // 대화 수정 일시
 
     browserId?: number; // 브라우저 id
-    bookmark?: string; // 북마크 상태 
-    deadline?: string;  // 데드라인
+    properties?: CommandProperty;
 };
 

@@ -12,7 +12,7 @@ import * as type from '@/renderer/libs/enum-type';
 import IntentList from '@/renderer/app/components/IntentList';
 import { getDate } from '@/renderer/libs/timestamp-converter';
 import store from '../../../../store';
-
+import { Client } from '@stomp/stompjs';
 const remote = require('electron').remote
 
 const Store = require('electron-store')
@@ -35,12 +35,13 @@ interface RoomState {
     prevScrollHeight: number;
     topMsgId: number;
     bookmarkStart?: number;
+    client: Client
 }
 
 class ChatRoom extends React.Component<RoomProps, RoomState> {
 
     getMsgs = (payload: any) => {
-        publishApi(client, 'api.message.list', electronStore.get("username"), this.state.uuid, {
+        publishApi(this.state.client, 'api.message.list', electronStore.get("username"), this.state.uuid, {
             convoId: this.state.convo.convoId,
             beforeAt: this.state.msgs[0].createdAt,
             direction: "backward"
@@ -48,7 +49,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
     }
 
     sendMsg = (msg: Message, api: string) => {
-        publishChat(client, api, electronStore.get("username"), this.state.uuid, msg);
+        publishChat(this.state.client, api, electronStore.get("username"), this.state.uuid, msg);
     }
 
     setSearch = (search: string) => {
@@ -60,23 +61,22 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
             state.convo.notificationType = type === 0 ? 1 : 0
             return {}
         })
-        publishApi(client, "api.conversation.notification", electronStore.get("username"), this.state.uuid, { "convoId": this.state.convo.convoId, "type": type === 0 ? 1 : 0 })
+        publishApi(this.state.client, "api.conversation.notification", electronStore.get("username"), this.state.uuid, { "convoId": this.state.convo.convoId, "type": type === 0 ? 1 : 0 })
         return false;
     }
 
     stompConnection = () => {
-        client.onConnect = () => {
+        this.state.client.onConnect = () => {
             subscribe(client, electronStore.get("username"), this.state.uuid);
-            publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
+            publishApi(this.state.client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
         }
     }
 
     constructor(props: RoomProps, state: {}) {
         super(props, state);
-        console.log('@@@@@@@@@@@@@')
-        console.log(props)
 
         this.state = ({
+            client,
             uuid: v4(),
             msgs: [],
             members: [],
@@ -93,11 +93,16 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                 latestMessageAt: 0,
                 createdAt: 0,
                 updatedAt: 0,
+                properties: {
+                    bookmark: "",
+                    deadline: ""
+                }
             },
             search: "",
             eom: false,
             prevScrollHeight: 0,
             topMsgId: 0,
+
         })
         this.updateMembers = this.updateMembers.bind(this);
     }
@@ -108,54 +113,74 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
             this.setState({
                 members: store.getState().members,
                 msgs: store.getState().msgs,
-                convo: store.getState().convo
+                convo: {
+                    convoId: this.props.match.params.convo,
+                    convoType: store.getState().convo.convoType,
+                    roomType: store.getState().convo.roomType,
+                    name: store.getState().convo.name,
+                    readAt: this.props.match.params.readAt,
+                    unread: this.props.match.params.unread,
+                    memberCount: store.getState().convo.memberCount,
+                    notificationType: store.getState().convo.notificationType,
+                    latestMessage: store.getState().convo.lastestMessage,
+                    latestMessageAt: store.getState().convo.latestMessageAt,
+                    createdAt: store.getState().convo.createdAt,
+                    updatedAt: store.getState().convo.updatedAt,
+                    properties: {
+                        bookmark: store.getState().convo.properties.bookmark,
+                        deadline: store.getState().convo.properties.deadline
+                    }
+                    // deadline: store.getState().convo.properties.deadline,
+                    
+                },
+                topMsgId: store.getState().topMsgId,
+                eom: store.getState().eom,
+                bot: store.getState().bot,
+                botIntent: store.getState().botIntent,
             });
         }.bind(this));
-        console.log(store.getState())
+        
     }
     updateMembers = () => {
         publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
     }
 
     render() {
-        // var win = remote.getCurrentWindow()
-        // var inviteWin = win.getChildWindows()
-        // inviteWin[0].on('close', function() { 
-        //    win.reload()
-        // });
+
         var currentWindow = remote.getCurrentWindow()
         var childWindow = currentWindow.getChildWindows()
-        console.log("-------------------ChatRoom에서 childWindow를 가져오는지 확인---------")
-        console.log(childWindow)
+
         let sendMsg = this.sendMsg;
         let aside, viewModeClass;
-        console.log("--------------------members----------------------")
-        console.log(this.state.members)
+
         if (this.state.convo && this.state.convo.convoType === type.ConvoType.BOT) {
             viewModeClass = 'wrapmsgr_chatbot'
-            aside = <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
+            aside = <div className="wrapmsgr_aside">
                 <IntentList bot={this.state.bot} botIntent={this.state.botIntent} convoId={this.state.convo.convoId} notificationType={this.state.convo.notificationType} setNotification={this.setNotification} sendMsg={this.sendMsg} />
             </div>
         }
         else {
             viewModeClass = 'doc-chatroom'
+            console.log(this.state.convo.properties.deadline)
             aside = <React.Fragment>
-                <InfoHeader convoType={this.state.convo.convoType} convoId={this.state.convo.convoId} docName={this.state.convo.name} memberCount={this.state.convo.memberCount} notificationType={this.state.convo.notificationType} setNotification={this.setNotification} deadline={this.state.convo.deadline} />
+                <InfoHeader convoType={this.state.convo.convoType} convoId={this.state.convo.convoId} docName={this.state.convo.name} memberCount={this.state.convo.memberCount} notificationType={this.state.convo.notificationType} setNotification={this.setNotification} deadline={this.state.convo.properties.deadline} />
                 <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
                     <SearchBar search={this.state.search} setSearch={this.setSearch} />
                     <MemberList search={this.state.search} convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} />
                 </div></React.Fragment>
         }
 
+        console.log("##### EOM" + this.state.eom)
+
         return (
             <React.Fragment>
                 <div id="wrapmsgr" className="ng-scope">
                     <div id="wrapmsgr_body" ng-controller="WrapMsgrController" className="wrapmsgr_container ng-scope" data-ws="ws://ecm.dev.fasoo.com:9500/ws" data-vhost="/wrapsody-oracle" data-fpns-enabled="true" data-weboffice-enabled="true">
-                        <div className="wrapmsgr_chat wrapmsgr_state_normalize wrapmsgr_viewmode_full" ng-class="[chatroomState, viewModeClass, {false: 'disabled'}[loggedIn]]" ng-show="current.convo">
-                            <Header convoId={this.state.convo.convoId} docName={this.state.convo.name} headerType={HeaderType.CHAT} bookmark={this.state.convo.bookmark} />
+                        <div className="wrapmsgr_chat wrapmsgr_state_normalize wrapmsgr_viewmode_full" >
+                            <Header convoId={this.state.convo.convoId} docName={this.state.convo.name} headerType={HeaderType.CHAT} bookmark={this.state.convo.properties.bookmark} />
                             <div className={"wrapmsgr_content  wrapmsgr_viewmode_full " + viewModeClass}>
                                 {aside}
-                                <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass" id="DocumentChat">
+                                <div className="wrapmsgr_article wrapmsgr_viewmode_full" id="DocumentChat">
                                     <MsgList msgs={this.state.msgs} convo={this.state.convo} sendMsg={this.sendMsg} getMsgs={this.getMsgs} eom={this.state.eom} topMsgId={this.state.topMsgId} isBookmark={false} />
                                     <MsgInput convoId={this.state.convo.convoId} uuid={this.state.uuid} sendMsg={sendMsg.bind(this)} />
                                 </div>
