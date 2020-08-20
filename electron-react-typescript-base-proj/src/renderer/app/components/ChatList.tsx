@@ -13,7 +13,7 @@ const {remote, webContents} = require('electron')
 const Store = require('electron-store')
 const electronStore = new Store()
 const {BrowserWindow} = remote
-import { connect } from 'react-redux'
+
 interface ChatListState {
     convos: Conversation[],
     len: number,
@@ -217,4 +217,4 @@ class ChatList extends Component<ChatListProps, ChatListState> {
     return (<div>{this.props.search}</div>)
     }
 }
-export default connect()(ChatList);
+export default ChatList;
