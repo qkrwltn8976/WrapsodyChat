@@ -21,19 +21,12 @@ interface inviteProps{
 interface inviteState{
     uuid: string,
     convoId: string,
-    docName: string,
-    master: TreeMember,
-    tempDepts: TreeMember[],
-    tempMembers: TreeMember[],
-    oldMembers: TreeMember[],
-    viewAuthAllUsers: boolean,
-    checkoutAuthList: TreeMember[] ,
-    checkoutDeptAuthList: TreeDept[],
-    viewAuthList: TreeMember[],
-    viewDeptAuthList: TreeDept[],
-    isAllChecked: boolean,
-    nodeList: Node[],
-    childNodes: Nodes[],
+    // tempMembers: TreeMember[],
+    // docName: string,
+    // master: TreeMember,
+    // viewAuthAllUsers: boolean,
+    // oldMembers: TreeMember[],
+    // nodeList: Node[],
 }
 
 class Invite extends React.Component<inviteProps, inviteState>{
@@ -42,36 +35,44 @@ class Invite extends React.Component<inviteProps, inviteState>{
         this.state = ({
             uuid: v4(),
             convoId: this.props.match.params.convo,
-            docName: "",
-            master: {
-                userId : "",
-                userName : "",
-                password : "",
-            }, 
-            viewAuthAllUsers: false,
-            checkoutAuthList : [],
-            checkoutDeptAuthList: [],
-            viewAuthList: [],
-            viewDeptAuthList: [],
-            tempDepts:[],
-            tempMembers:[],
-            oldMembers:[],
-            nodeList:[],
-            isAllChecked: false,
-            childNodes : [],
+            // tempMembers: [],
+            // docName: "",
+            // master: {
+            //     userId : "",
+            //     userName: "",
+            //     password: "",
+            // },
+            // viewAuthAllUsers: false,
+            // oldMembers: [],
+            // nodeList:[],
         })
+       
+    }
+
+    stompConnection = () => {
+        client.onConnect = () => {
+            subscribe(client, electronStore.get("username"), this.state.uuid);
+            publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convoId });
+        }
     }
 
     componentDidMount(){
-       client.onConnect = () => {
-            publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convoId });
-        }  
+       this.stompConnection();
+       store.subscribe(function(this: Invite){
+            this.setState({
+                // docName: store.getState().master,
+                // master : store.getState().master,
+                // viewAuthAllUsers: store.getState().viewAuthAllUsers,
+                // oldMembers: store.getState().members,
+                // nodeList: store.getState().nodeList
+            })
+        }.bind(this));
+        console.log(store.getState())   
     }
 
     render(){
         let aside, viewModeClass;
         var organ_tree_calc_width = { width: 'calc(100% - 300px)' };
-      
         return(
             aside = <React.Fragment>
                 <div id="wrapmsgr" className="ng-scope">
@@ -81,13 +82,13 @@ class Invite extends React.Component<inviteProps, inviteState>{
                                 <Header docName = "" headerType={HeaderType.INVITE}/>
                                 <form name="manageDocRoomForm" ng-submit="submitDocRoom()" className="ng-pristine ng-valid">
                                     <div className="wrapmsgr_popup_body">
-                                        <InfoHeader convoType= {ConvoType.IC} memberCount = {this.state.oldMembers.length} docName = {this.state.docName} tempMembers = {this.state.tempMembers}/>
+                                        <InfoHeader convoType= {ConvoType.IC} docName = {"fff"}/>
                                         <div className="group">
                                             <div className="wrapmsgr_organ_tree ng-scope angular-ui-tree" ui-tree="organTreeOptions" data-clone-enabled="true" data-nodrop-enabled="true" data-drag-delay="100" style = {organ_tree_calc_width}>
-                                                <MemberList memberListType = {MemberListType.SELECT} oldMembers = {this.state.oldMembers}  master = {this.state.master} nodeList = {this.state.nodeList} />
+                                                <MemberList memberListType = {MemberListType.SELECT}  />
                                             </div>    
                                             <div className="wrapmsgr_organ_tree right-list-col ng-scope angular-ui-tree" ui-tree="inviteTreeOptions">
-                                                <MemberList memberListType = {MemberListType.SELECTED} oldMembers = {this.state.oldMembers} master = {this.state.master}/>
+                                                <MemberList memberListType = {MemberListType.SELECTED}/>
                                             </div>
                                         </div>
                                     </div>

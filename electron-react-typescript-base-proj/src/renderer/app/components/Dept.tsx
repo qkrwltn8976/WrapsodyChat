@@ -55,31 +55,31 @@ class Dept extends React.Component<Props, State>{
     }
 
     componentDidMount(){
-        subscribe(client, electronStore.get("username"), this.state.uuid, (obj:any) => {
-            let payload = obj.payload;
-            if(payload){
-                if(payload.Nodes){
-                    this.setState({
-                        childNodes : payload.Nodes,
-                    })
-                    let newNodeList : Node[];
-                    newNodeList = [];
-                    this.state.childNodes.map(node =>{
-                        newNodeList =  newNodeList.concat([{"name": node.columnText , "id" : node.value, "hasChildren" : node.hasChildren, "isExpanded": false, "status": "select", "type": node.type, parentCode : node.parentCode}])   
-                    })
-                    this.setState({
-                        nodeList:newNodeList
-                    }, 
-                    ()=>{
-                        if(this.state.isChecked){
-                            this.setState({
-                                isChecked: !this.state.isChecked
-                            }, ()=> this.afterClick())
-                        }
-                    })
-                }
-            }
-        })
+        // subscribe(client, electronStore.get("username"), this.state.uuid, (obj:any) => {
+        //     let payload = obj.payload;
+        //     if(payload){
+        //         if(payload.Nodes){
+        //             this.setState({
+        //                 childNodes : payload.Nodes,
+        //             })
+        //             let newNodeList : Node[];
+        //             newNodeList = [];
+        //             this.state.childNodes.map(node =>{
+        //                 newNodeList =  newNodeList.concat([{"name": node.columnText , "id" : node.value, "hasChildren" : node.hasChildren, "isExpanded": false, "status": "select", "type": node.type, parentCode : node.parentCode}])   
+        //             })
+        //             this.setState({
+        //                 nodeList:newNodeList
+        //             }, 
+        //             ()=>{
+        //                 if(this.state.isChecked){
+        //                     this.setState({
+        //                         isChecked: !this.state.isChecked
+        //                     }, ()=> this.afterClick())
+        //                 }
+        //             })
+        //         }
+        //     }
+        // })
     }
 
 

@@ -10,7 +10,7 @@ import { subscribe, publishApi, publishChat, client } from '../../../libs/stomp'
 import { v4 } from "uuid"
 import * as type from '@/renderer/libs/enum-type';
 import IntentList from '@/renderer/app/components/IntentList';
-import { getDate} from '@/renderer/libs/timestamp-converter';
+import { getDate } from '@/renderer/libs/timestamp-converter';
 import store from '../../../../store';
 
 const remote = require('electron').remote
@@ -47,7 +47,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
     }
 
     sendMsg = (msg: Message, api: string) => {
-        publishChat(client, api, electronStore.get("username"),this.state.uuid, msg);
+        publishChat(client, api, electronStore.get("username"), this.state.uuid, msg);
     }
 
     setSearch = (search: string) => {
@@ -61,6 +61,13 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
         })
         publishApi(client, "api.conversation.notification", electronStore.get("username"), this.state.uuid, { "convoId": this.state.convo.convoId, "type": type === 0 ? 1 : 0 })
         return false;
+    }
+
+    stompConnection = () => {
+        client.onConnect = () => {
+            subscribe(client, electronStore.get("username"), this.state.uuid);
+            publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
+        }
     }
 
     constructor(props: RoomProps, state: {}) {
@@ -95,51 +102,15 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
     }
 
     componentDidMount() {
-        // if ((obj.body || obj.messageId) && obj.recvConvoId === this.state.convo.convoId) { // 받은 메세지 처리
-        //     this.setState({
-        //         msgs: this.state.msgs.concat(obj),
-        //         topMsgId: obj.messageId
-        //     });
-            
-        //     if(obj.messageType === 240) {
-        //         let body = JSON.parse(obj.body);
-        //         if(body.cmdType === type.Command.BOOKMARK_START) { // command 명령어 시작
-        //             this.setState(prevState => ({
-        //                 convo: {
-        //                     ...prevState.convo,
-        //                     bookmark: "Y",
-        //                 },
-        //                 bookmarkStart: Date.now()
-        //             }));
-        //             publishApi(client, 'api.conversation.property.update', electronStore.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": "Y"});
-                    
-        //             console.log('북마크 시작')
-        //         } else if(body.cmdType === type.Command.BOOKMARK_STOP) {
-        //             this.setState(prevState => ({
-        //                 convo: {
-        //                     ...prevState.convo,
-        //                     bookmark: "N"
-        //                 }
-        //             }));
-        //             console.log(this.state.bookmarkStart)
-        //             publishApi(client, 'api.conversation.property.update', electronStore.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "bookmark", "value": "N"});
-        //             publishApi(client, 'api.conversation.bookmark.create', electronStore.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "북마크 "+ getDate(Date.now()), "startAt": this.state.bookmarkStart, "endAt": obj.createdAt-1})
-        //         } else if(body.cmdType === type.Command.DEADLINE) {
-        //             this.setState(prevState => ({
-        //                 convo: {
-        //                     ...prevState.convo,
-        //                     deadline: body.body
-        //                 }
-        //             }));
-
-        //             publishApi(client, 'api.conversation.property.update', electronStore.get("username"), this.state.uuid, {"convoId": this.state.convo.convoId, "name": "deadline", "value": body.body });
-        //         }
-        //         document.getElementById(this.state.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
-        //     }
-        // }
-        client.onConnect = () => {
-            publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
-        }
+        this.stompConnection();
+        store.subscribe(function (this: any) {
+            this.setState({
+                members: store.getState().members,
+                msgs: store.getState().msgs,
+                convo: store.getState().convo
+            });
+        }.bind(this));
+        console.log(store.getState())
     }
     updateMembers = () => {
         publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convo.convoId });
@@ -148,7 +119,8 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
     render() {
         let sendMsg = this.sendMsg;
         let aside, viewModeClass;
-        if (this.state.convo.convoType === type.ConvoType.BOT) {
+
+        if (this.state.convo && this.state.convo.convoType === type.ConvoType.BOT) {
             viewModeClass = 'wrapmsgr_chatbot'
             aside = <div className="wrapmsgr_aside" ng-hide="viewMode == 'chat' || current.convo.convoType == 2">
                 <IntentList bot={this.state.bot} botIntent={this.state.botIntent} convoId={this.state.convo.convoId} notificationType={this.state.convo.notificationType} setNotification={this.setNotification} sendMsg={this.sendMsg} />
@@ -169,7 +141,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                 <div id="wrapmsgr" className="ng-scope">
                     <div id="wrapmsgr_body" ng-controller="WrapMsgrController" className="wrapmsgr_container ng-scope" data-ws="ws://ecm.dev.fasoo.com:9500/ws" data-vhost="/wrapsody-oracle" data-fpns-enabled="true" data-weboffice-enabled="true">
                         <div className="wrapmsgr_chat wrapmsgr_state_normalize wrapmsgr_viewmode_full" ng-class="[chatroomState, viewModeClass, {false: 'disabled'}[loggedIn]]" ng-show="current.convo">
-                            <Header convoId={this.state.convo.convoId} docName={this.state.convo.name} headerType={HeaderType.CHAT} bookmark={this.state.convo.bookmark}/>
+                            <Header convoId={this.state.convo.convoId} docName={this.state.convo.name} headerType={HeaderType.CHAT} bookmark={this.state.convo.bookmark} />
                             <div className={"wrapmsgr_content  wrapmsgr_viewmode_full " + viewModeClass}>
                                 {aside}
                                 <div className="wrapmsgr_article wrapmsgr_viewmode_full" ng-class="viewModeClass" id="DocumentChat">

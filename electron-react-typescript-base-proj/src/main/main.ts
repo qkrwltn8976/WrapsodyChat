@@ -2,13 +2,21 @@
  * Entry point of the Election app.
  */
 import { app, BrowserWindow, ipcMain } from 'electron';
+import { createClient, publishApi, subscribe, client, setClient} from '@/renderer/libs/stomp';
+import { Stomp } from "@stomp/stompjs";
+import { Client, IMessage } from "@stomp/stompjs";
 import '@public/icon_bot_wrapsody.png'
 const {download} = require("electron-dl")
 import * as path from 'path';
 import * as url from 'url';
-
+import { createStore } from 'redux';
+import { conversationHandler } from '@/renderer/libs/stompData';
+const remote = require('electron').remote
+const Store = require('electron-store')
+const electronStore = new Store()
 let mainWindow: Electron.BrowserWindow | null;
 let chatWindow: Electron.BrowserWindow;
+let globalClient: Client;
 
 function createMainWindow(): void {
     // Create the browser window.
@@ -20,7 +28,7 @@ function createMainWindow(): void {
         minWidth: 360,
         titleBarStyle:'hidden',
         hasShadow:true,
-        icon: __dirname + './public/icon_bot_wrapsody.png'
+        icon: __dirname + './public/icon_bot_wrapsody.png',
     });
 
     // and load the index.html of the app.
@@ -39,6 +47,15 @@ function createMainWindow(): void {
             .then(dl => mainWindow.webContents.send("download complete", dl.getSavePath()));
     });
 
+    // ipcMain.on('requestClient', (event, argument)=>{
+    //     console.log("requestClient");
+    //     console.log(globalClient)
+    //     globalClient.onConnect = () => {
+    //         publishApi(globalClient, 'api.conversation.list', electronStore.get("username"), electronStore.get("uuid"), {});
+    //     }
+    //     event.sender.send('sendClient', globalClient)
+    // });
+
     mainWindow.setTitle("Wrapsody Chat")
     mainWindow.show()
 
@@ -51,6 +68,7 @@ function createMainWindow(): void {
     //     mainWindow = null;
     // });
 }
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -74,5 +92,20 @@ app.on('activate', () => {
     }
 });
 
+ipcMain.on('setClient', async (event, argument:any) => {
+    let login = electronStore.get("username")
+    let passcode = electronStore.get("password")
+    //setClient()
+    // console.log('fffff------------------------------')
+    // console.log(globalClient)
+    // globalClient.onConnect = () => {
+    //     console.log("connected to Stomp");
+    // }
+    // globalAny.globalClient = {globalClient: globalClient};
+    console.log("----------------------setClient and publish-----------------------")
+    // console.log(client.connected)
+    publishApi(client, 'api.conversation.list', electronStore.get("username"), electronStore.get("uuid"), {});
+    mainWindow.loadURL("file://"+__dirname+"/index.html#/chatlist/")
+});
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.

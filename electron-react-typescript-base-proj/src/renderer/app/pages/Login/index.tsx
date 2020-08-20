@@ -1,24 +1,21 @@
 import React, { Fragment, useState, createContext, useContext } from 'react'
-import { client ,subscribe,publishApi, setClient} from '@/renderer/libs/stomp';
+// import { client} from '@/renderer/libs/stomp';
 import { v4 } from 'uuid';
+import { ipcRenderer } from 'electron';
 const remote = require('electron').remote
 
 //electron-store 라이브러리 사용하여 id / pw 저장
 const Store = require('electron-store')
 const store = new Store()
 
+
 async function handleClick (userinfo: any, uuid:string, lang:string){
+    const globalAny:any = global;
     store.set("username", userinfo.username)
     store.set("password", userinfo.password)
     store.set("language", lang)
-    setClient()
-
-    console.log(client.connected)
-
-    client.onConnect=()=>{
-        var win  = remote.getCurrentWindow()
-        win.loadURL("file://"+__dirname+"/index.html#/chatlist/")
-    }
+    store.set("uuid", uuid)
+    ipcRenderer.send('setClient')
 }
 
 const minimizeWindow = (event:any)=>{

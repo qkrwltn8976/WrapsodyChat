@@ -14,6 +14,7 @@ const isEnvDevelopment = process.env.NODE_ENV === 'development';
 const commonConfig = {
   devtool: isEnvDevelopment ? 'source-map' : false,
   mode: isEnvProduction ? 'production' : 'development',
+  externals: ['bufferutil', 'utf-8-validate'],
   output: { path: srcPaths('dist') },
   node: { __dirname: false, __filename: false },
   resolve: {

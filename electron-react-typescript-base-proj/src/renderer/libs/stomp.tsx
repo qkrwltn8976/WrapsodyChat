@@ -3,8 +3,7 @@ import { Client, IMessage } from "@stomp/stompjs";
 import { v4 } from "uuid";
 import * as stompData from "@/renderer/libs/stompData"
 const Store = require('electron-store')
-const store = new Store()
-
+const electronStore = new Store()
 
 export function createClient(login: string, passcode: string) {
     console.log(login)
@@ -29,29 +28,24 @@ export function createClient(login: string, passcode: string) {
 
     client.onConnect = () => {
         console.log("connected to Stomp");
-        subscribe(client, login, v4(), (obj: any) => {
-            let payload = obj.payload;
-            console.log(payload);
-        });
+        subscribe(client, login, v4());
     }
 
     client.activate();
     return client;
 }
 
-export var client = createClient(store.get("username"), store.get("password"))
-
+export var client = createClient(electronStore.get("username"), electronStore.get("password"))
 export function setClient(){
-    client = createClient(store.get("username"), store.get("password"))
+    client = createClient(electronStore.get("username"), electronStore.get("password"))
 }
 
-export function subscribe(client: Client, userId: string, uuid: string, callback: any) {
+export function subscribe(client: Client, userId: string, uuid: string) {
     let response : any;
     let sub: any;
     let apis: any;
     console.log("-------------------------message--------------------------")
     client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {
-        console.log("-------------------------message--------------------------")
         console.log(message)
         if(message.headers['correlation-id']) {
             sub = message.headers['correlation-id'];
@@ -86,6 +80,28 @@ export function subscribe(client: Client, userId: string, uuid: string, callback
             else {
                 console.log("got empty message");
             }
+            // sub = 
+            // dest/exchange/chat.short.room.8954b0fc574d4423adc422b0017cfc3e
+
+        } else {
+            if(message.headers['destination']) {
+                sub = message.headers['destination'];
+                let api = sub.substring(sub.indexOf('/chat.')+1);
+                console.log(api)
+                
+                console.log(sub.indexOf('/chat.')+1)
+                apis = api.split('.');
+                if (message.body || message.isBinaryBody || message.command) {
+                    response = JSON.parse(message.body);
+                    console.log(response)
+                    console.log(apis)
+                    switch(apis[0]) {
+                        case 'chat':
+                            stompData.chatHandler(apis, response);
+
+                    }
+                }
+            }
         }
     }, {
         "x-queue-name": `user-${userId}-${uuid}`
@@ -113,12 +129,12 @@ export function publishApi(client: Client, api: string, userId: string, uuid: st
     client.publish({
         destination: `/exchange/request/${api}`,
         body: JSON.stringify({
-            senderId: userId, locale: store.get("language"), payload,
+            senderId: userId, locale: electronStore.get("language"), payload,
         }),
         headers: { "user-id": userId, "reply-to": "user-"+userId+"-"+uuid, "content-type": "application/json", "correlation-id": api }
     });
     console.log(JSON.stringify({
-        senderId: userId, locale: store.get("language"), payload,
+        senderId: userId, locale: electronStore.get("language"), payload,
     }))
 }
 

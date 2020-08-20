@@ -9,6 +9,7 @@ import { Nodes } from '../../models/Nodes';
 import { Node } from '../../models/Node';
 import { v4 } from 'uuid';
 import store from '../../../store';
+import { Action } from 'history';
 
 const Store = require('electron-store')
 const electronStore = new Store()
@@ -27,8 +28,6 @@ interface Props {
     clickMember?: any;
     clickDept? : any;
     viewAuthAllUsers?: boolean;
-    oldMembers?: TreeMember[];
-    master?: TreeMember;
     isAllChecked?: boolean,
     isMemberChecked?: boolean,
     isDeptChecked?: boolean,
@@ -43,6 +42,8 @@ interface State{
     childNodes: Nodes[],
     nodeList: Node[],
     uuid: string,
+    master: TreeMember;
+    oldMembers: TreeMember[];
 }
 
 
@@ -55,6 +56,12 @@ class MemberList extends React.Component<Props, State>{
             childNodes : [],
             nodeList : [],
             uuid: v4(),
+            master: {
+                userId : "",
+                userName: "",
+                password: "",
+            },
+            oldMembers : [],
         })
         this.clickTree = this.clickTree.bind(this);
         this.afterClick = this.afterClick.bind(this);
@@ -63,22 +70,25 @@ class MemberList extends React.Component<Props, State>{
         store.subscribe(function(this:MemberList){
             this.setState({ 
                 tempMembers: store.getState().tempMembers,
-                members: store.getState().members, 
+                members: store.getState().members,
+                nodeList: store.getState().nodeList,
+                master: store.getState().master,
+                oldMembers: store.getState().members,
             });
         }.bind(this));
     }
 
     getChildNode = () => {   
-        subscribe(client, electronStore.get("username"), this.state.uuid, (obj:any) => {
-            let payload = obj.payload;
-            if(payload){
-                if(payload.Nodes){
-                    this.setState({
-                        childNodes : payload.Nodes,
-                    }, () => this.afterClick()) 
-                }
-            }
-        }); 
+        // subscribe(client, electronStore.get("username"), this.state.uuid, (obj:any) => {
+        //     let payload = obj.payload;
+        //     if(payload){
+        //         if(payload.Nodes){
+        //             this.setState({
+        //                 childNodes : payload.Nodes,
+        //             }, () => this.afterClick()) 
+        //         }
+        //     }
+        // }); 
     }
  
 
@@ -120,6 +130,12 @@ class MemberList extends React.Component<Props, State>{
     render() {
         const { memberListType, convoId} = this.props
         let tempMembersComponent;
+        console.log("-----------------store에서 왜 값을 못 받아오지-------------------")
+        console.log(this.state.master)
+        console.log(this.state.nodeList)
+        console.log(this.state.tempMembers)
+        console.log(this.state.members)
+        console.log(this.state.oldMembers)
         if(this.state.tempMembers && this.state.tempMembers.length > 0){
             tempMembersComponent = this.state.tempMembers.map(member=> {
                 return(
@@ -143,7 +159,7 @@ class MemberList extends React.Component<Props, State>{
                     })}
                 </ul>
             );
-        } else if (memberListType == 'select') {
+        } else if (memberListType == 'select' && this.state.master && this.state.nodeList && this.state.nodeList.length > 0) {
             return (
                 <React.Fragment>
                     <div className="wrapmsgr_organ_tree_header">
@@ -155,14 +171,14 @@ class MemberList extends React.Component<Props, State>{
                     </div>
                     <ol ui-tree-nodes="" ng-model="docInfo.organ" ng-show="docInfo.organ.length > 0" className="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-not-empty">  
                         {
-                            this.props.nodeList.map(node=>{
+                            this.state.nodeList.map(node=>{
                                 if(node.type == "user" && node.status == "select"){
                                     return(
-                                        <MemberComponent clickMember = {this.props.clickMember} master = {this.props.master} member = {node} oldMembers = {this.props.oldMembers}/>
+                                        <MemberComponent clickMember = {this.props.clickMember} master = {this.state.master} member = {node} oldMembers = {this.state.oldMembers}/>
                                     )
                                 }else if(node.type == "dept" && node.status == "select"){
                                     return(
-                                        <Dept clickDept = {this.props.clickDept} clickMember = {this.props.clickMember} master = {this.props.master} oldMembers = {this.props.oldMembers} dept = {node}/>
+                                        <Dept clickDept = {this.props.clickDept} clickMember = {this.props.clickMember} master = {this.state.master} oldMembers = {this.state.oldMembers} dept = {node}/>
                                     )
                                 }
                             })
@@ -170,10 +186,10 @@ class MemberList extends React.Component<Props, State>{
                     </ol>
                 </React.Fragment>
             );
-        } else if (memberListType == 'selected') {
+        } else if (memberListType == 'selected' && this.state.oldMembers && this.state.oldMembers.length > 0) {
             return (
                 <ol ui-tree-nodes="" ng-model="inviteMembers" ng-show="inviteMembers.length > 0" className="ng-pristine ng-untouched ng-valid ng-scope angular-ui-tree-nodes ng-not-empty">
-                    {this.props.oldMembers.map(member => 
+                    {this.state.oldMembers.map(member => 
                     {
                         return(
                            <MemberComponent oldMember = {member} selectedMemberType = {"oldMembers"}/>

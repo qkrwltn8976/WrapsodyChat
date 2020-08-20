@@ -18,7 +18,7 @@ interface Props {
     convoType: number;
     convoId?: string;
     // infoheaderType: string;
-    memberCount: number;
+    memberCount?: number;
     docName: string;
     notificationType?: number;
     setNotification?: any
@@ -30,7 +30,9 @@ interface ShowState {
     isShow: boolean;
     uuid:string; 
     tempMembers : TreeMember[];  
+    oldMembers: TreeMember[],
     deadline?: string;
+    docTitle: string;
 }
 
 
@@ -43,11 +45,16 @@ class InfoHeader extends React.Component<Props, ShowState>{
         this.state = ({
             isShow: false,
             uuid: v4(),
-            tempMembers : store.getState().tempMembers,
-            deadline: this.props.deadline
+            tempMembers : [],
+            oldMembers : [],
+            deadline: this.props.deadline,
+            docTitle: "ddd"
         }); 
         store.subscribe(function(this: InfoHeader){
-            this.setState({ tempMembers : store.getState().tempMembers})
+            this.setState({ 
+                tempMembers : store.getState().tempMembers,
+                oldMembers: store.getState().members
+            })
         }.bind(this));
     }
 
@@ -232,58 +239,20 @@ class InfoHeader extends React.Component<Props, ShowState>{
         if (convoType === ConvoType.DEP) {
             return (
                 <div className="wrapmsgr_header">
-                    {/* <div className="wrapmsgr_header_title ng-scope">
-                        <span className="user-photo ng-binding ng-isolate-scope group no-photo red">랩소</span>
-                            <div>
-                                <div className="chatroom-name ng-binding" title="Sample Text .DotInMiddle.txt">Sample Text .DotInMiddle.txt</div>
-                                <div className="chatroom-size ng-binding">3.5KB</div>
-                            </div>
-                        </div>
-                        <div className="chatroom-user">
-                            <i className="icon_users"></i>
-                            <span className="chatroom-user-cnt ng-binding">3 명</span>
-                        </div>
-                        <div className="chatroom-user">
-                            <div className="chatroom-user-list ng-hide" >
-                                <ul>
-                                    <li className="ng-binding ng-scope">administrator</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div className="wrapmsgr_right">
-                            <a href=""><i className="icon_bell"></i></a>
-                        </div> */}
                 </div>
             );
         }
         if (convoType === ConvoType.BOT) {
             return (<React.Fragment></React.Fragment>)
         }
-        //     return (
-        //         <div className="wrapmsgr_chatbot-info_div">
-        //                     <p className="ng-binding">Wrapsody Chatbot에게 무엇이든 물어보세요!</p>
-        //                     <a href=""><i title="알림 수신" className="icon_bell_off"></i></a>
-        //         </div>
-        //     );
-        // }
-        // if(infoheaderType === InfoHeaderType.CREATE || InfoHeaderType.INVITE){
-        //     return (
-        //         <div className="doc-chatroom-info_div">
-        //             <document-icon name="docInfo.detail.contentName" class="ng-isolate-scope"><i className="icon_txt">          <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i></document-icon>
-        //                 <div className="doc-name ng-binding">새 텍스트 문서 (2).txt</div>
-        //                     <div>
-        //                         <span className="ng-binding">문서 권한 보유자 3 명 / 대화 상대 1 명</span>                       
-        //                 </div>
-        //         </div>
-        //     )
-        // }
         if (convoType === ConvoType.IC) {
             return (
                 <div className="doc-chatroom-info_div">
                     <document-icon name="docInfo.detail.contentName" class="ng-isolate-scope"><i className="icon_txt">          <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i></document-icon>
                     <div className="doc-name ng-binding">{this.props.docName}</div>
                     <div>
-                        <span className="ng-binding">문서 권한 보유자 {this.props.memberCount} 명 / 대화 상대 {this.props.memberCount + this.state.tempMembers.length} 명</span>                       
+                        {/* <span className="ng-binding">문서 권한 보유자 {this.state.oldMembers.length} 명 / 대화 상대 {this.state.oldMembers.length + this.state.tempMembers.length} 명</span>            */}
+                        <span className="ng-binding">문서 권한 보유자 3 명 / 대화 상대 5 명</span>                                   
                     </div>
                 </div>
             )
