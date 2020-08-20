@@ -13,7 +13,7 @@ public class BookmarkStartMessage {
 
     public BookmarkStartMessage(String convoId, String name) throws ParseException {
         this.sPayload = "{\"convoId\": \""+ convoId +"\"," +
-                "\"name\": \"bookmark\"}";
+                "\"name\": \""+name+"\"}";
         JSONParser jp = new JSONParser();
         this.payload = jp.parse(this.sPayload);
     }

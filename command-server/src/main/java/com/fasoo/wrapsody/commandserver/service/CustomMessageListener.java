@@ -22,13 +22,14 @@ public class CustomMessageListener {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    String body, exchange, routingKey;
-    String []cmd;
-    Command type;
-    boolean iscommand = false;
-
     @RabbitListener(queues = "spring-boot")
     public void receiveMessage(final CustomMessage message) throws ParseException {
+        String body, exchange, routingKey;
+        String []cmd;
+        Command type = null;
+        boolean iscommand = false;
+        boolean isWrong = false;
+
         System.out.println(message.getBody());
         body = message.getBody();
 
@@ -50,8 +51,13 @@ public class CustomMessageListener {
             }
 
             if(iscommand){
+
                 //BOOKMARK
-                if(type==Command.BOOKMARK && cmd.length!=1){
+                if(type==Command.BOOKMARK && cmd.length==1){  //@bookmark 만 입력했을때
+                    isWrong = true;
+                }
+
+                else if(type==Command.BOOKMARK && cmd.length!=1){  //@bookmark + alpha
                     String c = cmd[1].toLowerCase();    //@bookmark 뒤에 처음 오는 단어
 
                     if(c.compareTo(Bookmark.START.getKey())==0){
@@ -77,7 +83,7 @@ public class CustomMessageListener {
                             }
                         }
                         //ALREADY_EXISTS
-                        if(result ==3){
+                        else if(result ==3){
                             SystemMessage sm = new SystemMessage(message.getRecvConvoId(),"이미 녹화중입니다", 100);
                             runner.send(exchange,routingKey+message.getRecvConvoId(),sm);
                         }
@@ -103,28 +109,30 @@ public class CustomMessageListener {
                             }
                         }
                         //ALREADY_EXISTS
-                        if(result ==3){
+                        else if(result ==3){
                             SystemMessage sm = new SystemMessage(message.getRecvConvoId(),"녹화중이 아닙니다", 100);
                             runner.send(exchange,routingKey+message.getRecvConvoId(),sm);
                         }
                     }
-
                     //@bookmark + 잘못된 입력일때
                     else{
-                        SystemMessage sm = new SystemMessage(message.getRecvConvoId(), "커맨드 형식: @BOOKMARK START [NAME] / @BOOKMARK STOP [NAME] / @BOOKMARK NAME name",100);
-                        runner.send(exchange,routingKey+message.getRecvConvoId(),sm);
+                        isWrong = true;
                     }
                 }
 
-                //@bookmark 만 입력했을때
-                if(type==Command.BOOKMARK && cmd.length==1){
+                //잘못된 입력 처리
+                if(type == Command.BOOKMARK && isWrong){
                     SystemMessage sm = new SystemMessage(message.getRecvConvoId(), "커맨드 형식: @BOOKMARK START [NAME] / @BOOKMARK STOP [NAME]",100);
                     runner.send(exchange,routingKey+message.getRecvConvoId(),sm);
                 }
 
 
                 //DEADLINE
-                if(type==Command.DEADLINE && cmd.length!=1) {
+                if(type==Command.DEADLINE && cmd.length==1) {   //@deadline 만 입력했을 때
+                    isWrong = true;
+                }
+
+                else if(type==Command.DEADLINE && cmd.length!=1) {  //@daedline + alpha
                     int cmdType=10;
                     if(cmd.length!= 1){
                         String msg="";
@@ -147,26 +155,24 @@ public class CustomMessageListener {
                             if(Integer.parseInt(date.get(0))<100){
                                 date.set(0,"20"+date.get(0));
                             }
-                            String d = date.get(0)+"-"+date.get(1)+"-"+date.get(2);
+                            msg = date.get(0)+"-"+date.get(1)+"-"+date.get(2);
 
-                            msg = d;
+                            SystemMessage sm = new SystemMessage(message.getRecvConvoId(), msg,cmdType);
+                            runner.send(exchange,routingKey+message.getRecvConvoId(), sm);
                         }
                         else {
-                            msg = "Please enter deadline YYYY-MM-DD or YY-MM-DD \n You can select delimiter among {. , / - _}";
-                            cmdType=100;
+                            isWrong = true;
                         }
-
-                        SystemMessage sm = new SystemMessage(message.getRecvConvoId(), msg,cmdType);
-                        runner.send(exchange,routingKey+message.getRecvConvoId(), sm);
                     }
 
                 }
-                else if(type==Command.DEADLINE && cmd.length==1) {
+
+                //잘못된 입력 처리
+                if(type == Command.DEADLINE && isWrong){
                     String msg = "Please enter deadline YYYY-MM-DD or YY-MM-DD \n You can select delimiter among {. , / - _}";
                     SystemMessage sm = new SystemMessage(message.getRecvConvoId(), msg,100);
                     runner.send(exchange,routingKey+message.getRecvConvoId(),sm);
                 }
-
 
                 //REVISION
                 if(type == Command.REVISION){
