@@ -2,6 +2,7 @@ package com.fasoo.wrapsody.commandserver.service;
 
 import com.fasoo.wrapsody.commandserver.model.BookmarkStartMessage;
 import com.fasoo.wrapsody.commandserver.model.CustomMessage;
+import com.fasoo.wrapsody.commandserver.model.PropertyUpdateMessage;
 import com.fasoo.wrapsody.commandserver.model.SystemMessage;
 import com.wrapsody.messaging.model.ApiResponse;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
@@ -36,7 +37,7 @@ public class Runner{
 
     //북마크 시작 or 중단 요청 보낼때 사용
     public int send (String exchange, String routingKey, BookmarkStartMessage message, String correlationId){
-        System.out.println("Sending message to get property...");
+        System.out.println("Sending message...");
         CorrelationData correlationData = new CorrelationData(correlationId);
 
         ApiResponse answer = (ApiResponse) rabbitTemplate.convertSendAndReceive(exchange, routingKey, message, m->{
@@ -46,6 +47,13 @@ public class Runner{
         },correlationData );
 
         return (answer.getResultCode().getCode());
+    }
 
+    public void send(String exchange, String routingKey, PropertyUpdateMessage message){
+        System.out.println("Sending message...");
+        rabbitTemplate.convertAndSend(exchange, routingKey, message, m->{
+            m.getMessageProperties().setUserId("wrapsody");
+            return m;
+        });
     }
 }
