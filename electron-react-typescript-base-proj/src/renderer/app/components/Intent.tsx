@@ -12,7 +12,8 @@ const electronStore = new Store()
 interface IntentProps {
     intent: BotIntent,
     convoId: string,
-    sendMsg: any
+    sendMsg: any,
+    getCommands: any
 }
 
 interface IntentState {
@@ -47,7 +48,7 @@ class Intent extends React.Component<IntentProps, IntentState>{
             this.setState({ active: false })
         } else {
             this.setState({ active: true });
-            publishApi(client, 'api.bot.command.list', electronStore.get("username"), this.state.uuid, { 'botUserId': e.botUserId, 'groupId': e.groupId });
+            this.props.getCommands(e); 
         }
     }
 
@@ -65,7 +66,7 @@ class Intent extends React.Component<IntentProps, IntentState>{
 
 
     componentDidMount() {
-        subscribe(client, electronStore.get("username"), this.state.uuid);
+        // subscribe(client, electronStore.get("username"), this.state.uuid);
         store.subscribe(function (this:any) {
             this.setState({
                 commands: store.getState().commands

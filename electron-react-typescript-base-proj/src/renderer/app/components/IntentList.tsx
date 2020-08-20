@@ -9,7 +9,8 @@ interface IntentProps {
     convoId: string,
     notificationType: number,
     setNotification: any,
-    sendMsg: any
+    sendMsg: any,
+    getCommands: any
 }
 
 interface IntentState {
@@ -59,7 +60,7 @@ class IntentList extends React.Component<IntentProps, IntentState> {
 
                         {this.state.botIntent.map((intent: any) => {
                             return (
-                                <Intent intent={intent} convoId={this.props.convoId} sendMsg={this.props.sendMsg}/>
+                                <Intent intent={intent} convoId={this.props.convoId} sendMsg={this.props.sendMsg} getCommands={this.props.getCommands}/>
                             )
                         })}
 

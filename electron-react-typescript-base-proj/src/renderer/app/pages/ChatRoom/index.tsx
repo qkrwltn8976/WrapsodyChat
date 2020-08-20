@@ -52,6 +52,10 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
         publishChat(this.state.client, api, electronStore.get("username"), this.state.uuid, msg);
     }
 
+    getCommands = (e: BotIntent) => {
+        publishApi(client, 'api.bot.command.list', electronStore.get("username"), this.state.uuid, { 'botUserId': e.botUserId, 'groupId': e.groupId });
+    }
+
     setSearch = (search: string) => {
         this.setState({ search: search })
     }
@@ -156,7 +160,7 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
         if (this.state.convo && this.state.convo.convoType === type.ConvoType.BOT) {
             viewModeClass = 'wrapmsgr_chatbot'
             aside = <div className="wrapmsgr_aside">
-                <IntentList bot={this.state.bot} botIntent={this.state.botIntent} convoId={this.state.convo.convoId} notificationType={this.state.convo.notificationType} setNotification={this.setNotification} sendMsg={this.sendMsg} />
+                <IntentList bot={this.state.bot} botIntent={this.state.botIntent} convoId={this.state.convo.convoId} notificationType={this.state.convo.notificationType} setNotification={this.setNotification} sendMsg={this.sendMsg} getCommands={this.getCommands}/>
             </div>
         }
         else {
