@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { BotIntent } from '@/renderer/models/BotIntent';
-import { publishApi, publishChat, subscribe, client } from '@/renderer/libs/stomp';
 import { v4 } from 'uuid';
 import { BotCommand } from '@/renderer/models/BotCommand';
 import { Message } from '@/renderer/models/Message';
@@ -19,7 +18,7 @@ interface IntentProps {
 interface IntentState {
     active: boolean,
     uuid: string,
-    commands: BotCommand[]
+    intent: BotIntent
 }
 
 class Intent extends React.Component<IntentProps, IntentState>{
@@ -55,23 +54,12 @@ class Intent extends React.Component<IntentProps, IntentState>{
 
     constructor(props: IntentProps) {
         super(props);
-
         this.state = {
             active: false,
             uuid: v4(),
-            commands: []
+            intent: this.props.intent
         }
 
-    }
-
-
-    componentDidMount() {
-        // subscribe(client, electronStore.get("username"), this.state.uuid);
-        store.subscribe(function (this:any) {
-            this.setState({
-                commands: store.getState().commands
-            })
-        }.bind(this));
     }
 
 
@@ -82,10 +70,10 @@ class Intent extends React.Component<IntentProps, IntentState>{
                 <i className={this.state.active ? 'icon_triangle wrapmsgr_expand' : 'icon_triangle wrapmsgr_collapse'}></i>
             </div>
             <ul className={this.state.active ? 'question-sub-list ' : 'question-sub-list hidden'}>
-                {
-                this.state.commands.map((command: BotCommand) => {
+                {(this.state.intent.commands) ?
+                this.state.intent.commands.map((command: BotCommand) => {
                     return (this.getCommand(command))
-                })
+                }) : null
                 }
             </ul></li>)
     }

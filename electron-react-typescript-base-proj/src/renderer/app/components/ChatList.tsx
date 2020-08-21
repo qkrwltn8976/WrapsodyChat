@@ -82,8 +82,6 @@ class ChatList extends Component<ChatListProps, ChatListState> {
 
         this.roomOpened.set(convoId, chatWindow.id)
 
-        
-
         const index = this.state.convos.findIndex(convo => convo.convoId === convoId),
         convos = [...this.state.convos] // important to create a copy, otherwise you'll modify state outside of setState call
         convos[index].unread = 0;
@@ -123,10 +121,7 @@ class ChatList extends Component<ChatListProps, ChatListState> {
             len: 0,
             client: JSON.parse(electronStore.get("stmp"))
         });
-        // console.log(electronStore.get("stmp"))
-        // console.log()
-        let stmp:Client = JSON.parse(electronStore.get("stmp"))
-        console.log(stmp)
+
     }
     
 

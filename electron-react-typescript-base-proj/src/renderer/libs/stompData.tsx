@@ -45,93 +45,6 @@ export function conversationHandler(apis, response) {
 	}
 }
 
-				// if (payload.BotIntentGroup) {
-				// 	this.setState({
-				// 		botIntent: payload.BotIntentGroup
-				// 	})
-				// }
-export function roomHandler(apis, response) {
-	switch (apis[2]) {
-		case 'list':
-		// $scope.$apply(function() {
-		// 	$scope.rooms = response.payload.Rooms;
-		// });
-		// break;
-
-		case 'create':
-		// 	$scope.$apply(function() {
-		// 		var room = response.payload.Room;
-		// 		var members = response.payload.Members;
-		// 		room.convoType = 1;
-		// 		room.unread = 0;
-		// 		room.memberCount = members.length;
-		// 		room.notificationType = 1;
-
-		// 		$scope.convos.push(room);
-		// 		$scope.current.convo = room;
-		// 		$scope.current.members = response.payload.Members;
-		// 		$scope.current.messages = response.payload.Messages;
-		// 		$scope.current.hasBrokenMessage = false;
-		// 		$scope.current.brokenMessage = undefined;
-
-		// 		$scope.search.user = '';
-
-		// 		if (room.syncId) {
-		// 			if ($scope.docInfo.detail && $scope.docInfo.detail.syncId == room.syncId) {
-		// 				$scope.current.docInfo = $scope.docInfo;
-		// 			} else {
-		// 				$scope.getDocInfo(room.syncId, function(data) {
-		// 					$scope.current.docInfo = data;
-		// 				});
-		// 			}
-		// 		}
-
-		// 		for (var i = 0; i < $scope.current.members.length; i++) {
-		// 			var member = $scope.current.members[i];
-		// 			if ($scope.users[member.userId] == undefined) {
-		// 				$scope.getUserInfo(member.userId, function() { member.userName = $scope.users[member.userId].userName; });
-		// 			} else {
-		// 				member.userName = $scope.users[member.userId].userName;
-		// 			}
-		// 		}
-
-		// 		$scope.hidePopup();
-
-		// 		$scope.checkUserInfo();
-		// 	});
-		// 	break;
-
-		// case 'invite':
-		// 	$scope.$apply(function() {
-		// 		$scope.hidePopup();
-		// 	});
-		// 	break;
-
-		// case 'leave':
-		// 	// room_left ì´ë²¤íŠ¸ì—ì„œ ì²˜ë¦¬í•¨
-		// 	break;
-	}
-}
-
-export function oneToOneHandler(apis, response) {
-	// switch(apis[2]) {
-	// 	case 'list':
-	// 		$scope.$apply(function() {
-	// 			$scope.oneToOne = response.payload.OneToOnes;
-	// 		});
-	// 		break;
-	// 	case 'remove':
-	// 		$scope.$apply(function() {
-	// 			for(var i = 0; i < $scope.convos.length; i++) {
-	// 				if ($scope.convos[i].convoId == response.payload.convoId) {
-	// 					$scope.convos.splice(i, 1);
-	// 				}
-	// 			}
-	// 		});
-	// 		break;
-	// 	}
-}
-
 export function messageHandler(apis, response) {
 	switch (apis[2]) {
 		case 'list':
@@ -170,7 +83,7 @@ export function botHandler(apis, response) {
 				let botUserId = response.payload.botUserId;
 				let groupId = response.payload.groupId;
 				let commands = response.payload.BotCommands;
-				store.dispatch({ type: "getBotCommands", commands: response.payload.BotCommands });
+				store.dispatch({ type: "getBotCommands", payload: response.payload });
 			}
 			break;
 	}
@@ -184,6 +97,8 @@ export function eventHandler(apis, response) {
 	switch (type) {
 		case 'CONVERSATION_BOOKMARK_DELETED':
 			store.dispatch({type: "deleteBookmark", bookmark: response.payload });
+		case 'NOTIFICATION_UPDATED':
+			store.dispatch({type: "updateNotification", notification: response.payload });
 	}
 }
 

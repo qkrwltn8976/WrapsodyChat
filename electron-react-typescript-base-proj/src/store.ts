@@ -1,7 +1,8 @@
-\import { createStore, bindActionCreators } from 'redux';
+import { createStore, bindActionCreators } from 'redux';
 import { sendNotification } from './renderer/libs/notification';
 import { remote } from 'electron';
 import * as etype from '@/renderer/libs/enum-type';
+import { BotIntent } from './renderer/models/BotIntent';
 const Store = require('electron-store')
 const electronStore = new Store()
 
@@ -136,8 +137,6 @@ export default createStore(function (state: any, action: any) {
     }
 
     if (action.type === 'sysMsg') {
-        console.log("**************syss")
-        console.log(action.msg)
         if (state.convo && action.msg.recvConvoId === state.convo.convoId) {
             let body = JSON.parse(action.msg.body);
             let convo;
@@ -159,8 +158,6 @@ export default createStore(function (state: any, action: any) {
                     }
                 }
             } else if (body.cmdType === etype.Command.DEADLINE) {
-                console.log('+++++++++++++')
-                console.log(body.body)
                 convo = {
                     ...state.convo,
                     properties: {
@@ -214,7 +211,7 @@ export default createStore(function (state: any, action: any) {
                 }
             }
             convos[index].latestMessageAt = action.msg.updatedAt;
-            return { ...state, convos: convos }
+            return { ...state, convos: convos, topMsgId: "0" }
         }
 
 
@@ -235,7 +232,10 @@ export default createStore(function (state: any, action: any) {
     }
 
     if (action.type === 'getBotCommands') {
-        return { ...state, commands: action.commands }
+        let idx = state.botIntent.findIndex(obj => obj.groupId === action.payload.groupId)
+        let botIntent: BotIntent = state.botIntent;
+        botIntent[idx].commands = action.payload.BotCommands;
+        return { ...state, botIntent }
     }
 
     if (action.type === 'getBookmarks') {
@@ -252,7 +252,7 @@ export default createStore(function (state: any, action: any) {
     }
 
     if (action.type === 'concatMsgs') {
-        let eom : boolean;
+        let eom: boolean;
         if (action.msgs.length === 20)
             eom = false;
         else
@@ -271,9 +271,26 @@ export default createStore(function (state: any, action: any) {
         };
     }
 
-    // if (action.type === 'systemMsg') {
-    //     return {...state, msgs: state.msgs.concat(action.msgs)}
-    // }
+    if (action.type === 'updateNotification') {
+        if (state.convos) {
+            // 채팅방 리스트에서 알람 업데이트 처리
+            let idx = state.convos.findIndex(obj => obj.convoId === action.notification.convoId);
+            let convos = state.convos;
+            convos[idx].notificationType = action.notification.type;
+            return {
+                ...state,
+                convos
+            }
+        } else if (state.convo) {
+            // 채팅방 내부에서 알람 업데이트 처리
+            return {
+                ...state,
+                convo: {
+                    notificationType: action.notification.type
+                }
+            }
+        }
+    }
 
     return state;
 })

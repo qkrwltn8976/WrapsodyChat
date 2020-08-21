@@ -52,7 +52,8 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
     }
 
     getCommands = (e: BotIntent) => {
-        publishApi(client, 'api.bot.command.list', electronStore.get("username"), this.state.uuid, { 'botUserId': e.botUserId, 'groupId': e.groupId });
+        if(!e.commands)
+            publishApi(client, 'api.bot.command.list', electronStore.get("username"), this.state.uuid, { 'botUserId': e.botUserId, 'groupId': e.groupId });
     }
 
     setSearch = (search: string) => {
@@ -172,8 +173,6 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                     <MemberList search={this.state.search} convoId={this.state.convo.convoId} memberListType={MemberListType.CHAT} />
                 </div></React.Fragment>
         }
-
-        console.log("##### EOM" + this.state.eom)
 
         return (
             <React.Fragment>
