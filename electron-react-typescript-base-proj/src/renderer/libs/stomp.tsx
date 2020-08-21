@@ -28,75 +28,75 @@ export function createClient(login: string, passcode: string) {
     });
 
     client.onConnect = () => {
-        let response: any;
-        let sub: any;
-        let apis: any;
-        let uuid: string = store.get("uuid");
-        let userId: string = store.get("username");
-        client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {
-            if (message.headers['correlation-id']) {
-                console.log(message)
-                sub = message.headers['correlation-id'];
-                apis = sub.split('.');
-                if (message.body || message.isBinaryBody || message.command) {
-                    response = JSON.parse(message.body);
-                    switch (apis[1]) {
-                        case 'user':
-                            stompData.userHandler(apis, response);
-                            break;
-                        case 'conversation':
-                            stompData.conversationHandler(apis, response);
-                            break;
-                        case 'room':
-                            stompData.roomHandler(apis, response);
-                            break;
-                        case 'oneToOne':
-                            stompData.oneToOneHandler(apis, response);
-                            break;
-                        case 'message':
-                            stompData.messageHandler(apis, response);
-                            break;
-                        case 'bot':
-                            stompData.botHandler(apis, response);
-                            break;
-                        case 'event':
-                            stompData.eventHandler(apis, response);
-                    }
-                    // callback(response); 
-                }
-                else {
-                    console.log("got empty message");
-                }
-                // sub = 
-                // dest/exchange/chat.short.room.8954b0fc574d4423adc422b0017cfc3e
+        // let response: any;
+        // let sub: any;
+        // let apis: any;
+        // let uuid: string = store.get("uuid");
+        // let userId: string = store.get("username");
+        // client.subscribe(`/exchange/user-${userId}`, (message: IMessage) => {
+        //     if (message.headers['correlation-id']) {
+        //         console.log(message)
+        //         sub = message.headers['correlation-id'];
+        //         apis = sub.split('.');
+        //         if (message.body || message.isBinaryBody || message.command) {
+        //             response = JSON.parse(message.body);
+        //             switch (apis[1]) {
+        //                 case 'user':
+        //                     stompData.userHandler(apis, response);
+        //                     break;
+        //                 case 'conversation':
+        //                     stompData.conversationHandler(apis, response);
+        //                     break;
+        //                 case 'room':
+        //                     stompData.roomHandler(apis, response);
+        //                     break;
+        //                 case 'oneToOne':
+        //                     stompData.oneToOneHandler(apis, response);
+        //                     break;
+        //                 case 'message':
+        //                     stompData.messageHandler(apis, response);
+        //                     break;
+        //                 case 'bot':
+        //                     stompData.botHandler(apis, response);
+        //                     break;
+        //                 case 'event':
+        //                     stompData.eventHandler(apis, response);
+        //             }
+        //             // callback(response); 
+        //         }
+        //         else {
+        //             console.log("got empty message");
+        //         }
+        //         // sub = 
+        //         // dest/exchange/chat.short.room.8954b0fc574d4423adc422b0017cfc3e
 
-            } else {
-                if (message.headers['destination']) {
-                    sub = message.headers['destination'];
-                    let routes = sub.split('/');
-                    console.log(routes);
-                    let api = routes[2];
-                    // let api = routes[2].substring(sub.indexOf('/chat.') + 1);
-                    console.log(api)
+        //     } else {
+        //         if (message.headers['destination']) {
+        //             sub = message.headers['destination'];
+        //             let routes = sub.split('/');
+        //             console.log(routes);
+        //             let api = routes[2];
+        //             // let api = routes[2].substring(sub.indexOf('/chat.') + 1);
+        //             console.log(api)
 
-                    console.log(sub.indexOf('/') + 1)
-                    apis = api.split('.');
-                    if (message.body || message.isBinaryBody || message.command) {
-                        response = JSON.parse(message.body);
-                        console.log(response)
-                        console.log(apis)
-                        switch (apis[0]) {
-                            case 'chat':
-                                stompData.chatHandler(apis, response);
-                            case 'event':
-                                stompData.eventHandler(apis, response);
-                        }
-                    }
-                }
-            }
-        }, {
-            "x-queue-name": `user-${userId}-${uuid}`
-        });
+        //             console.log(sub.indexOf('/') + 1)
+        //             apis = api.split('.');
+        //             if (message.body || message.isBinaryBody || message.command) {
+        //                 response = JSON.parse(message.body);
+        //                 console.log(response)
+        //                 console.log(apis)
+        //                 switch (apis[0]) {
+        //                     case 'chat':
+        //                         stompData.chatHandler(apis, response);
+        //                     case 'event':
+        //                         stompData.eventHandler(apis, response);
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }, {
+        //     "x-queue-name": `user-${userId}-${uuid}`
+        // });
 
     }
 
@@ -128,12 +128,6 @@ export function subscribe(client: Client, userId: string, uuid: string) {
                     case 'conversation':
                         stompData.conversationHandler(apis, response);
                         break;
-                    case 'room':
-                        stompData.roomHandler(apis, response);
-                        break;
-                    case 'oneToOne':
-                        stompData.oneToOneHandler(apis, response);
-                        break;
                     case 'message':
                         stompData.messageHandler(apis, response);
                         break;
@@ -146,8 +140,6 @@ export function subscribe(client: Client, userId: string, uuid: string) {
             else {
                 console.log("got empty message");
             }
-            // sub = 
-            // dest/exchange/chat.short.room.8954b0fc574d4423adc422b0017cfc3e
 
         } else {
             if (message.headers['destination']) {

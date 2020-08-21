@@ -103,8 +103,6 @@ export default createStore(function (state: any, action: any) {
                     }
                 }
             } else if (body.cmdType === etype.Command.DEADLINE) {
-                console.log('+++++++++++++')
-                console.log(body.body)
                 convo = {
                     ...state.convo,
                     properties: {
@@ -220,6 +218,7 @@ export default createStore(function (state: any, action: any) {
 
     if (action.type === 'updateNotification') {
         if (state.convos) {
+            // 채팅방 리스트에서 알람 업데이트 처리
             let idx = state.convos.findIndex(obj => obj.convoId === action.notification.convoId);
             let convos = state.convos;
             convos[idx].notificationType = action.notification.type;
@@ -228,6 +227,7 @@ export default createStore(function (state: any, action: any) {
                 convos
             }
         } else if (state.convo) {
+            // 채팅방 내부에서 알람 업데이트 처리
             return {
                 ...state,
                 convo: {
