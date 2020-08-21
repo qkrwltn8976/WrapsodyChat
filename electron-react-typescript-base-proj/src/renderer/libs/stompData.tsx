@@ -176,6 +176,8 @@ export function eventHandler(apis, response) {
 	switch (type) {
 		case 'CONVERSATION_BOOKMARK_DELETED':
 			store.dispatch({type: "deleteBookmark", bookmark: response.payload });
+		case 'NOTIFICATION_UPDATED':
+			store.dispatch({type: "updateNotification", notification: response.payload });
 	}
 }
 

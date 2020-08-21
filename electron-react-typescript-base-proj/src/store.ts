@@ -180,9 +180,9 @@ export default createStore(function (state: any, action: any) {
 
     if (action.type === 'getBotCommands') {
         let idx = state.botIntent.findIndex(obj => obj.groupId === action.payload.groupId)
-        let botIntent:BotIntent = state.botIntent;
+        let botIntent: BotIntent = state.botIntent;
         botIntent[idx].commands = action.payload.BotCommands;
-        return { ...state, botIntent}
+        return { ...state, botIntent }
     }
 
     if (action.type === 'getBookmarks') {
@@ -199,7 +199,7 @@ export default createStore(function (state: any, action: any) {
     }
 
     if (action.type === 'concatMsgs') {
-        let eom : boolean;
+        let eom: boolean;
         if (action.msgs.length === 20)
             eom = false;
         else
@@ -218,9 +218,24 @@ export default createStore(function (state: any, action: any) {
         };
     }
 
-    // if (action.type === 'systemMsg') {
-    //     return {...state, msgs: state.msgs.concat(action.msgs)}
-    // }
+    if (action.type === 'updateNotification') {
+        if (state.convos) {
+            let idx = state.convos.findIndex(obj => obj.convoId === action.notification.convoId);
+            let convos = state.convos;
+            convos[idx].notificationType = action.notification.type;
+            return {
+                ...state,
+                convos
+            }
+        } else if (state.convo) {
+            return {
+                ...state,
+                convo: {
+                    notificationType: action.notification.type
+                }
+            }
+        }
+    }
 
     return state;
 })

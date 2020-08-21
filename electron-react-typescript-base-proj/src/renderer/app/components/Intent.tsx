@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { BotIntent } from '@/renderer/models/BotIntent';
-import { publishApi, publishChat, subscribe, client } from '@/renderer/libs/stomp';
 import { v4 } from 'uuid';
 import { BotCommand } from '@/renderer/models/BotCommand';
 import { Message } from '@/renderer/models/Message';
@@ -61,21 +60,6 @@ class Intent extends React.Component<IntentProps, IntentState>{
             intent: this.props.intent
         }
 
-    }
-
-
-    componentDidMount() {
-        // if(this.props.intent.commands) {
-        //     this.setState({
-        //         commands: this.props.intent.commands
-        //     });
-        // }
-        // subscribe(client, electronStore.get("username"), this.state.uuid);
-        // store.subscribe(function (this:any) {
-        //     this.setState({
-        //         commands: store.getState().commands
-        //     })
-        // }.bind(this));
     }
 
 
