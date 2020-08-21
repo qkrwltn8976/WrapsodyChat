@@ -174,8 +174,6 @@ class ChatRoom extends React.Component<RoomProps, RoomState> {
                 </div></React.Fragment>
         }
 
-        console.log("##### EOM" + this.state.eom)
-
         return (
             <React.Fragment>
                 <div id="wrapmsgr" className="ng-scope">

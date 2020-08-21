@@ -162,7 +162,7 @@ export function botHandler(apis, response) {
 				let botUserId = response.payload.botUserId;
 				let groupId = response.payload.groupId;
 				let commands = response.payload.BotCommands;
-				store.dispatch({ type: "getBotCommands", commands: response.payload.BotCommands });
+				store.dispatch({ type: "getBotCommands", payload: response.payload });
 			}
 			break;
 	}

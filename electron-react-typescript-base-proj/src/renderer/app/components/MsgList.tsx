@@ -271,10 +271,6 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
                 // 일반 채팅창인 경우
                 // 메세지 최상단까지 스크롤 할 경우 api.message.list 호출
                 this.props.getMsgs();
-                if(this.props.eom) 
-                    this.scrollView.current.scrollTop = 0;
-                else
-                    document.getElementById(this.props.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
             }
         }
     }
@@ -294,25 +290,26 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     }
 
     componentDidUpdate = () => {
-        if (this.state.msgs && this.state.msgs.length <= 20) {
-            if (this.props.isBookmark) {
-                if(!this.props.eom) {
-                    // 처음 북마크 메세지를 로딩하는 경우
-                    this.scrollView.current.scrollTop = 0;
-                } 
-            } else {
-                if(!this.props.eom) {
-                    document.getElementById(this.props.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
-                } else {
-                    this.scrollView.current.scrollTop = 0;
-                }
+        // 채팅방의 스크롤 뷰 포인트 설정
+        if (this.props.isBookmark) {
+            // 북마크 채팅창의 경우
+            if (this.state.msgs && this.state.msgs,length <=20 && !this.props.eom) {
+                // 처음 메세지를 로딩하고 로딩할 메세지가 남아있는 경우
+                this.scrollView.current.scrollTop = 0;
             }
-        }
-        else if (this.state.unreadExists && document.getElementById('read')) {
-            // 안 읽은 메세지가 있는 경우
-            document.getElementById('read').scrollIntoView({ behavior: 'auto', inline: 'start' });
         } else {
-            this.messagesScrollToBottom();
+            // 일반 채팅창의 경우
+            if (this.state.msgs && !this.props.eom) {
+                // 새로운 메세지를 로딩하는 경우
+                document.getElementById(this.props.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
+            } else if (this.state.unreadExists && document.getElementById('read')) {
+                // 안 읽은 메세지가 있는 경우
+                document.getElementById('read').scrollIntoView({ behavior: 'auto', inline: 'start' });
+            }
+            else {
+                // 더이상 로딩할 메세지가 없는 경우
+                this.scrollView.current.scrollTop = 0;
+            }
         }
     }
 

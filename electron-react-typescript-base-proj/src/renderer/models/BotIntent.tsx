@@ -1,3 +1,5 @@
+import { BotCommand } from "./BotCommand";
+
 export type BotIntent = {
     botUserId: string,
     catalog: boolean,
@@ -7,5 +9,6 @@ export type BotIntent = {
     intentType: number,
     name: string,
     nameCode: string,
-    updatedAt: number
+    updatedAt: number,
+    commands?: BotCommand[]
 }

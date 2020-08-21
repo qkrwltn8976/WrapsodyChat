@@ -2,6 +2,7 @@ import { createStore, bindActionCreators } from 'redux';
 import { sendNotification } from './renderer/libs/notification';
 import { remote } from 'electron';
 import * as etype from '@/renderer/libs/enum-type';
+import { BotIntent } from './renderer/models/BotIntent';
 const Store = require('electron-store')
 const electronStore = new Store()
 
@@ -81,8 +82,6 @@ export default createStore(function (state: any, action: any) {
     }
 
     if (action.type === 'sysMsg') {
-        console.log("**************syss")
-        console.log(action.msg)
         if (state.convo && action.msg.recvConvoId === state.convo.convoId) {
             let body = JSON.parse(action.msg.body);
             let convo;
@@ -159,7 +158,7 @@ export default createStore(function (state: any, action: any) {
                 }
             }
             convos[index].latestMessageAt = action.msg.updatedAt;
-            return { ...state, convos: convos }
+            return { ...state, convos: convos, topMsgId: "0" }
         }
 
 
@@ -180,7 +179,10 @@ export default createStore(function (state: any, action: any) {
     }
 
     if (action.type === 'getBotCommands') {
-        return { ...state, commands: action.commands }
+        let idx = state.botIntent.findIndex(obj => obj.groupId === action.payload.groupId)
+        let botIntent:BotIntent = state.botIntent;
+        botIntent[idx].commands = action.payload.BotCommands;
+        return { ...state, botIntent}
     }
 
     if (action.type === 'getBookmarks') {
