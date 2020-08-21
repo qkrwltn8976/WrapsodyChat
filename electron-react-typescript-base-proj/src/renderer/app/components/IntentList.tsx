@@ -9,7 +9,8 @@ interface IntentProps {
     convoId: string,
     notificationType: number,
     setNotification: any,
-    sendMsg: any
+    sendMsg: any,
+    getCommands: any
 }
 
 interface IntentState {
@@ -45,7 +46,8 @@ class IntentList extends React.Component<IntentProps, IntentState> {
         }
 
         if (this.state.botIntent) {
-            var len = this.state.botIntent.length
+            let len = this.state.botIntent.length
+            
             return (
                 <React.Fragment>
                     <div className="wrapmsgr_chatbot-info_div">
@@ -58,7 +60,7 @@ class IntentList extends React.Component<IntentProps, IntentState> {
 
                         {this.state.botIntent.map((intent: any) => {
                             return (
-                                <Intent intent={intent} convoId={this.props.convoId} sendMsg={this.props.sendMsg}/>
+                                <Intent intent={intent} convoId={this.props.convoId} sendMsg={this.props.sendMsg} getCommands={this.props.getCommands}/>
                             )
                         })}
 
@@ -72,5 +74,4 @@ class IntentList extends React.Component<IntentProps, IntentState> {
 
 }
 
-// destination:/exchange/request/api.bot.command.list
 export default IntentList;

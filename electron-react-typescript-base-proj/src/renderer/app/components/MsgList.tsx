@@ -6,10 +6,10 @@ import { getShortName } from '../../libs/messengerLoader';
 import { Attachment } from '@/renderer/models/Attachment';
 import { Action } from '@/renderer/models/Action';
 import * as etype from '@/renderer/libs/enum-type';
-const {remote} = require('electron')
+const { remote } = require('electron')
 const Store = require('electron-store')
 const store = new Store()
-const {BrowserWindow} = remote
+const { BrowserWindow } = remote
 
 interface MsgProps {
     msgs: Message[];
@@ -34,12 +34,6 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     private scrollView = React.createRef<HTMLDivElement>();
 
     isReadAt(before: number, after: number) {
-        // console.log(this.state)
-        // console.log(this.state.unreadExists)
-        // console.log(this.state.convo.readAt >= before)
-        // console.log('+++++++++++++++++++++++++++++++++++=')
-        // console.log(this.state.convo.readAt)
-        // console.log(this.state.convo.readAt < after)
         return this.state.convo && this.state.unreadExists && this.state.convo.readAt >= before && this.state.convo.readAt < after;
     }
 
@@ -79,7 +73,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
     getSystemMsg(body: string, type: string) {
         let msgspan;
-        if(body[0] === "{") 
+        if (body[0] === "{")
             body = JSON.parse(body).body;
 
         msgspan = <span className="ng-binding">{body}<a href="" className="wrapmsgr_right"></a></span>;
@@ -144,7 +138,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
                     <div className="wrapmsgr_msg_attachment ng-scope" ng-repeat="attachment in message.attachments">
                         <div className="wrapmsgr_msg_title ng-binding">{attach[0].title}</div>
                         <img className="ng-scope fullscreen-view-element" src={"http://ecm.dev.fasoo.com:9400" + attach[0].uri}
-                            onClick = {(e)=>{
+                            onClick={(e) => {
                                 e.preventDefault();
                                 var win = new BrowserWindow()
                                 win.loadURL("http://ecm.dev.fasoo.com:9400" + attach[0].uri)
@@ -162,7 +156,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
         let msgbubble;
         let profileClass;
         let senderName;
-        if(this.state.convo && this.state.convo.convoType === etype.ConvoType.BOT) {
+        if (this.state.convo && this.state.convo.convoType === etype.ConvoType.BOT) {
             profileClass = 'bot-profile';
             senderName = this.state.convo.name;
         }
@@ -173,7 +167,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
         if (!this.isContinuous(this.state.msgs[index - 1], msg)) {
             profile = <React.Fragment><div className="wrapmsgr_msg_user ng-isolate-scope" ng-attr-title="{{users[message.sendUserId].userName}}" wrapmsgr-user-profile="users[message.sendUserId]" user-profile-disabled="message.sendUserId.substr(0, 5) == '@BOT@'" title="administrator">
-                <span className={"user-photo ng-binding ng-isolate-scope " + profileClass }>{getShortName(msg.sendUserId)}</span>
+                <span className={"user-photo ng-binding ng-isolate-scope " + profileClass}>{getShortName(msg.sendUserId)}</span>
             </div>
                 <div className="wrapmsgr_msg_userid ng-binding">{senderName}</div></React.Fragment>
         }
@@ -223,7 +217,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
             diff = this.diffDays(prev.createdAt, msg.createdAt)
             readAt = this.isReadAt(prev.createdAt, msg.createdAt)
         }
-        console.log('--------------------------' + readAt)
+
         if (readAt)
             readUntil = this.getSystemMsg('여기까지 읽었습니다', 'read');
         else
@@ -238,7 +232,7 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
         if (msg.sendUserId === store.get("username")) { // 나중에 자신의 sendUserId로 수정
             return (
-                <li id={msg.messageId.toString()}  ng-repeat="message in current.messages" className="li-right ng-scope">
+                <li id={msg.messageId.toString()} ng-repeat="message in current.messages" className="li-right ng-scope">
                     {msgbody}
                 </li>
             )
@@ -263,36 +257,35 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
 
     messageOnScroll = () => {
 
-        let height = this.scrollView.current.scrollHeight-this.scrollView.current.clientHeight;
+        let height = this.scrollView.current.scrollHeight - this.scrollView.current.clientHeight;
         let scrollTop = this.scrollView.current.scrollTop;
 
-        if (scrollTop === 0 && !this.props.isBookmark) {
-            // 메세지 최상단까지 스크롤 할 경우 api 호출
-            this.props.getMsgs();
-            if (this.props.eom) {
-                this.scrollView.current.scrollTop = 0;
-            }   
-            else 
-                document.getElementById(this.props.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
-        }
-
-        if(Math.floor(scrollTop) === height && this.props.isBookmark) {
-            console.log('botototototo')
-            this.props.getBottomMsgs();
+        if (this.props.isBookmark) {
+            // 북마크인 경우
+            // 메세지 최하단까지 스크롤 할 경우 api.message.list 호출
+            if (Math.floor(scrollTop) === height) {
+                this.props.getBottomMsgs();
+            }
+        } else {
+            if (scrollTop === 0) {
+                // 일반 채팅창인 경우
+                // 메세지 최상단까지 스크롤 할 경우 api.message.list 호출
+                this.props.getMsgs();
+                if(this.props.eom) 
+                    this.scrollView.current.scrollTop = 0;
+                else
+                    document.getElementById(this.props.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
+            }
         }
     }
 
-    // messageScrollToRecentMessage = () => {
-    //     if(this.scrollView.current.scrollHeight)
-    // }
 
     constructor(props: MsgProps) {
         super(props);
-        
+
     }
 
     componentDidMount() {
-        console.log(this.props.isBookmark)
         const scrollView: HTMLDivElement | null = this.scrollView.current;
         if (scrollView) {
             scrollView.addEventListener('scroll', this.messageOnScroll);
@@ -301,40 +294,40 @@ class MsgList extends React.Component<MsgProps, MsgListState> {
     }
 
     componentDidUpdate = () => {
-        // 처음 채팅방에 접속했을 경우
         if (this.state.msgs && this.state.msgs.length <= 20) {
-            if(this.props.isBookmark && !this.props.eom) {
-                this.scrollView.current.scrollTop = 0;
-                console.log(this.state.msgs.length)
-            } 
-            // else {
-            //     this.messagesScrollToBottom();
-            //     console.log('down')
-            // // }
-            if(!this.props.isBookmark && !this.props.eom){
-                this.messagesScrollToBottom();
-                console.log(this.state.msgs.length)
-                console.log('down')
+            if (this.props.isBookmark) {
+                if(!this.props.eom) {
+                    // 처음 북마크 메세지를 로딩하는 경우
+                    this.scrollView.current.scrollTop = 0;
+                } 
+            } else {
+                if(!this.props.eom) {
+                    document.getElementById(this.props.topMsgId.toString()).scrollIntoView({ behavior: 'auto', inline: 'start' });
+                } else {
+                    this.scrollView.current.scrollTop = 0;
+                }
             }
-               
-        } 
-        
-         // 안 읽은 메세지가 있는 경우
-        if(this.state.unreadExists && document.getElementById('read'))
+        }
+        else if (this.state.unreadExists && document.getElementById('read')) {
+            // 안 읽은 메세지가 있는 경우
             document.getElementById('read').scrollIntoView({ behavior: 'auto', inline: 'start' });
+        } else {
+            this.messagesScrollToBottom();
+        }
     }
 
     render() {
+
         let unreadExists = (this.props.convo && this.props.convo.unread > 0)
-        this.state = ({ msgs: this.props.msgs, convo: this.props.convo, unreadExists});
+        this.state = ({ msgs: this.props.msgs, convo: this.props.convo, unreadExists });
 
         return (
             <div className="wrapmsgr_content">
                 <div className="wrapmsgr_messages" in-view-container="" ref={this.scrollView} id="scrollView">
                     <ul>
-                        {(this.state.msgs)?this.state.msgs.map((msg: Message, index: number) =>
+                        {(this.state.msgs) ? this.state.msgs.map((msg: Message, index: number) =>
                             this.getMsgBody(msg, index)
-                        ):null}
+                        ) : null}
                     </ul>
                     <div className="wrapmsgr_latest_message ng-hide" ng-show="current.latestMessage" onClick={this.messagesScrollToBottom}>
                         <i className="icon_arrow_down"></i>

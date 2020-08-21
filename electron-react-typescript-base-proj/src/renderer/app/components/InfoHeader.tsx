@@ -32,7 +32,6 @@ interface ShowState {
     tempMembers : TreeMember[];  
     oldMembers: TreeMember[],
     deadline?: string;
-    docTitle: string;
 }
 
 
@@ -48,7 +47,6 @@ class InfoHeader extends React.Component<Props, ShowState>{
             tempMembers : [],
             oldMembers : [],
             deadline: this.props.deadline,
-            docTitle: "ddd"
         }); 
         store.subscribe(function(this: InfoHeader){
             this.setState({ 
@@ -188,7 +186,6 @@ class InfoHeader extends React.Component<Props, ShowState>{
             pNum = language.en.pNum
 
         let deadline = this.getDeadline();
-        console.log(this.props.deadline)
 
         const { convoType } = this.props;
         if (convoType === ConvoType.DOC) {
@@ -251,8 +248,7 @@ class InfoHeader extends React.Component<Props, ShowState>{
                     <document-icon name="docInfo.detail.contentName" class="ng-isolate-scope"><i className="icon_txt">          <span className="path1"></span>         <span className="path2"></span>         <span className="path3"></span>         <span className="path4"></span>         <span className="path5"></span>         <span className="path6"></span>         <span className="path7"></span>         <span className="path8"></span>         <span className="path9"></span>         <span className="path10"></span>            <span className="path11"></span>            </i></document-icon>
                     <div className="doc-name ng-binding">{this.props.docName}</div>
                     <div>
-                        {/* <span className="ng-binding">문서 권한 보유자 {this.state.oldMembers.length} 명 / 대화 상대 {this.state.oldMembers.length + this.state.tempMembers.length} 명</span>            */}
-                        <span className="ng-binding">문서 권한 보유자 3 명 / 대화 상대 5 명</span>                                   
+                        <span className="ng-binding">문서 권한 보유자 {this.state.oldMembers.length} 명 / 대화 상대 {this.state.oldMembers.length + this.state.tempMembers.length} 명</span>                                          
                     </div>
                 </div>
             )

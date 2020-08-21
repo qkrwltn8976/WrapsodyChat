@@ -1,6 +1,6 @@
 import { Component, Fragment, useContext } from 'react';
 import React from 'react';
-import { subscribe, publishApi, subscribeCmd} from '@/renderer/libs/stomp';
+import {  subscribe, publishApi, client} from '@/renderer/libs/stomp';
 import { v4 } from "uuid"
 import { getConvoDate } from '@/renderer/libs/timestamp-converter';
 import {getDocType} from '@/renderer/libs/messengerLoader'
@@ -9,6 +9,7 @@ import { sortConvos } from '@/renderer/libs/sort';
 import { sendNotification } from '@/renderer/libs/notification';
 import { ipcRenderer } from 'electron';
 import store from '@/store';
+import { Client } from '@stomp/stompjs';
 const {remote, webContents} = require('electron')
 const Store = require('electron-store')
 const electronStore = new Store()
@@ -18,13 +19,14 @@ interface ChatListState {
     convos: Conversation[],
     len: number,
     uuid: string,
+    client: Client
 }
 
 interface ChatListProps {
     search: string
 }
 
-class Chat extends Component<ChatListProps, ChatListState> {
+class ChatList extends Component<ChatListProps, ChatListState> {
     _isMounted: boolean = false;
     roomName: [] = [];
     roomDate: [] = [];
@@ -36,7 +38,7 @@ class Chat extends Component<ChatListProps, ChatListState> {
         payload: [],
     };
     convoId: string = "";
-    uuid: string = v4();
+    uuid: string = electronStore.get("uuid");
     chatBotImgPath = "http://ecm.dev.fasoo.com:9400/images/icon_bot_wrapsody.png"
     
 
@@ -102,41 +104,43 @@ class Chat extends Component<ChatListProps, ChatListState> {
     }
 
     stompConnection = () => {
-        let client;
-        ipcRenderer.send("requestClient")
-        ipcRenderer.on('sendClient', (event, arg) => {
-            console.log("arg로 뭐가 들어오는지 확인")
-            console.log(arg)
-            client = arg;
-            console.log("client잘 받았는지 확인!!!")
-            console.log(client)
-            client.onConnect = () => {
-                publishApi(client, 'api.conversation.list', electronStore.get("username"), electronStore.get("uuid"), {});
-            }
-            // client.activate();
-        })
+        // let client = this.state.client;
+        // client = store.getState().client
+       
+        client.onConnect = () => {
+            
+            subscribe(client, electronStore.get("username"), this.state.uuid);
+            publishApi(client, 'api.conversation.list', electronStore.get("username"), this.state.uuid, {});
+        }
+        client.activate();
     }
 
     constructor(props: ChatListProps) {
         super(props);
         this.state = ({
-            uuid: "",
+            uuid: electronStore.get("uuid"),
             convos: [],
-            len: 0
-        })
+            len: 0,
+            client: JSON.parse(electronStore.get("stmp"))
+        });
+        // console.log(electronStore.get("stmp"))
+        // console.log()
+        let stmp:Client = JSON.parse(electronStore.get("stmp"))
+        console.log(stmp)
+    }
+    
+
+    componentDidMount() {
+        this.stompConnection();
+        this._isMounted = true;
         store.dispatch({ type: "setElectron", electron: this });
+        // store.dispatch({ type: "setClient" , client });
         store.subscribe(function(this: any){
             this.setState({ 
             electron: store.getState().electron,
             convos : sortConvos(store.getState().convos),
             msg: store.getState().msg });
         }.bind(this));
-    }
-    
-
-    componentDidMount() {
-        this._isMounted = true;
-        console.log(store.getState())
     }
 
     componentWillUnmount() {
@@ -211,4 +215,4 @@ class Chat extends Component<ChatListProps, ChatListState> {
     return (<div>{this.props.search}</div>)
     }
 }
-export default Chat;
+export default ChatList;

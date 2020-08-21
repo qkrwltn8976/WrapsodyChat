@@ -5,6 +5,7 @@ import { Nodes } from '../../models/Nodes'
 import { TreeMember } from '../../models/TreeMember'
 import { v4 } from 'uuid';
 import { publishApi, subscribe, client } from '@/renderer/libs/stomp';
+import { setNewNodeList } from '@/renderer/libs/stompData';
 import MemberComponent from './MemberComponent';
 import { Node } from '../../models/Node';
 import store from '../../../store';
@@ -31,6 +32,7 @@ interface State{
     memberIsChecked:boolean,
     nodeList: Node[],
     tempMembers: TreeMember[],
+    newNodeList: Node[],
 }
 
 class Dept extends React.Component<Props, State>{
@@ -44,12 +46,22 @@ class Dept extends React.Component<Props, State>{
             memberIsChecked: false,
             nodeList: [],
             tempMembers : store.getState().tempMembers,
+            newNodeList:[],
         })
         this.expandTree = this.expandTree.bind(this);
-        this.isChecked = this.isChecked.bind(this);
+        this.isCheckedForCss = this.isCheckedForCss.bind(this);
         store.subscribe(function(this: Dept){
             this.setState({
                 tempMembers : store.getState().tempMembers,
+                newNodeList: store.getState().newNodeList,
+                childNodes: store.getState().childNodes
+            },()=>{
+                console.log("체크박스를 눌렀나요" + this.state.isChecked)
+                if(this.state.isChecked){
+                    this.setState({
+                        isChecked: false
+                    }, ()=> this.afterClick())
+                }
             })
         }.bind(this));   
     }
@@ -80,6 +92,7 @@ class Dept extends React.Component<Props, State>{
         //         }
         //     }
         // })
+    
     }
 
 
@@ -87,27 +100,41 @@ class Dept extends React.Component<Props, State>{
         this.setState({
             isExpanded : !this.state.isExpanded
         })
+        subscribe(client, electronStore.get("username"), this.state.uuid);
         publishApi(client, 'api.organ.tree', electronStore.get("username"), this.state.uuid, {"root": "N", "path": id})
     }
     
     clickTree = (id) => {
+        subscribe(client, electronStore.get("username"), this.state.uuid);
         this.setState({
-            isChecked: !this.state.isChecked
+            isChecked: true
         }, () => publishApi(client, 'api.organ.tree', electronStore.get("username"), this.state.uuid, {"root": "N", "path": id}))
     }
 
     afterClick = () =>{
-        store.dispatch({type: 'clickDept', childNodes : this.state.childNodes})
-        this.state.childNodes.map(node=>{
-            let that = this;
-            if(node.type === "dept" && node.hasChildren){
-                this.setState({
-                    isChecked : false
-                }, ()=> that.clickTree(node.value))
+        console.log("afterClick이 실행되었음")
+        console.log("왜 undefined가 뜨는지 모르겟네?")
+        let temp : Node[];
+        temp = [];
+        this.state.nodeList.map(node=>{
+            if(node.parentCode === this.props.dept.id){
+                temp.push({"id": node.id, "name": node.name})
             }
         })
+        console.log(temp)
+        store.dispatch({type: 'clickDept', childNodes : temp})
+        if(this.state.newNodeList && this.state.newNodeList.length > 0){
+            this.state.newNodeList.map(node=>{
+                let that = this;
+                if(node.type === "dept" && node.hasChildren){
+                    this.setState({
+                        isChecked : false
+                    }, ()=> that.clickTree(node.id))
+                }
+            })
+        }   
     }
-    isChecked = () : boolean =>{
+    isCheckedForCss = () : boolean =>{
         let ch : boolean
         if(this.state.nodeList && this.state.tempMembers && this.state.nodeList.length > 0 && this.state.tempMembers.length > 0 && this.props.oldMembers){
             ch = true;
@@ -129,8 +156,10 @@ class Dept extends React.Component<Props, State>{
     
     render(){
         let nodesComponent;
-        if(this.state.nodeList){
-            nodesComponent = this.state.nodeList.map(node=>{
+        // let newNodeList = setNewNodeList()
+        
+        if(this.state.newNodeList && this.state.newNodeList.length > 0){
+            nodesComponent = this.state.newNodeList.map(node=>{
                 if(node.parentCode == this.props.dept.id && node.type == "dept"){
                     return(
                         <Dept clickDept = {this.props.clickDept} clickMember = {this.props.clickMember}  master = {this.props.master} oldMembers = {this.props.oldMembers} dept = {node} tempMembers = {this.props.tempMembers}/>
@@ -153,7 +182,7 @@ class Dept extends React.Component<Props, State>{
             <li ng-repeat={this.props.dept.hasChildren ? "node in docInfo.organ" : "node in node.subTree" } ng-class="{selected: isInviteMembers(node) >= 0}" ui-tree-node="" data-collapsed="true" ng-include="'organ_renderer'" className={this.props.dept.hasChildren ? "ng-scope angular-ui-tree-node" : "ng-scope angular-ui-tree-node selected"} expand-on-hover="false">
                 <div className="organ_wrapper ng-scope">
                     <span ng-style="node.type === 'dept' &amp;&amp; !node.hasChildren &amp;&amp; {'visibility': 'hidden'}" style = {triangleVisibility}>
-                        <input type="checkbox" id={checkboxId} ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)" checked = {this.isChecked()}/>
+                        <input type="checkbox" id={checkboxId} ng-disabled="node.disabled" ng-checked="isInviteMembers(node) >= 0" ng-click="toggleMember(node, $event)" checked = {this.isCheckedForCss()}/>
                         <label htmlFor={checkboxId} data-nodrag="">
                             <i className="icon_checkbox" ng-class="{disabled: node.disabled}" onClick={(e) => this.clickTree(this.props.dept.id)}></i>
                         </label>

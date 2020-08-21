@@ -32,8 +32,6 @@ interface Props {
     isMemberChecked?: boolean,
     isDeptChecked?: boolean,
     childNodes?: any,
-    nodeList?: Node[],
-    // tempMembers?: TreeMember[],
 }
 
 interface State{
@@ -111,7 +109,7 @@ class MemberList extends React.Component<Props, State>{
 
     clickAll = (e) =>{
         e.preventDefault()
-        this.props.nodeList.map(node=>{
+        this.state.nodeList.map(node=>{
             if(node.type == "user"){
                 let newMember : TreeMember[];
                 newMember = [{
@@ -130,12 +128,6 @@ class MemberList extends React.Component<Props, State>{
     render() {
         const { memberListType, convoId} = this.props
         let tempMembersComponent;
-        console.log("-----------------store에서 왜 값을 못 받아오지-------------------")
-        console.log(this.state.master)
-        console.log(this.state.nodeList)
-        console.log(this.state.tempMembers)
-        console.log(this.state.members)
-        console.log(this.state.oldMembers)
         if(this.state.tempMembers && this.state.tempMembers.length > 0){
             tempMembersComponent = this.state.tempMembers.map(member=> {
                 return(

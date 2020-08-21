@@ -92,39 +92,39 @@ app.on('activate', () => {
     }
 });
 
-ipcMain.on('setClient', async (event, argument) => {
-    let login = electronStore.get("username")
-    let passcode = electronStore.get("password")
-    globalClient = new Client({
-        brokerURL: "ws://192.168.100.30:9500/ws",
-        connectHeaders: {
-            login,
-            passcode,
-            host: "/wrapsody-oracle",
-        },
-        debug: function (str) {
-            console.log(str);
-        },
-        reconnectDelay: 500000,
-        heartbeatIncoming: 10000,
-        heartbeatOutgoing: 10000,
-        onUnhandledMessage: (messages: IMessage) => {
-            console.log(messages)
-        } 
-    });
-    console.log('1------------------------------')
-    console.log(globalClient)
-    console.log('2------------------------------')
-    globalClient.onConnect = () => {
-        console.log("connected to Stomp");
-        subscribe(client, login, electronStore.get("uuid"));
-    }
-    globalClient.activate()
-    //globalAny.globalClient = {globalClient: globalClient};
-    console.log("----------------------setClient and publish-----------------------")
-    console.log(globalClient.connected)
-    publishApi(client, 'api.conversation.list', electronStore.get("username"), electronStore.get("uuid"), {});
-    mainWindow.loadURL("file://"+__dirname+"/index.html#/chatlist/")
-});
-// In this file you can include the rest of your app"s specific main process
-// code. You can also put them in separate files and require them here.
+// ipcMain.on('setClient', async (event, argument) => {
+//     let login = electronStore.get("username")
+//     let passcode = electronStore.get("password")
+//     globalClient = new Client({
+//         brokerURL: "ws://192.168.100.30:9500/ws",
+//         connectHeaders: {
+//             login,
+//             passcode,
+//             host: "/wrapsody-oracle",
+//         },
+//         debug: function (str) {
+//             console.log(str);
+//         },
+//         reconnectDelay: 500000,
+//         heartbeatIncoming: 10000,
+//         heartbeatOutgoing: 10000,
+//         onUnhandledMessage: (messages: IMessage) => {
+//             console.log(messages)
+//         } 
+//     });
+//     console.log('1------------------------------')
+//     console.log(globalClient)
+//     console.log('2------------------------------')
+//     globalClient.onConnect = () => {
+//         console.log("connected to Stomp");
+//         subscribe(client, login, electronStore.get("uuid"));
+//     }
+//     globalClient.activate()
+//     //globalAny.globalClient = {globalClient: globalClient};
+//     console.log("----------------------setClient and publish-----------------------")
+//     console.log(globalClient.connected)
+//     publishApi(client, 'api.conversation.list', electronStore.get("username"), electronStore.get("uuid"), {});
+//     mainWindow.loadURL("file://"+__dirname+"/index.html#/chatlist/")
+// });
+// // In this file you can include the rest of your app"s specific main process
+// // code. You can also put them in separate files and require them here.

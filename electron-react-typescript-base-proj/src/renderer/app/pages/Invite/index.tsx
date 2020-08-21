@@ -21,12 +21,12 @@ interface inviteProps{
 interface inviteState{
     uuid: string,
     convoId: string,
-    // tempMembers: TreeMember[],
-    // docName: string,
-    // master: TreeMember,
-    // viewAuthAllUsers: boolean,
-    // oldMembers: TreeMember[],
-    // nodeList: Node[],
+    tempMembers: TreeMember[],
+    docName: string,
+    master: TreeMember,
+    viewAuthAllUsers: boolean,
+    oldMembers: TreeMember[],
+    nodeList: Node[],
 }
 
 class Invite extends React.Component<inviteProps, inviteState>{
@@ -35,17 +35,27 @@ class Invite extends React.Component<inviteProps, inviteState>{
         this.state = ({
             uuid: v4(),
             convoId: this.props.match.params.convo,
-            // tempMembers: [],
-            // docName: "",
-            // master: {
-            //     userId : "",
-            //     userName: "",
-            //     password: "",
-            // },
-            // viewAuthAllUsers: false,
-            // oldMembers: [],
-            // nodeList:[],
+            tempMembers: [],
+            docName: "",
+            master: {
+                userId : "",
+                userName: "",
+                password: "",
+            },
+            viewAuthAllUsers: false,
+            oldMembers: [],
+            nodeList:[],
         })
+        store.subscribe(function(this: Invite){
+            this.setState({
+                docName: store.getState().name,
+                master : store.getState().master,
+                viewAuthAllUsers: store.getState().viewAuthAllUsers,
+                oldMembers: store.getState().members,
+                nodeList: store.getState().nodeList
+            })
+        }.bind(this));
+        console.log(store.getState())   
        
     }
 
@@ -54,20 +64,11 @@ class Invite extends React.Component<inviteProps, inviteState>{
             subscribe(client, electronStore.get("username"), this.state.uuid);
             publishApi(client, 'api.conversation.view', electronStore.get("username"), this.state.uuid, { 'convoId': this.state.convoId });
         }
+        client.activate()
     }
 
     componentDidMount(){
        this.stompConnection();
-       store.subscribe(function(this: Invite){
-            this.setState({
-                // docName: store.getState().master,
-                // master : store.getState().master,
-                // viewAuthAllUsers: store.getState().viewAuthAllUsers,
-                // oldMembers: store.getState().members,
-                // nodeList: store.getState().nodeList
-            })
-        }.bind(this));
-        console.log(store.getState())   
     }
 
     render(){
@@ -82,7 +83,7 @@ class Invite extends React.Component<inviteProps, inviteState>{
                                 <Header docName = "" headerType={HeaderType.INVITE}/>
                                 <form name="manageDocRoomForm" ng-submit="submitDocRoom()" className="ng-pristine ng-valid">
                                     <div className="wrapmsgr_popup_body">
-                                        <InfoHeader convoType= {ConvoType.IC} docName = {"fff"}/>
+                                        <InfoHeader convoType= {ConvoType.IC} docName = {this.state.docName}/>
                                         <div className="group">
                                             <div className="wrapmsgr_organ_tree ng-scope angular-ui-tree" ui-tree="organTreeOptions" data-clone-enabled="true" data-nodrop-enabled="true" data-drag-delay="100" style = {organ_tree_calc_width}>
                                                 <MemberList memberListType = {MemberListType.SELECT}  />

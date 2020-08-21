@@ -1,21 +1,33 @@
 import React, { Fragment, useState, createContext, useContext } from 'react'
-// import { client} from '@/renderer/libs/stomp';
+import { client, setClient} from '@/renderer/libs/stomp';
 import { v4 } from 'uuid';
-import { ipcRenderer } from 'electron';
+import store from '@/store';
 const remote = require('electron').remote
 
 //electron-store 라이브러리 사용하여 id / pw 저장
 const Store = require('electron-store')
-const store = new Store()
+const electronStore = new Store()
 
 
 async function handleClick (userinfo: any, uuid:string, lang:string){
-    const globalAny:any = global;
-    store.set("username", userinfo.username)
-    store.set("password", userinfo.password)
-    store.set("language", lang)
-    store.set("uuid", uuid)
-    ipcRenderer.send('setClient')
+    electronStore.set("username", userinfo.username)
+    electronStore.set("password", userinfo.password)
+    electronStore.set("uuid", uuid)
+    electronStore.set("language", lang)
+    
+
+    setClient()
+
+    console.log(client.connected)
+    electronStore.set("stmp", JSON.stringify(client))
+    client.onConnect=()=>{
+        console.log('hihiihi')
+        let win  = remote.getCurrentWindow();
+        
+        store.dispatch({ type: "setClient" , client });
+        win.loadURL("file://"+__dirname+"/index.html#/chatlist/")
+    }
+
 }
 
 const minimizeWindow = (event:any)=>{
@@ -33,7 +45,7 @@ function Login(){
     const [lang, setLang] = useState("ko-KR")
     const uuid = v4()
 
-    store.clear()
+    electronStore.clear()
     
     return (
         <Fragment>
