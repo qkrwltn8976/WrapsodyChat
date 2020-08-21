@@ -92,18 +92,37 @@ app.on('activate', () => {
     }
 });
 
-ipcMain.on('setClient', async (event, argument:any) => {
+ipcMain.on('setClient', async (event, argument) => {
     let login = electronStore.get("username")
     let passcode = electronStore.get("password")
-    //setClient()
-    // console.log('fffff------------------------------')
-    // console.log(globalClient)
-    // globalClient.onConnect = () => {
-    //     console.log("connected to Stomp");
-    // }
-    // globalAny.globalClient = {globalClient: globalClient};
+    globalClient = new Client({
+        brokerURL: "ws://192.168.100.30:9500/ws",
+        connectHeaders: {
+            login,
+            passcode,
+            host: "/wrapsody-oracle",
+        },
+        debug: function (str) {
+            console.log(str);
+        },
+        reconnectDelay: 500000,
+        heartbeatIncoming: 10000,
+        heartbeatOutgoing: 10000,
+        onUnhandledMessage: (messages: IMessage) => {
+            console.log(messages)
+        } 
+    });
+    console.log('1------------------------------')
+    console.log(globalClient)
+    console.log('2------------------------------')
+    globalClient.onConnect = () => {
+        console.log("connected to Stomp");
+        subscribe(client, login, electronStore.get("uuid"));
+    }
+    globalClient.activate()
+    //globalAny.globalClient = {globalClient: globalClient};
     console.log("----------------------setClient and publish-----------------------")
-    // console.log(client.connected)
+    console.log(globalClient.connected)
     publishApi(client, 'api.conversation.list', electronStore.get("username"), electronStore.get("uuid"), {});
     mainWindow.loadURL("file://"+__dirname+"/index.html#/chatlist/")
 });

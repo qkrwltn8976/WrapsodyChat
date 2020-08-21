@@ -35,7 +35,7 @@ export function createClient(login: string, passcode: string) {
     return client;
 }
 
-export var client = createClient(electronStore.get("username"), electronStore.get("password"))
+export var client = null;
 export function setClient(){
     client = createClient(electronStore.get("username"), electronStore.get("password"))
 }
