@@ -99,12 +99,13 @@ export default createStore(function (state: any, action: any) {
             bot = action.room.Bot;
             botIntent = action.room.BotIntentGroup;
         }
-        let nodeList = [];
-        let checkoutAuthList = action.room.SyncInfo.checkoutAuthList.user;
-        let checkoutDeptAuthList = action.room.SyncInfo.checkoutDeptAuthList.dept;
-        let viewAuthList = action.room.SyncInfo.viewAuthList.user;
-        let viewDeptAuthList = action.room.SyncInfo.viewDeptAuthList.dept;
         
+        let nodeList = [];
+        let checkoutAuthList = action.room.SyncInfo.checkoutAuthList ? action.room.SyncInfo.checkoutAuthList.user : null;
+        let checkoutDeptAuthList = action.room.SyncInfo.checkoutDeptAuthList ? action.room.SyncInfo.checkoutDeptAuthList.dept : null;
+        let viewAuthList = action.room.SyncInfo.viewAuthList ? action.room.SyncInfo.viewAuthList.user : null;
+        let viewDeptAuthList = action.room.SyncInfo.viewDeptAuthList ? action.room.SyncInfo.viewDeptAuthList.dept : null;
+ 
         if(checkoutAuthList && checkoutAuthList.length > 0){
             checkoutAuthList.map(node=>{
                 nodeList.push({"name": node.userName, "id" : node.userId, "status": "select", "type": "user"})

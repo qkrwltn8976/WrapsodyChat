@@ -10,11 +10,11 @@ export function createClient(login: string, passcode: string) {
     console.log(login)
     console.log(passcode)
     let client = new Client({
-        brokerURL: "ws://192.168.100.30:9500/ws",
+        brokerURL: "ws://13.209.80.61:9500/rabbitmq/ws",
         connectHeaders: {
             login,
             passcode,
-            host: "/wrapsody-oracle",
+            host: "/wrapsody",
         },
         debug: function (str) {
             console.log(str);
